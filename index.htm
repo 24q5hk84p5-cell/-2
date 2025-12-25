@@ -2,197 +2,218 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title id="pageTitle">בנק הכיתה ח/2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מערכת ניהול ניקוד כיתתית</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
-            --bg: #0f172a; --card-bg: #1e293b; --accent: #38bdf8;
-            --success: #22c55e; --danger: #ef4444; --text: #f8fafc;
-            --gold: #fbbf24; --silver: #94a3b8; --bronze: #d97706;
-            --purple: #a855f7;
+            --primary: #2563eb; --secondary: #64748b; --success: #22c55e;
+            --danger: #ef4444; --warning: #f59e0b; --bg: #f8fafc;
+            --card: #ffffff; --text: #1e293b;
         }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; padding-bottom: 50px; direction: rtl; }
-        .sticky-header { position: sticky; top: 0; width: 100%; background: rgba(15, 23, 42, 0.95); padding: 15px 0; display: flex; flex-direction: column; align-items: center; z-index: 1000; border-bottom: 2px solid var(--accent); backdrop-filter: blur(10px); }
-        .main-title { font-size: 1.8em; font-weight: 800; color: var(--accent); margin: 0; }
-        .slogan { font-size: 0.9em; color: #94a3b8; margin-top: 5px; text-align: center; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 50px; }
+        .header { background: var(--primary); color: white; padding: 20px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .container { max-width: 900px; margin: 20px auto; padding: 0 15px; }
         
-        .container { width: 95%; max-width: 850px; background: var(--card-bg); border-radius: 24px; overflow: hidden; border: 1px solid #334155; margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
-        
-        /* עיצוב רשימה משולבת */
-        .student-row { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 15px; transition: 0.3s; }
-        .student-header { display: flex; align-items: center; gap: 12px; }
-        .student-info { flex-grow: 1; display: flex; flex-direction: column; cursor: pointer; }
-        .student-name { font-weight: bold; font-size: 1.1em; display: flex; align-items: center; gap: 8px; }
-        
-        /* באדג'ים של פרסים */
-        .prize-badge { font-size: 0.7em; padding: 3px 8px; border-radius: 12px; font-weight: bold; color: white; display: inline-flex; align-items: center; gap: 3px; }
-        .badge-nachat { background: var(--purple); box-shadow: 0 0 10px rgba(168, 85, 247, 0.4); }
-        .badge-choopar { background: var(--success); box-shadow: 0 0 10px rgba(34, 197, 94, 0.4); }
+        /* כרטיס תלמיד */
+        .student-list { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .student-card { background: var(--card); padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: 0.2s; }
+        .student-info { flex-grow: 1; }
+        .student-name { font-weight: bold; font-size: 1.1em; display: flex; align-items: center; gap: 10px; }
+        .prize-icons { display: flex; gap: 5px; }
+        .badge { font-size: 0.7em; padding: 2px 8px; border-radius: 10px; color: white; }
 
-        .score-box { width: 50px; height: 50px; border-radius: 12px; border: 2px solid var(--accent); display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; background: rgba(56, 189, 248, 0.05); }
-        .weekly-label { font-size: 0.6em; color: var(--accent); margin-top: -2px; }
+        /* ניקוד */
+        .score-section { display: flex; align-items: center; gap: 15px; }
+        .score-val { font-size: 1.5em; font-weight: 800; color: var(--primary); min-width: 50px; text-align: center; }
+        .btn-circle { width: 32px; height: 32px; border-radius: 50%; border: none; cursor: pointer; color: white; font-weight: bold; font-size: 1.2em; display: flex; align-items: center; justify-content: center; }
 
-        .btn-m { width: 35px; height: 35px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; color: white; }
-        .history-panel { display: none; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 12px; margin-top: 10px; border: 1px solid rgba(255,255,255,0.05); font-size: 0.9em; }
+        /* פודיום */
+        .podium { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin: 30px 0; height: 150px; }
+        .podium-place { display: flex; flex-direction: column; align-items: center; width: 100px; }
+        .podium-bar { width: 100%; border-radius: 8px 8px 0 0; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+
+        /* ניהול */
+        .admin-panel { background: #e2e8f0; padding: 20px; border-radius: 15px; margin-bottom: 20px; display: none; }
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn-main { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
         
-        /* פאנל ניהול */
-        .admin-panel { display: none; padding: 25px; border-top: 2px solid var(--accent); }
-        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .admin-card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; border: 1px solid #334155; }
-        input, textarea { background: #0f172a; color: white; border: 1px solid #334155; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box; }
+        .class-photo { width: 100%; max-height: 300px; object-fit: cover; border-radius: 15px; margin-bottom: 20px; display: none; }
         
-        .class-img { width: 95%; max-width: 850px; border-radius: 20px; margin-top: 20px; display: none; border: 2px solid var(--accent); }
-        #podium { display: flex; justify-content: center; align-items: flex-end; gap: 15px; margin: 25px 0; height: 120px; }
+        @media print { .no-print { display: none; } }
     </style>
 </head>
 <body>
 
-    <div class="sticky-header">
-        <div class="main-title" id="displayTitle">בנק הכיתה ח/2</div>
-        <div class="slogan" id="displaySlogan">"אל תהיו כעבדים..."</div>
-        <div style="margin-top: 10px; display: flex; gap: 10px;">
-             <button class="tab-btn" style="background:var(--accent); color:var(--bg); border:none; padding:8px 15px; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="toggleAdmin()">⚙️ ניהול והגדרות</button>
-             <button class="tab-btn" style="background:var(--purple); color:white; border:none; padding:8px 15px; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="window.print()">🖨️ הדפסת זכאים</button>
+<div class="header">
+    <h1 id="viewTitle">בנק הכיתה</h1>
+    <p id="viewSlogan">בונים הצלחה ביחד</p>
+    <button class="btn-main no-print" onclick="toggleAdmin()">⚙️ מצב עריכה</button>
+</div>
+
+<div class="container">
+    <div id="adminArea" class="admin-panel no-print">
+        <div class="admin-grid">
+            <div style="background: white; padding: 15px; border-radius: 10px;">
+                <h3>📁 טעינת אקסל</h3>
+                <input type="file" id="excelFile" accept=".xlsx, .xls" onchange="processExcel(event)">
+                <p style="font-size: 0.8em; color: gray;">השמות יזוהו אוטומטית ללא קשר לסדר (משפחה/פרטי).</p>
+            </div>
+            <div style="background: white; padding: 15px; border-radius: 10px;">
+                <h3>🖼️ עיצוב כיתה</h3>
+                <input type="text" id="editTitle" placeholder="שם הכיתה" oninput="updateMeta()"><br><br>
+                <input type="text" id="editSlogan" placeholder="סלוגן" oninput="updateMeta()"><br><br>
+                <input type="file" accept="image/*" onchange="updatePhoto(event)">
+            </div>
+        </div>
+        <div style="margin-top: 15px; display: flex; gap: 10px;">
+            <button class="btn-main" style="background: var(--danger);" onclick="resetScores()">🔄 איפוס ניקוד שבועי</button>
+            <button class="btn-main" style="background: var(--warning);" onclick="exportData()">💾 גיבוי נתונים</button>
         </div>
     </div>
 
-    <img id="classPhoto" class="class-img">
-    <div id="podium"></div>
+    <img id="displayPhoto" class="class-photo">
+    
+    <div id="podiumArea" class="podium"></div>
 
-    <div class="container">
-        <div id="studentList"></div>
-
-        <div id="adminPanel" class="admin-panel">
-            <div class="admin-grid">
-                <div class="admin-card">
-                    <h3 style="color:var(--purple); margin-top:0;">🎁 סף פרסים</h3>
-                    <label>נחת (ללא הפרעות):</label>
-                    <input type="number" id="minNachat" onchange="state.prizes.nachat=this.value;save();render();">
-                    <label style="margin-top:10px; display:block;">צ'ופר שבועי:</label>
-                    <input type="number" id="minChoopar" onchange="state.prizes.choopar=this.value;save();render();">
-                </div>
-                <div class="admin-card">
-                    <h3 style="color:var(--accent); margin-top:0;">📁 העלאת נתונים</h3>
-                    <input type="file" id="fileIn" accept=".xlsx, .xls" onchange="loadExcel(event)">
-                    <p style="font-size:0.7em; color:#94a3b8;">העלה אקסל עם מילות מפתח: "חיסור", "מילה טובה", "הפרעה" (15-).</p>
-                </div>
-            </div>
-            <div class="admin-card" style="margin-bottom:15px;">
-                <h3>📝 עריכת כיתה</h3>
-                <input type="text" id="inputTitle" oninput="updateTexts()" placeholder="שם הכיתה"><br><br>
-                <input type="file" accept="image/*" onchange="uploadPhoto(event)">
-            </div>
-            <button class="btn-m" style="background:var(--danger); width:100%; height:45px;" onclick="resetWeek()">🔄 איפוס שבועי (מוחק ניקוד והיסטוריה)</button>
-        </div>
-    </div>
+    <div id="studentList" class="student-list"></div>
+</div>
 
 <script>
-    let state = JSON.parse(localStorage.getItem('class_bank_v21')) || {
-        data: [], photo: "", title: "בנק הכיתה ח/2", slogan: '"אל תהיו כעבדים המשמשים את הרב..."',
-        prizes: { nachat: 25, choopar: 45 }
+    // נתונים התחלתיים
+    let state = JSON.parse(localStorage.getItem('class_v1_core')) || {
+        students: [
+            "אברמוביץ דניאל", "איוב איתן", "אלגרבלי בניה עוז", "אלמו נתנאל", "ארבל אליה אהרון", 
+            "בלוסטוצקי הלל ישי", "בן עטר נתאי יוסף", "בן פורת נעם", "גורדון בניה", "גלייזר שלום", 
+            "דהן יוסף חיים", "הירשנברגר בועז", "וויסמן יהונתן", "ולר נווה אהרן", "טמנה אביהו", 
+            "יושעי נעם", "יעקבי יהודה", "כהן ליאור", "כהן ניתאי", "מנצור הראל", 
+            "מרסיאנו אורי", "נדל נוה", "ניאזוב אביאל", "סמני שבח", "פורסט עמיחי", 
+            "פלומבו נריה", "פנקר שילה", "פרשל מלאכי", "קצב נעם", "רוזנצוויג בעז אשר"
+        ].map(name => ({ name, score: 100, weeklyLogs: [] })),
+        config: { title: "בנק הכיתה ח/2", slogan: "אל תהיו כעבדים המשמשים את הרב...", photo: "" },
+        prizes: [
+            { name: "💌 הודעת נחת", minScore: 125, noBadBehavior: true, minGood: 3 },
+            { name: "🍫 צ'ופר שבועי", minScore: 145, noBadBehavior: false, minGood: 0 }
+        ]
     };
 
-    if (state.data.length === 0) {
-        const names = ["אברמוביץ דניאל", "איוב איתן", "אלגרבלי בניה עוז", "אלמו נתנאל", "ארבל אליה אהרון", "בלוסטוצקי הלל ישי", "בן עטר נתאי יוסף", "בן פורת נעם", "גורדון בניה", "גלייזר שלום", "דהן יוסף חיים", "הירשנברגר בועז", "וויסמן יהונתן", "ולר נווה אהרן", "טמנה אביהו", "יושעי נעם", "יעקבי יהודה", "כהן ליאור", "כהן ניתאי", "מנצור הראל", "מרסיאנו אורי", "נדל נוה", "ניאזוב אביאל", "סמני שבח", "פורסט עמיחי", "פלומבו נריה", "פנקר שילה", "פרשל מלאכי", "קצב נעם", "רוזנצוויג בעז אשר"];
-        state.data = names.map(n => ({ name: n, balance: 100, logs: [], weeklyEarned: 0 }));
+    function save() { localStorage.setItem('class_v1_core', JSON.stringify(state)); }
+
+    // פונקציית זיהוי שמות גמישה
+    function findStudent(rawName) {
+        const clean = (s) => s.split(' ').filter(x => x.length > 1).sort().join('');
+        const searchName = clean(rawName);
+        return state.students.find(s => clean(s.name) === searchName || clean(s.name).includes(searchName) || searchName.includes(clean(s.name)));
     }
 
-    function save() { localStorage.setItem('class_bank_v21', JSON.stringify(state)); }
-
-    function updateManual(name, delta) {
-        let s = state.data.find(x => x.name === name);
-        let pts = delta * 5;
-        s.balance += pts;
-        s.weeklyEarned += pts;
-        s.logs.unshift({ text: "עדכון ידני", val: pts });
-        render();
+    function updateScore(studentName, amount, reason = "עדכון ידני") {
+        const s = state.students.find(x => x.name === studentName);
+        if (s) {
+            s.score += amount;
+            s.weeklyLogs.push({ reason, amount, date: new Date().toLocaleDateString() });
+            render();
+        }
     }
 
     function render() {
-        document.getElementById('displayTitle').innerText = state.title;
-        document.getElementById('displaySlogan').innerText = state.slogan;
-        document.getElementById('minNachat').value = state.prizes.nachat;
-        document.getElementById('minChoopar').value = state.prizes.choopar;
-        
-        const list = document.getElementById('studentList'); list.innerHTML = '';
-        const sorted = [...state.data].sort((a,b) => b.balance - a.balance);
+        // עדכון כותרות
+        document.getElementById('viewTitle').innerText = state.config.title;
+        document.getElementById('viewSlogan').innerText = state.config.slogan;
+        if(state.config.photo) {
+            const img = document.getElementById('displayPhoto');
+            img.src = state.config.photo; img.style.display = 'block';
+        }
 
-        sorted.forEach((s, idx) => {
-            // חישוב זכאות לפרסים
-            let hasDisturbance = s.logs.some(l => l.text.includes("הפרעה") || l.val < 0);
-            let eligibleNachat = (s.weeklyEarned >= state.prizes.nachat && !hasDisturbance);
-            let eligibleChoopar = (s.weeklyEarned >= state.prizes.choopar);
+        // פודיום
+        const sorted = [...state.students].sort((a,b) => b.score - a.score);
+        const podArea = document.getElementById('podiumArea');
+        podArea.innerHTML = `
+            <div class="podium-place"><small>${sorted[1].name}</small><div class="podium-bar" style="height:60px; background:#cbd5e1;">🥈</div></div>
+            <div class="podium-place"><small>${sorted[0].name}</small><div class="podium-bar" style="height:90px; background:#fbbf24;">🥇</div></div>
+            <div class="podium-place"><small>${sorted[2].name}</small><div class="podium-bar" style="height:40px; background:#cd7f32;">🥉</div></div>
+        `;
+
+        // רשימה
+        const list = document.getElementById('studentList');
+        list.innerHTML = '';
+        sorted.forEach((s, i) => {
+            // בדיקת זכאות לפרסים
+            const badCount = s.weeklyLogs.filter(l => l.amount < 0).length;
+            const goodCount = s.weeklyLogs.filter(l => l.amount > 0).length;
+            
+            let prizeHTML = '';
+            state.prizes.forEach(p => {
+                const scoreOk = s.score >= p.minScore;
+                const behaviorOk = !p.noBadBehavior || (p.noBadBehavior && badCount === 0);
+                const goodOk = goodCount >= p.minGood;
+                if (scoreOk && behaviorOk && goodOk) {
+                    prizeHTML += `<span class="badge" style="background:var(--warning)">${p.name}</span>`;
+                }
+            });
 
             list.innerHTML += `
-                <div class="student-row">
-                    <div class="student-header">
-                        <div class="controls">
-                            <button class="btn-m" style="background:var(--success)" onclick="updateManual('${s.name}', 1)">+</button>
-                            <button class="btn-m" style="background:var(--danger); margin-right:5px;" onclick="updateManual('${s.name}', -1)">-</button>
-                        </div>
-                        <div class="student-info" onclick="toggleHistory('hist-${idx}')">
-                            <div class="student-name">
-                                ${idx+1}. ${s.name}
-                                ${eligibleNachat ? '<span class="prize-badge badge-nachat">💌 נחת</span>' : ''}
-                                ${eligibleChoopar ? '<span class="prize-badge badge-choopar">🍫 צ\'ופר</span>' : ''}
-                            </div>
-                        </div>
-                        <div class="score-box">
-                            <span>${s.balance}</span>
-                            <span class="weekly-label">${s.weeklyEarned >= 0 ? '+' : ''}${s.weeklyEarned}</span>
-                        </div>
+                <div class="student-card">
+                    <div class="student-info">
+                        <div class="student-name">${i+1}. ${s.name} <div class="prize-icons">${prizeHTML}</div></div>
                     </div>
-                    <div id="hist-${idx}" class="history-panel">
-                        ${s.logs.length > 0 ? s.logs.map(l => `<div style="display:flex; justify-content:space-between;"><span>${l.text}</span><span style="color:${l.val>=0?'var(--success)':'var(--danger)'}">${l.val>=0?'+':''}${l.val}</span></div>`).join('') : 'אין פעולות שבועיות'}
+                    <div class="score-section">
+                        <button class="btn-circle" style="background:var(--danger)" onclick="updateScore('${s.name}', -5)">-</button>
+                        <div class="score-val">${s.score}</div>
+                        <button class="btn-circle" style="background:var(--success)" onclick="updateScore('${s.name}', 5)">+</button>
                     </div>
-                </div>`;
+                </div>
+            `;
         });
-
-        const pod = document.getElementById('podium');
-        pod.innerHTML = `
-            <div style="text-align:center"><small>${sorted[1].name}</small><div style="background:var(--silver); width:50px; height:50px; border-radius:8px; color:black; font-weight:bold; margin:0 auto;">🥈</div></div>
-            <div style="text-align:center"><small>${sorted[0].name}</small><div style="background:var(--gold); width:60px; height:80px; border-radius:8px; color:black; font-weight:bold; margin:0 auto;">🥇</div></div>
-            <div style="text-align:center"><small>${sorted[2].name}</small><div style="background:var(--bronze); width:50px; height:35px; border-radius:8px; color:black; font-weight:bold; margin:0 auto;">🥉</div></div>`;
-        
-        if(state.photo) { document.getElementById('classPhoto').src = state.photo; document.getElementById('classPhoto').style.display='block'; }
         save();
     }
 
-    function loadExcel(e) {
+    function processExcel(e) {
         const reader = new FileReader();
         reader.onload = (evt) => {
-            const workbook = XLSX.read(new Uint8Array(evt.target.result), { type: 'array' });
-            const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
-            json.forEach(row => {
-                const rowStr = row.join(" ");
-                let s = state.data.find(n => rowStr.includes(n.name));
-                if (s) {
-                    const rules = { "חיסור": -5, "מילה טובה": 10, "עזרה": 15, "השתתפות": 5, "הפרעה": -15 };
-                    Object.keys(rules).forEach(key => {
-                        if(rowStr.includes(key)) {
-                            let val = rules[key];
-                            // חוק חיסורים (מעל 10 חיסורים מוריד 5)
-                            if(key === "חיסור") {
-                                let absences = s.logs.filter(l => l.text.includes("חיסור")).length;
-                                val = (absences >= 10) ? -5 : 0;
-                            }
-                            s.balance += val;
-                            s.weeklyEarned += val;
-                            s.logs.unshift({ text: key, val: val });
-                        }
-                    });
+            const data = new Uint8Array(evt.target.result);
+            const workbook = XLSX.read(data, {type: 'array'});
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const rows = XLSX.utils.sheet_to_json(sheet, {header: 1});
+
+            rows.forEach(row => {
+                const text = row.join(" ");
+                const student = findStudent(text);
+                if (student) {
+                    // חיפוש מילות מפתח
+                    if (text.includes("הפרעה")) updateScore(student.name, -15, "הפרעה");
+                    if (text.includes("מילה טובה")) updateScore(student.name, 5, "מילה טובה");
+                    if (text.includes("חיסור")) updateScore(student.name, -5, "חיסור");
+                    if (text.includes("השתתפות")) updateScore(student.name, 5, "השתתפות");
                 }
             });
-            render(); alert("נתוני אקסל עודכנו!");
+            alert("הנתונים נסרקו בהצלחה!");
         };
         reader.readAsArrayBuffer(e.target.files[0]);
     }
 
-    function toggleAdmin() { const p = document.getElementById('adminPanel'); p.style.display = (p.style.display === 'block') ? 'none' : 'block'; }
-    function toggleHistory(id) { const el = document.getElementById(id); el.style.display = (el.style.display === 'block') ? 'none' : 'block'; }
-    function resetWeek() { if(confirm("לאפס את הניקוד השבועי וההיסטוריה?")) { state.data.forEach(s => { s.balance=100; s.logs=[]; s.weeklyEarned=0; }); render(); } }
-    function updateTexts() { state.title = document.getElementById('inputTitle').value; render(); }
-    function uploadPhoto(e) { const r = new FileReader(); r.onload = (f) => { state.photo = f.target.result; render(); }; r.readAsDataURL(e.target.files[0]); }
+    function toggleAdmin() {
+        const el = document.getElementById('adminArea');
+        el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function resetScores() {
+        if(confirm("לאפס את כל הניקוד ל-100? (ההיסטוריה השבועית תימחק)")) {
+            state.students.forEach(s => { s.score = 100; s.weeklyLogs = []; });
+            render();
+        }
+    }
+
+    function updateMeta() {
+        state.config.title = document.getElementById('editTitle').value;
+        state.config.slogan = document.getElementById('editSlogan').value;
+        render();
+    }
+
+    function updatePhoto(e) {
+        const r = new FileReader();
+        r.onload = (f) => { state.config.photo = f.target.result; render(); };
+        r.readAsDataURL(e.target.files[0]);
+    }
 
     render();
 </script>
