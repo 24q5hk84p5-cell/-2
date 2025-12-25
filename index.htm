@@ -3,164 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אוצר הכיתה ח'/2 - גרסה 67</title>
+    <title>אוצר הכיתה ח'/2 - גרסה 70</title>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { --primary: #3e2723; --secondary: #5d4037; --bg: #fdfaf5; --card: #ffffff; --accent: #af935a; --success: #2e7d32; --danger: #c62828; --gold: #f1c40f; --silver: #bdc3c7; --bronze: #cd7f32; }
-        body { background-color: var(--bg); font-family: 'Assistant', sans-serif; margin: 0; padding: 20px; color: var(--primary); }
-        .container { max-width: 1200px; margin: auto; }
+        :root { --primary: #2c3e50; --accent: #d4af37; --bg: #f4f7f6; --card: #ffffff; --success: #27ae60; --danger: #e74c3c; }
+        body { background-color: var(--bg); font-family: 'Assistant', sans-serif; margin: 0; padding: 20px; color: var(--primary); transition: 0.3s; }
+        .container { max-width: 1100px; margin: auto; }
         
-        /* סרגל עליון עם כפתור ניהול */
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .admin-lock-btn { background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: 700; display: flex; align-items: center; gap: 8px; font-family: inherit; }
+        /* כפתור מעבר מצבים נגיש בצד */
+        .mode-toggle-btn { position: fixed; top: 20px; left: 20px; z-index: 1001; padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: 700; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         
-        header { text-align: center; margin-bottom: 30px; }
-        h1 { font-size: 3em; font-weight: 800; margin: 0; }
-        
-        .podium-wrapper { display: flex; justify-content: center; align-items: flex-end; gap: 15px; height: 180px; margin: 30px 0; border-bottom: 4px solid #e0e0e0; }
-        .podium-step { width: 120px; border-radius: 10px 10px 0 0; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; font-weight: bold; }
-        .step-name { position: absolute; top: -50px; width: 140px; color: var(--primary); font-size: 0.8em; text-align: center; font-weight: 800; }
-        .rank-1 { height: 140px; background: var(--gold); box-shadow: 0 4px 15px rgba(241,196,15,0.4); }
-        .rank-2 { height: 100px; background: var(--silver); }
-        .rank-3 { height: 70px; background: var(--bronze); }
+        header { text-align: center; margin-bottom: 20px; }
+        #classImg { max-width: 200px; border-radius: 15px; margin-bottom: 10px; border: 3px solid var(--accent); }
+        h1 { font-size: 2.8em; margin: 5px 0; }
+        #sloganText { font-style: italic; color: #666; font-size: 1.2em; }
+
+        /* פודיום */
+        .podium-area { display: flex; justify-content: center; align-items: flex-end; gap: 10px; height: 160px; margin: 40px 0; }
+        .step { width: 100px; color: white; text-align: center; border-radius: 8px 8px 0 0; position: relative; font-weight: bold; }
+        .step-info { position: absolute; top: -50px; width: 120px; color: var(--primary); font-size: 0.8em; }
+        .gold { height: 120px; background: var(--accent); }
+        .silver { height: 90px; background: #bdc3c7; }
+        .bronze { height: 65px; background: #cd7f32; }
 
         .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .section-card { background: var(--card); border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-        .full-width { grid-column: span 2; }
+        .card { background: var(--card); border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .full { grid-column: span 2; }
         
-        .shop-input { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid var(--accent); font-family: inherit; text-align: center; box-sizing: border-box; }
+        /* חנות ותצוגה */
+        .search-box { width: 100%; padding: 12px; border: 2px solid var(--accent); border-radius: 10px; text-align: center; font-size: 1.1em; font-family: inherit; margin-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { background: #f8f9fa; padding: 10px; font-size: 0.9em; }
-        td { padding: 8px; border-bottom: 1px solid #f0f0f0; text-align: center; }
+        /* מצב מורה למטה */
+        .teacher-panel { border-top: 5px solid var(--primary); margin-top: 50px; background: #fff; padding: 30px; border-radius: 20px; }
+        .config-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+        .teacher-only { display: none; }
+        body.admin-mode .teacher-only { display: block; }
         
-        body.view-mode .teacher-only { display: none !important; }
-        #customModal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:25px; border-radius:20px; z-index:1000; width:450px; max-width:90%; box-shadow: 0 0 50px rgba(0,0,0,0.5); border: 3px solid var(--primary); }
-        #overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:999; }
-        
-        .score-plus { color: var(--success); font-weight: bold; }
-        .btn-action { padding: 5px 10px; cursor: pointer; border-radius: 5px; border: 1px solid #ddd; }
+        #modal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:30px; border-radius:20px; z-index:2000; width:450px; box-shadow: 0 0 100px rgba(0,0,0,0.5); border: 2px solid var(--accent); }
+        #overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1999; }
     </style>
 </head>
 <body class="view-mode">
 
-<div id="overlay" onclick="closeModal()"></div>
+<button class="mode-toggle-btn" onclick="toggleMode()">🔄 החלף תצוגה</button>
 
-<div id="customModal">
-    <h3 id="modalTitle" style="text-align:center;"></h3>
-    <div id="modalContent" style="max-height:400px; overflow-y:auto;"></div>
-    <button onclick="closeModal()" style="width:100%; margin-top:15px; padding:10px; background:var(--primary); color:white; border:none; border-radius:8px; cursor:pointer;">סגור</button>
+<div id="overlay" onclick="closeModal()"></div>
+<div id="modal">
+    <h3 id="mTitle" style="text-align:center"></h3>
+    <div id="mBody"></div>
+    <button onclick="closeModal()" style="width:100%; margin-top:15px; padding:10px; cursor:pointer; background:var(--primary); color:white; border:none; border-radius:8px;">סגור</button>
 </div>
 
 <div class="container">
-    <div class="top-bar">
-        <div id="sloganDisplay" style="font-weight: 600; font-style: italic;"></div>
-        <button class="admin-lock-btn" onclick="toggleAdminMode()">
-            <span id="lockIcon">🔒</span> <span id="lockText">כניסת מורה</span>
-        </button>
-    </div>
-
     <header>
-        <h1>🏛️ אוצר הכיתה ח'/2</h1>
+        <img id="classImg" src="https://via.placeholder.com/200x150?text=ח/2" alt="תמונת כיתה">
+        <h1 id="classTitle">אוצר הכיתה ח'/2</h1>
+        <p id="sloganText"></p>
     </header>
 
-    <div class="podium-wrapper" id="podium"></div>
+    <div class="podium-area" id="podium"></div>
 
     <div class="dashboard">
-        <div class="section-card">
-            <h3>🛍️ עמדת בדיקה ורכישה</h3>
-            <input type="text" class="shop-input" placeholder="הקלד שם תלמיד לבדיקת זכאות..." list="namesList" onchange="showStudentDetails(this.value)">
+        <div class="card">
+            <h3>🛍️ עמדת רכישה ובדיקה</h3>
+            <input type="text" class="search-box" placeholder="הקלד שם תלמיד..." list="namesList" onchange="openStudent(this.value)">
             <datalist id="namesList"></datalist>
+            <p style="text-align:center; font-size:0.9em;">כאן תוכלו לראות מה צברתם ומה אפשר לקנות</p>
         </div>
 
-        <div class="section-card">
-            <h3>💰 מצב הקופה</h3>
-            <div style="max-height: 200px; overflow-y: auto;">
+        <div class="card">
+            <h3>💰 מצב הבנק הכיתתי</h3>
+            <div style="max-height: 250px; overflow-y: auto;">
                 <table id="bankTable"></table>
             </div>
         </div>
 
-        <div class="section-card full-width teacher-only" style="border: 2px solid var(--primary);">
-            <h3>⚙️ ניהול מורה (עריכה)</h3>
-            <div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px; flex-wrap: wrap;">
-                <button onclick="document.getElementById('fileIn').click()" style="background:#1976d2; color:white; padding:10px; border:none; border-radius:5px; cursor:pointer;">📂 טען אקסל</button>
-                <button onclick="resetWeekly()" style="background:var(--accent); color:white; padding:10px; border:none; border-radius:5px; cursor:pointer;">🆕 איפוס פודיום שבועי</button>
-                <button onclick="resetAll()" style="background:var(--danger); color:white; padding:10px; border:none; border-radius:5px; cursor:pointer;">⚠️ איפוס קופה כללי</button>
-                <button onclick="changePassword()" style="background:#555; color:white; padding:10px; border:none; border-radius:5px; cursor:pointer;">🔑 שינוי סיסמה</button>
-                <input type="file" id="fileIn" style="display:none" accept=".xlsx" onchange="handleExcel(event)">
+        <div class="card full teacher-only teacher-panel">
+            <h2 style="text-align:center; color:var(--primary)">🛠️ פאנל ניהול ועריכה</h2>
+            
+            <div class="config-grid">
+                <div>
+                    <h4>🖼️ עיצוב</h4>
+                    סלוגן: <input type="text" id="editSlogan" onchange="updateConfig()"><br><br>
+                    URL תמונה: <input type="text" id="editImg" onchange="updateConfig()">
+                </div>
+                <div>
+                    <h4>📂 טעינת נתונים</h4>
+                    <button onclick="document.getElementById('fileIn').click()" style="background:var(--success); color:white; padding:10px; border:none; border-radius:5px; cursor:pointer;">📁 העלה קובץ Excel</button>
+                    <input type="file" id="fileIn" style="display:none" onchange="importExcel(event)">
+                    <p style="font-size:0.8em;">האקסל מעדכן את הפודיום אוטומטית</p>
+                </div>
+                <div>
+                    <h4>🔑 אבטחה ואיפוס</h4>
+                    <button onclick="changePass()" style="background:#555; color:white; padding:5px; border:none; border-radius:5px; cursor:pointer;">שנה סיסמה</button><br><br>
+                    <button onclick="globalReset()" style="background:var(--danger); color:white; padding:5px; border:none; border-radius:5px; cursor:pointer;">איפוס כללי (0)</button>
+                </div>
             </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                <div class="card">
+                    <h4>🏷️ ניהול חנות (שם וסכום)</h4>
+                    <div id="editShop"></div>
+                    <button onclick="addItem('shop')" style="margin-top:5px;">+ הוסף מוצר</button>
+                </div>
+                <div class="card">
+                    <h4>📝 מילות מפתח לניקוד</h4>
+                    <div id="editKeys"></div>
+                    <button onclick="addItem('keys')" style="margin-top:5px;">+ הוסף מילה</button>
+                </div>
+            </div>
+
+            <h4 style="margin-top:20px;">👥 רשימת תלמידים (ניהול ידני)</h4>
             <table id="adminTable"></table>
         </div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('yeshiva_v67')) || {
-        config: { slogan: '“בכל דרכיך דעהו והוא יישר אורחותיך”', pass: '1234' },
-        fixedScores: { "תפילה": 5, "הצטיינות": 10, "חיסור": -10, "פטפוט": -5 },
-        students: ["אברמוביץ דניאל", "איוב איתן", "אלגרבלי בניה עוז", "אלמו נתנאל", "ארבל אליה אהרון", "בלוסטוצקי הלל ישי", "בן עטר נתאי יוסף", "בן פורת נעם", "גורדון בניה", "גלייזר שלום", "דהן יוסף חיים", "הירשנברגר בועז", "וויסמן יהונתן", "ולר נווה אהרן", "טמנה אביהו", "יושעי נעם", "יעקבי יהודה", "כהן ליאור", "כהן ניתאי", "מנצור הראל", "מרסיאנו אורי", "נדל נוה", "ניאזוב אביאל", "סמני שבח", "פורסט עמיחי", "פלומבו נריה", "פנקר שילה", "פרשל מלאכי", "קצב נעם", "רוזנצוויג בעז אשר"].map(n => ({name:n, total:0, weekly:0, history:[]})),
-        shop: [{name:"קולה", val:40}, {name:"חטיף", val:25}, {name:"פיצה", val:150}, {name:"פטור מבחן", val:300}]
+    let db = JSON.parse(localStorage.getItem('bank_v70')) || {
+        config: { slogan: '“בכל דרכיך דעהו”', img: 'https://via.placeholder.com/200x150?text=ח/2', pass: '1234' },
+        keys: { "תפילה": 5, "הצטיינות": 10, "חיסור": -10, "פטפוט": -5 },
+        students: ["אברמוביץ דניאל", "איוב איתן", "אלגרבלי בניה עוז", "אלמו נתנאל", "ארבל אליה אהרון", "בלוסטוצקי הלל ישי", "בן עטר נתאי יוסף", "בן פורת נעם", "גורדון בניה", "גלייזר שלום", "דהן יוסף חיים", "הירשנברגר בועז", "וויסמן יהונתן", "ולר נווה אהרן", "טמנה אביהו", "יושעי נעם", "יעקבי יהודה", "כהן ליאור", "כהן ניתאי", "מנצור הראל", "מרסיאנו אורי", "נדל נוה", "ניאזוב אביאל", "סמני שבח", "פורסט עמיחי", "פלומבו נריה", "פנקר שילה", "פרשל מלאכי", "קצב נעם", "רוזנצוויג בעז אשר"].map(n => ({name:n, total:100, weekly:0, history:[]})),
+        shop: [{n:"קולה", v:40}, {n:"חטיף", v:25}, {n:"פיצה", v:120}]
     };
 
     function render() {
-        document.getElementById('sloganDisplay').innerText = db.config.slogan;
-        const list = document.getElementById('namesList');
-        list.innerHTML = '';
-        db.students.forEach(s => list.innerHTML += `<option value="${s.name}">`);
+        document.getElementById('sloganText').innerText = db.config.slogan;
+        document.getElementById('editSlogan').value = db.config.slogan;
+        document.getElementById('classImg').src = db.config.img;
+        document.getElementById('editImg').value = db.config.img;
+        
+        const nList = document.getElementById('namesList'); nList.innerHTML = '';
+        db.students.forEach(s => nList.innerHTML += `<option value="${s.name}">`);
 
         // פודיום
-        let sorted = [...db.students].filter(s => s.weekly > 0).sort((a,b) => b.weekly - a.weekly);
-        const podium = document.getElementById('podium');
-        podium.innerHTML = '';
-        [{p:1,c:'rank-2',i:'🥈'},{p:0,c:'rank-1',i:'🥇'},{p:2,c:'rank-3',i:'🥉'}].forEach(slot => {
-            let s = sorted[slot.p];
-            if(s) podium.innerHTML += `<div class="podium-step ${slot.c}"><div class="step-name">${s.name}<br>${s.weekly} נק'</div>${slot.i}</div>`;
-            else podium.innerHTML += `<div style="width:120px"></div>`;
+        let sorted = [...db.students].filter(s => s.weekly > 0).sort((a,b)=>b.weekly-a.weekly);
+        const p = document.getElementById('podium'); p.innerHTML = '';
+        [{i:1,c:'silver',m:'🥈'},{i:0,c:'gold',m:'🥇'},{i:2,c:'bronze',m:'🥉'}].forEach(r => {
+            let s = sorted[r.i];
+            if(s) p.innerHTML += `<div class="step ${r.c}"><div class="step-info">${s.name}<br>${s.weekly} נק'</div>${r.m}</div>`;
+            else p.innerHTML += `<div style="width:100px"></div>`;
         });
 
         // טבלאות
-        const bank = document.getElementById('bankTable');
-        bank.innerHTML = '<tr><th>תלמיד</th><th>קופה</th></tr>';
-        [...db.students].sort((a,b)=>b.total-a.total).forEach(s => bank.innerHTML += `<tr><td>${s.name}</td><td><b>${s.total}₪</b></td></tr>`);
+        const bTable = document.getElementById('bankTable');
+        bTable.innerHTML = '<tr><th>שם</th><th>קופה</th></tr>';
+        [...db.students].sort((a,b)=>b.total-a.total).forEach(s => bTable.innerHTML += `<tr><td>${s.name}</td><td><b>${s.total}₪</b></td></tr>`);
 
-        const admin = document.getElementById('adminTable');
-        admin.innerHTML = '<tr><th>שם</th><th>₪ קופה</th><th>שבועי</th><th>פעולות</th></tr>';
-        db.students.forEach((s, i) => {
-            admin.innerHTML += `<tr><td>${s.name}</td><td>${s.total}</td><td>${s.weekly}</td><td>
-                <button class="btn-action" onclick="adjust(${i},5)">+5</button>
-                <button class="btn-action" onclick="openSale(${i})">🛒 מכירה</button>
-            </td></tr>`;
-        });
+        const aTable = document.getElementById('adminTable');
+        aTable.innerHTML = '<tr><th>שם</th><th>קופה</th><th>שבועי</th><th>תיקון</th></tr>';
+        db.students.forEach((s, i) => aTable.innerHTML += `<tr><td>${s.name}</td><td>${s.total}</td><td>${s.weekly}</td><td><button onclick="adjust(${i},5)">+5</button><button onclick="adjust(${i},-5)">-5</button></td></tr>`);
 
-        localStorage.setItem('yeshiva_v67', JSON.stringify(db));
+        // עריכת חנות ומילים
+        const eShop = document.getElementById('editShop'); eShop.innerHTML = '';
+        db.shop.forEach((it, i) => eShop.innerHTML += `<div style="margin-bottom:5px;"><input value="${it.n}" onchange="db.shop[${i}].n=this.value; render()"> <input type="number" value="${it.v}" style="width:50px" onchange="db.shop[${i}].v=parseInt(this.value); render()"> <button onclick="db.shop.splice(${i},1); render()">🗑️</button></div>`);
+        
+        const eKeys = document.getElementById('editKeys'); eKeys.innerHTML = '';
+        Object.keys(db.keys).forEach(k => eKeys.innerHTML += `<div style="margin-bottom:5px;"><span>${k}</span>: <input type="number" value="${db.keys[k]}" style="width:50px" onchange="db.keys['${k}']=parseInt(this.value); render()"> <button onclick="delete db.keys['${k}']; render()">🗑️</button></div>`);
+
+        localStorage.setItem('bank_v70', JSON.stringify(db));
     }
 
-    function toggleAdminMode() {
+    function toggleMode() {
         if(document.body.classList.contains('view-mode')) {
-            let p = prompt("הכנס סיסמת מורה:");
-            if(p === db.config.pass) {
-                document.body.classList.remove('view-mode');
-                document.getElementById('lockIcon').innerText = "🔓";
-                document.getElementById('lockText').innerText = "מצב עריכה פעיל";
-            } else if (p !== null) {
-                if(confirm("סיסמה שגויה. האם תרצה לאפס את הסיסמה ל-1234?")) {
-                    db.config.pass = '1234'; render(); alert("הסיסמה אופסה ל-1234");
-                }
-            }
+            let p = prompt("סיסמת מורה:");
+            if(p === db.config.pass) document.body.classList.add('admin-mode'), document.body.classList.remove('view-mode');
+            else if(p !== null && confirm("שכחת? לאפס ל-1234?")) db.config.pass='1234', render();
         } else {
-            document.body.classList.add('view-mode');
-            document.getElementById('lockIcon').innerText = "🔒";
-            document.getElementById('lockText').innerText = "כניסת מורה";
+            document.body.classList.remove('admin-mode'), document.body.classList.add('view-mode');
         }
-        render();
     }
 
-    function handleExcel(e) {
+    function importExcel(e) {
         const file = e.target.files[0];
         const reader = new FileReader();
-        reader.onload = (event) => {
-            const data = new Uint8Array(event.target.result);
+        reader.onload = (ev) => {
+            const data = new Uint8Array(ev.target.result);
             const wb = XLSX.read(data, {type:'array'});
             const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1});
             db.students.forEach(s => s.weekly = 0);
@@ -170,67 +191,34 @@
                 const s = db.students.find(x => x.name === name);
                 if(s) {
                     const txt = row.join(" ");
-                    Object.keys(db.fixedScores).forEach(key => {
-                        if(txt.includes(key)) {
-                            let sc = db.fixedScores[key];
-                            s.total += sc; s.weekly += sc;
-                            s.history.push(`${key} (+${sc})`);
-                        }
+                    Object.keys(db.keys).forEach(k => {
+                        if(txt.includes(k)) { s.total += db.keys[k]; s.weekly += db.keys[k]; s.history.push(`${k} (${db.keys[k]})`); }
                     });
                 }
             });
-            render();
+            render(); alert("עודכן!");
         };
         reader.readAsArrayBuffer(file);
     }
 
-    function showStudentDetails(name) {
-        const s = db.students.find(x => x.name === name);
-        if(!s) return;
-        document.getElementById('modalTitle').innerText = "החשבון של " + s.name;
-        let html = `<h4>יתרה: ${s.total}₪ | שבועי: ${s.weekly}</h4><hr><b>פירוט ניקוד מהאקסל:</b><div style="font-size:0.9em; margin-bottom:15px;">`;
-        s.history.slice(-10).forEach(h => html += `<div>✅ ${h}</div>`);
-        html += `</div><hr><b>מוצרים זמינים:</b>`;
-        db.shop.forEach(item => {
-            const per = Math.min((s.total/item.val)*100, 100);
-            html += `<div style="margin-top:10px;">${item.name} (${item.val}₪)
-            <div style="background:#eee; height:8px; border-radius:4px; overflow:hidden;"><div style="background:var(--accent); width:${per}%; height:100%;"></div></div></div>`;
+    function openStudent(name) {
+        const s = db.students.find(x => x.name === name); if(!s) return;
+        document.getElementById('mTitle').innerText = "החשבון של " + s.name;
+        let html = `<h4>יתרה: ${s.total}₪</h4><hr><b>התקדמות לחנות:</b>`;
+        db.shop.forEach(it => {
+            let per = Math.min((s.total/it.v)*100, 100);
+            html += `<div style="margin-top:10px;">${it.n} (${it.v}₪)<div style="background:#eee; height:10px; border-radius:5px; overflow:hidden;"><div style="background:var(--accent); width:${per}%; height:100%;"></div></div></div>`;
         });
-        document.getElementById('modalContent').innerHTML = html;
-        document.getElementById('customModal').style.display = 'block';
-        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('mBody').innerHTML = html;
+        document.getElementById('modal').style.display = 'block'; document.getElementById('overlay').style.display = 'block';
     }
 
-    function openSale(idx) {
-        const s = db.students[idx];
-        document.getElementById('modalTitle').innerText = "מכירה ל" + s.name;
-        let html = '';
-        db.shop.forEach(item => {
-            html += `<div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <span>${item.name} (${item.val}₪)</span>
-                <button onclick="confirmSale(${idx},'${item.name}',${item.val})" ${s.total < item.val ? 'disabled' : ''}>בצע חיוב</button>
-            </div>`;
-        });
-        document.getElementById('modalContent').innerHTML = html;
-        document.getElementById('customModal').style.display = 'block';
-        document.getElementById('overlay').style.display = 'block';
-    }
-
-    function confirmSale(idx, name, price) {
-        db.students[idx].total -= price;
-        db.students[idx].history.push(`רכישה: ${name} (-${price})`);
-        render(); closeModal();
-    }
-
-    function changePassword() {
-        let n = prompt("בחר סיסמה חדשה:");
-        if(n) { db.config.pass = n; render(); alert("הסיסמה עודכנה!"); }
-    }
-
+    function updateConfig() { db.config.slogan = document.getElementById('editSlogan').value; db.config.img = document.getElementById('editImg').value; render(); }
     function adjust(i, v) { db.students[i].total += v; render(); }
-    function resetWeekly() { db.students.forEach(s => s.weekly = 0); render(); }
-    function resetAll() { if(confirm("למחוק את כל היתרות בקופה?")) { db.students.forEach(s => {s.total=0; s.weekly=0; s.history=[];}); render(); } }
-    function closeModal() { document.getElementById('customModal').style.display = 'none'; document.getElementById('overlay').style.display = 'none'; }
+    function addItem(type) { if(type==='shop') db.shop.push({n:"חדש", v:10}); else { let k = prompt("מילה חדשה:"); if(k) db.keys[k] = 5; } render(); }
+    function changePass() { let n = prompt("סיסמה חדשה:"); if(n) db.config.pass = n; render(); }
+    function globalReset() { if(confirm("לאפס הכל?")) { db.students.forEach(s => {s.total=100; s.weekly=0; s.history=[];}); render(); } }
+    function closeModal() { document.getElementById('modal').style.display = 'none'; document.getElementById('overlay').style.display = 'none'; }
 
     render();
 </script>
