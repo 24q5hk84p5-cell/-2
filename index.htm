@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אוצר הכיתה - ישיבה תיכונית</title>
+    <style>
+        body { 
+            background-color: #e0d7c6; 
+            background-image: url('https://www.transparenttextures.com/patterns/parchment.png');
+            font-family: 'Segoe UI', 'David', serif;
+            margin: 0; padding: 20px; color: #3e2723;
+        }
+        .container { 
+            max-width: 1100px; margin: auto; 
+            background: rgba(255, 252, 240, 0.95); 
+            padding: 30px; border: 8px double #8d6e63; 
+            border-radius: 10px; box-shadow: 0 0 40px rgba(0,0,0,0.15);
+        }
+        h1 { font-size: 3em; color: #5d4037; text-align: center; margin-bottom: 5px; }
+        .slogan { font-style: italic; font-size: 1.3em; text-align: center; display: block; margin-bottom: 30px; color: #795548; }
+
+        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        .table-section { background: #fffde7; border: 2px solid #d7ccc8; border-radius: 12px; padding: 15px; }
+        h3 { border-bottom: 2px solid #8d6e63; color: #5d4037; padding-bottom: 5px; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #5d4037; color: #fff; padding: 10px; }
+        td { padding: 10px; border-bottom: 1px solid #d7ccc8; text-align: center; }
+        
+        .value-buttons { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; }
+        .v-btn { font-size: 0.8em; padding: 4px 8px; border-radius: 4px; background: #8d6e63; color: white; border: none; cursor: pointer; }
+        .v-btn:hover { background: #5d4037; }
+
+        .reward-card { background: #efebe9; border: 2px solid #8d6e63; padding: 15px; border-radius: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
+        .shop-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 15px; margin-top: 30px; }
+
+        .admin-panel { background: #d7ccc8; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        input { padding: 10px; border-radius: 5px; border: 1px solid #8d6e63; flex-grow: 1; }
+        button { cursor: pointer; font-weight: bold; border-radius: 5px; border: none; transition: 0.2s; }
+        .btn-main { background: #4caf50; color: white; padding: 10px 20px; }
+        .btn-backup { background: #2e7d32; color: white; padding: 10px; }
+        .btn-reset { background: #795548; color: white; padding: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🏛️ אוצר הכיתה</h1>
+    <span class="slogan">"עולם חסד יבנה" | ישיבה תיכונית - כיתה ח'</span>
+
+    <div class="admin-panel">
+        <input type="text" id="nameInp" placeholder="שם תלמיד חדש...">
+        <button class="btn-main" onclick="addStudent()">הוסף תלמיד (100₪)</button>
+        <button class="btn-reset" onclick="resetWeekly()">🌀 איפוס שבועי</button>
+        <button class="btn-backup" onclick="exportData()">💾 גיבוי נתונים</button>
+        <button class="btn-backup" style="background:#1565c0" onclick="document.getElementById('importInp').click()">📂 טעינת גיבוי</button>
+        <input type="file" id="importInp" style="display:none" onchange="importData(event)">
+    </div>
+
+    <div class="dashboard">
+        <div class="table-section">
+            <h3>📈 מצטייני השבוע וערכים</h3>
+            <table>
+                <thead>
+                    <tr><th>שם</th><th>עלייה</th><th>חיזוק חברתי (15₪+)</th></tr>
+                </thead>
+                <tbody id="weeklyTable"></tbody>
+            </table>
+        </div>
+
+        <div class="table-section">
+            <h3>💰 יתרה כללית (עו"ש)</h3>
+            <table>
+                <thead>
+                    <tr><th>שם</th><th>יתרה</th><th>עדכון חופשי</th></tr>
+                </thead>
+                <tbody id="totalTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="reward-section">
+        <h2 style="text-align:center; margin-top:40px;">📜 שער ההטבות והאירועים</h2>
+        <div class="shop-grid" id="rewardsContainer"></div>
+    </div>
+</div>
+
+<script>
+    const rewards = [
+        { id: 1, name: "צ'ופר קטן", price: 20, cond: "זמין במלאי" },
+        { id: 2, name: "הודעת פרגון להורים", price: 50, cond: "שבועי ללא הערות" },
+        { id: 3, name: "פיצה בראש חודש", price: 120, cond: "לכבוד ר\"ח" },
+        { id: 4, name: "על האש כיתתי", price: 300, cond: "סעודת גיבוש" },
+        { id: 5, name: "יציאה כיתתית", price: 400, cond: "טיול חוץ" },
+        { id: 6, name: "פרס 10 ש\"ח", price: 0, cond: "לשלישיית המובילים" },
+        { id: 7, name: "בוקר כיתה", price: 150, cond: "ארוחת בוקר כיתתית" },
+        { id: 8, name: "ערב כיתה", price: 200, cond: "פעילות ערב מגבשת" }
+    ];
+
+    let students = JSON.parse(localStorage.getItem('yeshiva_gh_v1')) || [];
+
+    function render() {
+        const wTable = document.getElementById('weeklyTable');
+        const tTable = document.getElementById('totalTable');
+        wTable.innerHTML = ''; tTable.innerHTML = '';
+        
+        let sorted = [...students].sort((a,b) => b.total - a.total);
+        let wSorted = [...students].sort((a,b) => b.weekly - a.weekly);
+
+        wSorted.forEach(s => {
+            const idx = students.findIndex(x => x.name === s.name);
+            wTable.innerHTML += `<tr><td><strong>${s.name}</strong></td><td style="color:green">+${s.weekly}</td><td>
+                <div class="value-buttons">
+                    <button class="v-btn" onclick="update(${idx},15)">🤒 ביקור חולה</button>
+                    <button class="v-btn" onclick="update(${idx},15)">📚 עזרה בלימוד</button>
+                    <button class="v-btn" onclick="update(${idx},15)">❤️ יחס חם</button>
+                </div></td></tr>`;
+        });
+
+        sorted.forEach(s => {
+            const idx = students.findIndex(x => x.name === s.name);
+            tTable.innerHTML += `<tr><td>${s.name}</td><td><b>${s.total} ₪</b></td><td>
+                <button onclick="update(${idx},5)">+5</button>
+                <button onclick="update(${idx},-5)">-5</button>
+                <button onclick="del('${s.name}')">🗑️</button></td></tr>`;
+        });
+
+        const rGrid = document.getElementById('rewardsContainer');
+        rGrid.innerHTML = '';
+        rewards.forEach(r => {
+            rGrid.innerHTML += `<div class="reward-card"><strong>${r.name}</strong><br><b>${r.price > 0 ? r.price + ' ₪' : 'בונוס'}</b><br><small>${r.cond}</small><br>
+                <select id="sel-${r.id}" style="width:100%; margin: 5px 0;"><option value="">בחר תלמיד...</option>${students.map((s,i)=>`<option value="${i}">${s.name}</option>`).join('')}</select>
+                <button style="width:100%; cursor:pointer; background:#5d4037; color:white; padding:5px;" onclick="buy(${r.id})">מימוש</button></div>`;
+        });
+        localStorage.setItem('yeshiva_gh_v1', JSON.stringify(students));
+    }
+
+    function update(i, v) { students[i].total += v; if(v>0) students[i].weekly += v; render(); }
+    function addStudent() { const n = document.getElementById('nameInp').value; if(n){ students.push({name:n, total:100, weekly:0}); document.getElementById('nameInp').value=''; render(); } }
+    function del(n) { if(confirm("למחוק את התלמיד מהמערכת?")) { students = students.filter(s=>s.name!==n); render(); } }
+    function resetWeekly() { if(confirm("לאפס מצטייני שבוע?")) { students.forEach(s=>s.weekly=0); render(); } }
+
+    function exportData() {
+        const dataStr = JSON.stringify(students);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', 'bank_backup.json');
+        linkElement.click();
+    }
+
+    function importData(event) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            students = JSON.parse(e.target.result);
+            render();
+            alert("הנתונים נטענו בהצלחה!");
+        };
+        reader.readAsText(event.target.files[0]);
+    }
+
+    function buy(rid) {
+        const r = rewards.find(x=>x.id===rid);
+        const i = document.getElementById(`sel-${rid}`).value;
+        if(i==="") return;
+        if(rid === 6) { // שלישייה
+            let sSorted = [...students].sort((a,b) => b.total - a.total);
+            if(sSorted.indexOf(students[i]) > 2) { alert("רק לשלושת המובילים!"); return; }
+        }
+        if(students[i].total < r.price) { alert("אין מספיק יתרה"); return; }
+        if(confirm(`לממש ${r.name} עבור ${students[i].name}?`)) {
+            students[i].total -= r.price; render(); alert("בוצע בהצלחה!");
+        }
+    }
+
+    render();
+</script>
+</body>
+</html>
