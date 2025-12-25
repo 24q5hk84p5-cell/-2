@@ -3,39 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אוצר הכיתה - גרסה 32 (תקנון וענישה)</title>
+    <title>אוצר הכיתה - גרסה 33 (פודיום וניקוד אוטומטי)</title>
     <style>
         :root { --primary: #5d4037; --secondary: #8d6e63; --bg: #e0d7c6; --card: #fffde7; }
         body { background-color: var(--bg); background-image: url('https://www.transparenttextures.com/patterns/parchment.png'); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; color: #3e2723; }
         .container { max-width: 98%; margin: auto; background: rgba(255, 252, 240, 0.95); padding: 15px; border: 5px double var(--secondary); border-radius: 15px; }
         header { text-align: center; position: relative; margin-bottom: 15px; }
-        #mainSlogan { font-style: italic; color: var(--secondary); font-weight: bold; font-size: 1.1em; }
+        #mainSlogan { font-style: italic; color: var(--secondary); font-weight: bold; }
         .photo-container { margin: 10px auto; max-width: 400px; display: none; }
         #classPhoto { width: 100%; border: 4px solid var(--primary); border-radius: 12px; }
         
         #loginArea { display: none; background: white; border: 2px solid var(--primary); padding: 10px; border-radius: 8px; position: absolute; top: 40px; left: 10px; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .dashboard { display: grid; grid-template-columns: 1.2fr 1fr 0.9fr 0.9fr 1.1fr; gap: 8px; }
-        .section-card { background: var(--card); border: 1px solid var(--secondary); border-radius: 8px; padding: 8px; height: 580px; overflow-y: auto; }
+        .section-card { background: var(--card); border: 1px solid var(--secondary); border-radius: 8px; padding: 8px; height: 600px; overflow-y: auto; }
         
         table { width: 100%; border-collapse: collapse; font-size: 0.8em; }
         th { background: var(--primary); color: white; padding: 6px; position: sticky; top: 0; }
         td { padding: 5px; border-bottom: 1px solid #ddd; text-align: center; }
         
-        .btn { cursor: pointer; border: none; font-weight: bold; border-radius: 4px; padding: 5px 10px; }
+        .btn { cursor: pointer; border: none; font-weight: bold; border-radius: 4px; padding: 5px 10px; transition: 0.3s; }
         .plus { background: #4caf50; color: white; }
         .minus { background: #e53935; color: white; }
         .teacher-only { display: none; }
         
-        .podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 5px; height: 100px; margin-bottom: 10px; border-bottom: 2px solid var(--secondary); }
-        .podium-step { width: 55px; border-radius: 5px 5px 0 0; color: white; text-align: center; font-weight: bold; position: relative; }
-        .step-name { color: #3e2723; position: absolute; top: -35px; width: 100%; font-size: 0.7em; font-weight: bold; line-height: 1.1; }
-        .rule-punish { background: #ffebee; color: #c62828; font-weight: bold; font-size: 0.85em; }
+        /* עיצוב פודיום משופר */
+        .podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 10px; height: 130px; margin-bottom: 15px; border-bottom: 3px solid var(--secondary); padding-bottom: 5px; }
+        .podium-step { width: 60px; border-radius: 8px 8px 0 0; color: white; text-align: center; font-weight: bold; position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 5px; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); }
+        .step-name { color: #3e2723; position: absolute; top: -45px; width: 100%; font-size: 0.75em; font-weight: bold; line-height: 1.2; text-shadow: 1px 1px 0px white; }
+        .step-val { font-size: 0.9em; margin-bottom: 2px; }
+        
+        .rule-punish { background: #ffebee; color: #c62828; font-weight: bold; }
+        @media print { .no-print { display: none; } body { background: white; } .container { border: none; } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
+    <header class="no-print">
         <button id="loginBtn" onclick="toggleLogin(true)" style="position: absolute; left: 0; top: 0; background: white; border: 1px solid #ccc; padding: 5px;">🔑 מורה</button>
         <div id="loginArea">
             <input type="password" id="passInput" placeholder="סיסמה" style="width: 70px;" onkeypress="if(event.key==='Enter') checkPassword()">
@@ -49,19 +53,17 @@
 
         <div class="teacher-only" style="margin: 10px 0; display: flex; justify-content: center; gap: 5px; flex-wrap: wrap;">
             <button class="btn" onclick="exportData()" style="background:#2e7d32; color:white;">💾 גיבוי</button>
-            <button class="btn" onclick="document.getElementById('fileLoad').click()" style="background:#1565c0; color:white;">📂 טעינה</button>
-            <button class="btn" onclick="document.getElementById('excelLoad').click()" style="background:#ff9800; color:white;">📊 אקסל</button>
-            <button class="btn" onclick="resetWeekly()" style="background:#795548; color:white;">🌀 שבוע</button>
-            <button class="btn" onclick="fullReset()" style="background:#d32f2f; color:white;">⚠️ איפוס 100</button>
-            <input type="file" id="fileLoad" style="display:none" onchange="importData(event)">
+            <button class="btn" onclick="document.getElementById('excelLoad').click()" style="background:#ff9800; color:white;">📊 טעינת אקסל (חישוב אוטומטי)</button>
+            <button class="btn" onclick="resetWeekly()" style="background:#795548; color:white;">🌀 איפוס שבוע</button>
+            <button class="btn" onclick="window.print()" style="background:#607d8b; color:white;">🖨️ הדפסת תקנון</button>
             <input type="file" id="excelLoad" style="display:none" accept=".csv" onchange="processSchoolFile(event)">
         </div>
     </header>
 
     <div class="dashboard">
-        <div class="section-card">
+        <div class="section-card no-print">
             <h3>📝 ניהול</h3>
-            <input type="text" id="studentSearch" placeholder="🔍 חפש..." style="width:90%; padding:4px; margin-bottom:8px;" oninput="render()">
+            <input type="text" id="studentSearch" placeholder="🔍 חפש..." style="width:90%; padding:5px; margin-bottom:8px;" oninput="render()">
             <table>
                 <thead><tr><th>שם</th><th class="teacher-only">+/-</th><th>נקי</th></tr></thead>
                 <tbody id="tableManage"></tbody>
@@ -69,62 +71,50 @@
         </div>
 
         <div class="section-card">
-            <h3>🏆 מצטיינים</h3>
+            <h3>🏆 המצטיינים</h3>
             <div class="podium-container" id="podium"></div>
             <table id="tableWeeklySort"></table>
             <hr>
+            <h3>🏅 זכאויות</h3>
             <table id="tablePrizes"></table>
         </div>
 
-        <div class="section-card">
-            <h3>💰 קופה</h3>
+        <div class="section-card no-print">
+            <h3>💰 קופה כללית</h3>
             <table><thead><tr><th>שם</th><th>₪</th></tr></thead><tbody id="tableBank"></tbody></table>
         </div>
 
-        <div class="section-card" style="background:#f1f8e9;">
+        <div class="section-card">
             <h3>📜 מחירון קניות</h3>
             <table id="tableShop"></table>
         </div>
 
-        <div class="section-card" style="background:#fff3e0;">
+        <div class="section-card">
             <h3>⚖️ תקנון וענישה</h3>
-            <table id="tableRules">
-                <thead><tr><th>הנהגה</th><th>תוצאה</th></tr></thead>
-                <tbody id="rulesBody"></tbody>
-            </table>
+            <table><thead><tr><th>הנהגה</th><th>תוצאה</th></tr></thead><tbody id="rulesBody"></tbody></table>
         </div>
     </div>
 
-    <div class="teacher-only" style="margin-top:15px; background:#d7ccc8; padding:10px; border-radius:10px; display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:10px;">
-        <div style="background:white; padding:8px; border-radius:5px; font-size:0.85em;">
+    <div class="teacher-only no-print" style="margin-top:15px; background:#d7ccc8; padding:10px; border-radius:10px; display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:10px;">
+        <div style="background:white; padding:8px; border-radius:5px;">
             <strong>⚙️ הגדרות:</strong><br>
-            +/-: <input type="number" id="cfgPlus" style="width:35px"> <input type="number" id="cfgMinus" style="width:35px"> <button onclick="saveConfig()">V</button><br>
-            סלוגן: <input type="text" id="cfgSlogan" style="width:100px"><br>
-            תמונה: <input type="file" accept="image/*" onchange="uploadPhoto(event)" style="font-size:0.7em;">
+            פלוס: <input type="number" id="cfgPlus" style="width:40px"> 
+            מינוס: <input type="number" id="cfgMinus" style="width:40px">
+            <button onclick="saveConfig()">שמור</button>
         </div>
-        <div style="background:white; padding:8px; border-radius:5px; font-size:0.85em;">
-            <strong>⚖️ עריכת תקנון:</strong><br>
-            מעשה: <input type="text" id="ruleAct" style="width:60px"> עונש: <input type="text" id="rulePun" style="width:60px"> <button onclick="addRule()">+</button>
-            <div id="rulesEdit" style="max-height:60px; overflow-y:auto;"></div>
-        </div>
-        <div style="background:white; padding:8px; border-radius:5px; font-size:0.85em;">
-            <strong>🛒 מחירון/פרסים:</strong><br>
-            מוצר/₪: <input type="text" id="shItem" style="width:50px"> <input type="number" id="shPrice" style="width:35px"> <button onclick="addShop()">+</button>
-            <div id="shopEdit" style="max-height:60px; overflow-y:auto;"></div>
-        </div>
-        <div style="background:white; padding:8px; border-radius:5px; font-size:0.85em;">
-            <strong>👤 תלמידים:</strong><br>
-            שם: <input type="text" id="newName" style="width:80px"> <button onclick="addStudent()">+</button>
-            <div id="editList" style="max-height:60px; overflow-y:auto;"></div>
+        <div style="background:white; padding:8px; border-radius:5px;">
+            <strong>👤 ניהול תלמידים/תמונה:</strong><br>
+            <input type="text" id="newName" placeholder="שם חדש" style="width:80px"> <button onclick="addStudent()">+</button>
+            <input type="file" accept="image/*" onchange="uploadPhoto(event)" style="font-size:0.7em; margin-top:5px;">
         </div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('yeshiva_final_v32')) || {
+    let db = JSON.parse(localStorage.getItem('yeshiva_final_v33')) || {
         config: { slogan: '"אל תהיו כעבדים..."', plusVal: 15, minVal: -10, pass: "1234", classPhoto: "" },
         prizes: [{name: "הודעת נחת", points: 45, clean: true}],
-        shop: [{name: "פחית קולה", price: 50}],
+        shop: [{name: "פחית קולה", price: 50}, {name: "חטיף", price: 20}],
         rules: [
             {act: "3 איחורים לתפילה", pun: "1/2 שעה עבודה"},
             {act: "חיסור לא מוצדק", pun: "1/2 שעה עבודה"},
@@ -137,12 +127,12 @@
 
     function toggleLogin(s) { document.getElementById('loginArea').style.display = s ? 'block' : 'none'; }
     function checkPassword() {
-        if (document.getElementById('passInput').value === db.config.pass) { 
-            document.querySelectorAll('.teacher-only').forEach(e=>e.style.display='block'); 
-            document.getElementById('loginBtn').style.display='none'; toggleLogin(false); render(); 
-        } else if (document.getElementById('passInput').value === "613") { db.config.pass = "1234"; alert("אופס ל-1234"); } else alert("טעות");
+        let p = document.getElementById('passInput').value;
+        if (p === db.config.pass) { document.querySelectorAll('.teacher-only').forEach(e=>e.style.display='block'); document.getElementById('loginBtn').style.display='none'; toggleLogin(false); render(); }
+        else if (p === "613") { db.config.pass = "1234"; alert("סיסמה אופסה"); } else alert("טעות");
     }
 
+    // ניתוח אקסל כולל הורדת נקודות על התנהגות
     function processSchoolFile(event) {
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -153,12 +143,19 @@
                 const student = db.students.find(s => s.name === (cells[1]||"").trim());
                 if(student) {
                     line.split(',').forEach(cell => {
-                        if(cell.includes("מילה  טובה")) { student.total += db.config.plusVal; student.weekly += db.config.plusVal; }
-                        if(["חיסור", "איחור", "הפרעה", "ציוד", "שוטטות"].some(w => cell.includes(w))) { student.total += db.config.minVal; student.hasNote = true; }
+                        if(cell.includes("מילה  טובה")) { 
+                            student.total += db.config.plusVal; 
+                            student.weekly += db.config.plusVal; // מוסיף לניקוד הפודיום
+                        }
+                        if(["חיסור", "איחור", "הפרעה", "ציוד", "שוטטות", "חוצפה"].some(w => cell.includes(w))) { 
+                            student.total += db.config.minVal; 
+                            student.weekly += db.config.minVal; // מוריד מניקוד הפודיום!
+                            student.hasNote = true; 
+                        }
                     });
                 }
             });
-            alert("הקובץ נותח בהצלחה!"); render();
+            alert("הנתונים והפודיום עודכנו בהצלחה!"); render();
         };
         reader.readAsText(event.target.files[0]);
     }
@@ -168,55 +165,44 @@
         const img = document.getElementById('classPhoto');
         if(db.config.classPhoto) { img.src = db.config.classPhoto; document.getElementById('photoWrapper').style.display = 'block'; }
         
-        const t1 = document.getElementById('tableManage'), t3 = document.getElementById('tableBank'), tW = document.getElementById('tableWeeklySort'), tS = document.getElementById('tableShop'), tP = document.getElementById('tablePrizes'), rB = document.getElementById('rulesBody'), rE = document.getElementById('rulesEdit'), sE = document.getElementById('shopEdit'), eL = document.getElementById('editList');
-        t1.innerHTML = t3.innerHTML = tW.innerHTML = tS.innerHTML = tP.innerHTML = rB.innerHTML = rE.innerHTML = sE.innerHTML = eL.innerHTML = '';
+        const t1 = document.getElementById('tableManage'), t3 = document.getElementById('tableBank'), tW = document.getElementById('tableWeeklySort'), tS = document.getElementById('tableShop'), tP = document.getElementById('tablePrizes'), rB = document.getElementById('rulesBody');
+        t1.innerHTML = t3.innerHTML = tW.innerHTML = tS.innerHTML = tP.innerHTML = rB.innerHTML = '';
         
-        let q = document.getElementById('studentSearch').value;
         const sortedByMoney = [...db.students].sort((a,b) => b.total - a.total);
         const sortedByWeekly = [...db.students].sort((a,b) => b.weekly - a.weekly);
 
         db.students.forEach((s, i) => {
-            if(s.name.includes(q)) t1.innerHTML += `<tr><td>${s.name}</td><td class="teacher-only"><button class="plus" onclick="changeScore(${i},${db.config.plusVal},false)">+</button><button class="minus" onclick="changeScore(${i},${db.config.minVal},true)">-</button></td><td>${s.hasNote?'❌':'✅'}</td></tr>`;
-            eL.innerHTML += `<span>${s.name}<button onclick="db.students.splice(${i},1);render()">x</button> | </span>`;
+            if(s.name.includes(document.getElementById('studentSearch').value))
+                t1.innerHTML += `<tr><td>${s.name}</td><td class="teacher-only"><button class="plus" onclick="changeScore(${i},${db.config.plusVal},false)">+</button><button class="minus" onclick="changeScore(${i},${db.config.minVal},true)">-</button></td><td>${s.hasNote?'❌':'✅'}</td></tr>`;
         });
 
         sortedByMoney.forEach(s => t3.innerHTML += `<tr><td>${s.name}</td><td>${s.total}₪</td></tr>`);
         sortedByWeekly.forEach(s => {
-            if(s.weekly > 0) tW.innerHTML += `<tr><td>${s.name}</td><td>${s.weekly}</td></tr>`;
+            if(s.weekly !== 0) tW.innerHTML += `<tr><td>${s.name}</td><td>${s.weekly} נק'</td></tr>`;
             db.prizes.forEach(p => { if(s.weekly >= p.points && (p.clean ? !s.hasNote : true)) tP.innerHTML += `<tr><td>${s.name}</td><td><span style="background:#fbc02d;padding:2px;border-radius:3px;">${p.name}</span></td></tr>`; });
         });
 
-        db.shop.forEach((item, i) => {
-            tS.innerHTML += `<tr><td>${item.name}</td><td>${item.price}₪</td></tr>`;
-            sE.innerHTML += `<span>${item.name}<button onclick="db.shop.splice(${i},1);render()">x</button> | </span>`;
-        });
+        db.shop.forEach(item => tS.innerHTML += `<tr><td>${item.name}</td><td>${item.price}₪</td></tr>`);
+        db.rules.forEach(r => rB.innerHTML += `<tr><td>${r.act}</td><td class="rule-punish">${r.pun}</td></tr>`);
 
-        db.rules.forEach((r, i) => {
-            rB.innerHTML += `<tr><td>${r.act}</td><td class="rule-punish">${r.pun}</td></tr>`;
-            rE.innerHTML += `<span>${r.act}<button onclick="db.rules.splice(${i},1);render()">x</button> | </span>`;
-        });
-
-        const pod = document.getElementById('podium'), meds = ['🥈', '🥇', '🥉'], cols = ['#c0c0c0', '#ffd700', '#cd7f32'];
+        // פודיום
+        const pod = document.getElementById('podium'), medals = ['🥈', '🥇', '🥉'], cols = ['#c0c0c0', '#ffd700', '#cd7f32'], heights = [80, 100, 60];
+        pod.innerHTML = '';
         [1, 0, 2].forEach(pos => {
             const s = sortedByWeekly[pos];
-            if(s && s.weekly > 0) pod.innerHTML += `<div class="podium-step" style="height:${pos==1?70:pos==0?55:40}px; background:${cols[pos]}"><div class="step-name">${s.name}</div>${medals[pos]}</div>`;
-            else pod.innerHTML += `<div style="width:55px;"></div>`;
+            if(s && s.weekly > 0) pod.innerHTML += `<div class="podium-step" style="height:${heights[pos]}px; background:${cols[pos]}"><div class="step-name">${s.name}</div><div class="step-val">${s.weekly}</div>${medals[pos]}</div>`;
+            else pod.innerHTML += `<div style="width:60px;"></div>`;
         });
 
-        localStorage.setItem('yeshiva_final_v32', JSON.stringify(db));
+        localStorage.setItem('yeshiva_final_v33', JSON.stringify(db));
     }
 
-    function changeScore(i,v,p) { db.students[i].total+=v; if(v>0) db.students[i].weekly+=v; if(p) db.students[i].hasNote=true; render(); }
+    function changeScore(i,v,p) { db.students[i].total+=v; db.students[i].weekly+=v; if(p) db.students[i].hasNote=true; render(); }
+    function saveConfig() { db.config.plusVal = parseInt(document.getElementById('cfgPlus').value); db.config.minVal = parseInt(document.getElementById('cfgMinus').value); render(); }
     function addStudent() { db.students.push({name:document.getElementById('newName').value, total:100, weekly:0, hasNote:false}); render(); }
-    function addRule() { db.rules.push({act:document.getElementById('ruleAct').value, pun:document.getElementById('rulePun').value}); render(); }
-    function addShop() { db.shop.push({name:document.getElementById('shItem').value, price:parseInt(document.getElementById('shPrice').value)}); render(); }
-    function saveConfig() { db.config.plusVal = parseInt(document.getElementById('cfgPlus').value); db.config.minVal = parseInt(document.getElementById('cfgMinus').value); db.config.slogan = document.getElementById('cfgSlogan').value; render(); }
-    function resetWeekly() { if(confirm("איפוס שבוע?")) { db.students.forEach(s=>{s.weekly=0; s.hasNote=false;}); render(); } }
-    function fullReset() { if(confirm("איפוס ל-100?")) { db.students.forEach(s=>{s.total=100; s.weekly=0; s.hasNote=false;}); render(); } }
+    function resetWeekly() { if(confirm("לאפס שבוע?")) { db.students.forEach(s=>{s.weekly=0; s.hasNote=false;}); render(); } }
     function uploadPhoto(e) { const r = new FileReader(); r.onload = ev => { db.config.classPhoto = ev.target.result; render(); }; r.readAsDataURL(e.target.files[0]); }
     function exportData() { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'backup.json'; a.click(); }
-    function importData(e) { const r = new FileReader(); r.onload = f => { db = JSON.parse(f.target.result); render(); }; r.readAsText(e.target.files[0]); }
-
     render();
 </script>
 </body>
