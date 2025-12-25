@@ -3,38 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אוצר הכיתה - גרסה 27</title>
+    <title>אוצר הכיתה - גרסה 28</title>
     <style>
         :root { --primary: #5d4037; --secondary: #8d6e63; --bg: #e0d7c6; --card: #fffde7; }
         body { background-color: var(--bg); background-image: url('https://www.transparenttextures.com/patterns/parchment.png'); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; color: #3e2723; }
         .container { max-width: 98%; margin: auto; background: rgba(255, 252, 240, 0.95); padding: 15px; border: 5px double var(--secondary); border-radius: 15px; }
         header { text-align: center; position: relative; margin-bottom: 15px; }
-        #mainSlogan { font-style: italic; color: var(--secondary); margin-top: -5px; font-weight: bold; font-size: 1.1em; }
+        #mainSlogan { font-style: italic; color: var(--secondary); margin-top: -5px; font-weight: bold; }
         
         .photo-container { margin: 10px auto; max-width: 450px; display: none; }
         #classPhoto { width: 100%; border: 4px solid var(--primary); border-radius: 12px; }
 
         #loginArea { display: none; background: white; border: 2px solid var(--primary); padding: 10px; border-radius: 8px; position: absolute; top: 40px; left: 10px; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .dashboard { display: grid; grid-template-columns: 1.3fr 1.2fr 1fr 1.1fr; gap: 10px; }
-        .section-card { background: var(--card); border: 1px solid var(--secondary); border-radius: 8px; padding: 10px; height: 530px; overflow-y: auto; }
+        .dashboard { display: grid; grid-template-columns: 1.2fr 1fr 1fr 1fr; gap: 10px; }
+        .section-card { background: var(--card); border: 1px solid var(--secondary); border-radius: 8px; padding: 10px; height: 550px; overflow-y: auto; }
         
-        .search-box { width: 90%; padding: 6px; margin-bottom: 10px; border: 1px solid var(--secondary); border-radius: 4px; font-family: 'Segoe UI'; }
+        .search-box { width: 90%; padding: 6px; margin-bottom: 10px; border: 1px solid var(--secondary); border-radius: 4px; }
         
         table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
         th { background: var(--primary); color: white; padding: 8px; position: sticky; top: 0; }
         td { padding: 6px; border-bottom: 1px solid #ddd; text-align: center; }
         
-        .btn { cursor: pointer; border: none; font-weight: bold; border-radius: 4px; padding: 6px 12px; }
+        .btn { cursor: pointer; border: none; font-weight: bold; border-radius: 4px; padding: 5px 10px; }
         .plus { background: #4caf50; color: white; }
         .minus { background: #e53935; color: white; }
         .teacher-only { display: none; }
         
-        .admin-section { margin-top: 20px; background: #d7ccc8; padding: 15px; border-radius: 10px; border: 2px solid var(--primary); }
-        .prize-tag { background: #fbc02d; padding: 2px 5px; border-radius: 4px; font-weight: bold; font-size: 0.8em; display: block; margin-bottom: 2px; border: 1px solid #f57f17; }
-        
-        .podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 8px; height: 130px; margin: 10px 0; border-bottom: 2px solid var(--secondary); }
-        .podium-step { width: 70px; border-radius: 8px 8px 0 0; color: white; text-align: center; font-weight: bold; position: relative; transition: height 0.5s; }
-        .step-name { color: #3e2723; position: absolute; top: -42px; width: 100%; font-size: 0.75em; font-weight: bold; line-height: 1.1; }
+        .podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 8px; height: 120px; margin: 10px 0; border-bottom: 2px solid var(--secondary); }
+        .podium-step { width: 65px; border-radius: 8px 8px 0 0; color: white; text-align: center; font-weight: bold; position: relative; transition: height 0.5s; }
+        .step-name { color: #3e2723; position: absolute; top: -42px; width: 100%; font-size: 0.7em; font-weight: bold; line-height: 1.1; }
+        .prize-tag { background: #fbc02d; padding: 2px 4px; border-radius: 4px; font-weight: bold; font-size: 0.75em; display: block; border: 1px solid #f57f17; margin-bottom: 2px;}
     </style>
 </head>
 <body>
@@ -42,12 +40,10 @@
 <div class="container">
     <header>
         <button id="loginBtn" onclick="toggleLogin(true)" style="position: absolute; left: 0; top: 0; background: white; border: 1px solid #ccc; padding: 5px; cursor: pointer;">🔑 כניסת מורה</button>
-        
         <div id="loginArea">
-            <input type="password" id="passInput" placeholder="סיסמה" style="width: 80px; padding: 5px;" onkeypress="if(event.key==='Enter') checkPassword()">
+            <input type="password" id="passInput" placeholder="סיסמה" style="width: 80px;" onkeypress="if(event.key==='Enter') checkPassword()">
             <button class="btn plus" onclick="checkPassword()">כניסה</button>
         </div>
-
         <button id="logoutBtn" onclick="logout()" class="teacher-only" style="position: absolute; left: 0; top: 0; background: #3e2723; color: white; padding: 5px;">🔒 יציאה</button>
         
         <h1>🏛️ אוצר הכיתה</h1>
@@ -64,66 +60,70 @@
 
     <div class="dashboard">
         <div class="section-card">
-            <h3>📝 ניהול תלמידים</h3>
+            <h3>📝 ניהול</h3>
             <input type="text" id="studentSearch" class="search-box" placeholder="🔍 חפש תלמיד..." oninput="render()">
             <table>
-                <thead><tr><th>שם</th><th class="teacher-only">+/-</th><th>נקי</th></tr></thead>
+                <thead><tr><th>שם</th><th class="teacher-only">+/-</th><th>נקי</th><th class="teacher-only">הסר מצטיין</th></tr></thead>
                 <tbody id="tableManage"></tbody>
             </table>
         </div>
 
         <div class="section-card">
-            <h3>🏆 המצטיינים</h3>
+            <h3>🏆 מצטיינים שבועיים</h3>
             <div class="podium-container" id="podium"></div>
-            <table>
-                <thead><tr><th>שם</th><th>נקודות</th></tr></thead>
-                <tbody id="tableWeeklySort"></tbody>
-            </table>
+            <table><tbody id="tableWeeklySort"></tbody></table>
+            <hr>
+            <h3>🏅 זכאויות</h3>
+            <table id="tablePrizes"></table>
         </div>
 
         <div class="section-card">
             <h3>💰 קופה (ממוין)</h3>
-            <table>
-                <thead><tr><th>שם</th><th>₪</th></tr></thead>
-                <tbody id="tableBank"></tbody>
-            </table>
+            <table><thead><tr><th>שם</th><th>₪</th></tr></thead><tbody id="tableBank"></tbody></table>
         </div>
 
-        <div class="section-card" style="background:#e3f2fd;">
-            <h3>🏅 זכאויות</h3>
-            <table><tbody id="tablePrizes"></tbody></table>
+        <div class="section-card" style="background:#f1f8e9;">
+            <h3>📜 מחירון קניות</h3>
+            <table><thead><tr><th>מוצר</th><th>מחיר</th></tr></thead><tbody id="tableShop"></tbody></table>
         </div>
     </div>
 
     <div class="admin-section teacher-only">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
             <div style="background:white; padding:10px; border-radius:5px;">
                 <strong>⚙️ הגדרות:</strong> 
-                +/-: <input type="number" id="cfgPlus" style="width:40px"> | <input type="number" id="cfgMinus" style="width:40px">
-                <button onclick="saveConfig()" class="btn" style="background:gray; color:white; padding:2px 5px;">שמור</button><br><br>
-                תמונה: <input type="file" accept="image/*" onchange="uploadPhoto(event)" style="font-size:0.7em;"><br>
-                סלוגן: <input type="text" id="cfgSlogan" style="width:150px">
+                +/-: <input type="number" id="cfgPlus" style="width:35px"> <input type="number" id="cfgMinus" style="width:35px">
+                <button onclick="saveConfig()">V</button><br>
+                סלוגן: <input type="text" id="cfgSlogan" style="width:100px"><br>
+                תמונה: <input type="file" accept="image/*" onchange="uploadPhoto(event)" style="font-size:0.6em;">
             </div>
             <div style="background:white; padding:10px; border-radius:5px;">
-                <strong>🎁 פרסים:</strong> ש: <input type="text" id="pName" style="width:70px"> נ: <input type="number" id="pPoints" style="width:40px"> <button onclick="addPrize()">+</button>
-                <div id="prizeList" style="font-size:0.8em; margin-top:5px;"></div>
+                <strong>🎁 פרסים (לפי ניקוד):</strong><br>
+                שם: <input type="text" id="pName" style="width:60px"> נק: <input type="number" id="pPoints" style="width:35px"> <button onclick="addPrize()">+</button>
+                <div id="prizeList" style="font-size:0.7em; margin-top:5px; height:50px; overflow-y:auto;"></div>
+            </div>
+            <div style="background:white; padding:10px; border-radius:5px;">
+                <strong>🛒 עריכת מחירון (קניות):</strong><br>
+                מוצר: <input type="text" id="shopItem" style="width:60px"> מחיר: <input type="number" id="shopPrice" style="width:35px"> <button onclick="addShopItem()">+</button>
+                <div id="shopEditList" style="font-size:0.7em; margin-top:5px; height:50px; overflow-y:auto;"></div>
             </div>
         </div>
         <div style="margin-top: 10px; background:white; padding:10px; border-radius:5px;">
-            <strong>👤 ניהול רשימה:</strong> <input type="text" id="newName" placeholder="שם חדש"> <button onclick="addStudent()">+</button>
-            <div id="editList" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap:5px; margin-top:5px; max-height:100px; overflow-y:auto;"></div>
+            <strong>👤 עריכת תלמידים:</strong> <input type="text" id="newName" placeholder="שם חדש"> <button onclick="addStudent()">+</button>
+            <div id="editList" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); gap:5px; margin-top:5px; height:80px; overflow-y:auto;"></div>
         </div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('yeshiva_final_v27')) || {
-        config: { title: "🏛️ אוצר הכיתה", slogan: '"אל תהיו כעבדים..."', plusVal: 15, minVal: -10, pass: "1234", classPhoto: "" },
+    let db = JSON.parse(localStorage.getItem('yeshiva_final_v28')) || {
+        config: { slogan: '"אל תהיו כעבדים..."', plusVal: 15, minVal: -10, pass: "1234", classPhoto: "" },
         prizes: [{name: "הודעת נחת", points: 45, clean: true}],
+        shop: [{name: "פחית קולה", price: 50}],
         students: ["אברמוביץ דניאל", "איוב איתן", "אלגרבלי בניה עוז", "אלמו נתנאל", "ארבל אליה אהרון", "בלוסטוצקי הלל ישי", "בן עטר נתאי יוסף", "בן פורת נעם", "גורדון בניה", "גלייזר שלום", "דהן יוסף חיים", "הירשנברגר בועז", "וויסמן יהונתן", "ולר נווה אהרן", "טמנה אביהו", "יושעי נעם", "יעקבי יהודה", "כהן ליאור", "כהן ניתאי", "מנצור הראל", "מרסיאנו אורי", "נדל נוה", "ניאזוב אביאל", "סמני שבח", "פורסט עמיחי", "פלומבו נריה", "פנקר שילה", "פרשל מלאכי", "קצב נעם", "רוזנצוויג בעז אשר"].map(n => ({name: n, total: 100, weekly: 0, hasNote: false}))
     };
 
-    function toggleLogin(s) { document.getElementById('loginArea').style.display = s ? 'block' : 'none'; if(s) document.getElementById('passInput').focus(); }
+    function toggleLogin(s) { document.getElementById('loginArea').style.display = s ? 'block' : 'none'; }
     function checkPassword() {
         const inp = document.getElementById('passInput');
         if (inp.value === db.config.pass) { showAdmin(true); toggleLogin(false); }
@@ -145,29 +145,23 @@
         const img = document.getElementById('classPhoto');
         if(db.config.classPhoto) { img.src = db.config.classPhoto; document.getElementById('photoWrapper').style.display = 'block'; }
 
-        const t1 = document.getElementById('tableManage'), t3 = document.getElementById('tableBank'), tP = document.getElementById('tablePrizes'), tW = document.getElementById('tableWeeklySort'), eL = document.getElementById('editList'), pL = document.getElementById('prizeList');
-        t1.innerHTML = t3.innerHTML = tP.innerHTML = tW.innerHTML = eL.innerHTML = pL.innerHTML = '';
+        const t1 = document.getElementById('tableManage'), t3 = document.getElementById('tableBank'), tP = document.getElementById('tablePrizes'), tW = document.getElementById('tableWeeklySort'), tS = document.getElementById('tableShop'), eL = document.getElementById('editList'), pL = document.getElementById('prizeList'), sE = document.getElementById('shopEditList');
+        t1.innerHTML = t3.innerHTML = tP.innerHTML = tW.innerHTML = tS.innerHTML = eL.innerHTML = pL.innerHTML = sE.innerHTML = '';
         
         let isAdmin = document.getElementById('loginBtn').style.display === 'none';
         let query = document.getElementById('studentSearch').value.trim();
 
-        // מיון לטבלאות השכר והנקודות (אבל לא לטבלת הניהול!)
         const sortedByMoney = [...db.students].sort((a,b) => b.total - a.total);
         const sortedByWeekly = [...db.students].sort((a,b) => b.weekly - a.weekly);
 
-        // 1. טבלת ניהול - סדר קבוע + סינון חיפוש
         db.students.forEach((s, realIndex) => {
             if (s.name.includes(query)) {
-                t1.innerHTML += `<tr><td><b>${s.name}</b></td><td class="${isAdmin?'':'teacher-only'}"><button class="plus" onclick="changeScore(${realIndex},${db.config.plusVal},false)">+</button><button class="minus" onclick="changeScore(${realIndex},${db.config.minVal},true)">-</button></td><td>${s.hasNote ? '❌' : '✅'}</td></tr>`;
+                t1.innerHTML += `<tr><td><b>${s.name}</b></td><td class="${isAdmin?'':'teacher-only'}"><button class="plus" onclick="changeScore(${realIndex},${db.config.plusVal},false)">+</button><button class="minus" onclick="changeScore(${realIndex},${db.config.minVal},true)">-</button></td><td>${s.hasNote ? '❌' : '✅'}</td><td class="teacher-only"><button onclick="clearWeekly(${realIndex})">🗑️</button></td></tr>`;
             }
         });
 
-        // 2. קופה כללית - ממוין לפי כסף
-        sortedByMoney.forEach(s => {
-            t3.innerHTML += `<tr><td>${s.name}</td><td>${s.total}₪</td></tr>`;
-        });
+        sortedByMoney.forEach(s => { t3.innerHTML += `<tr><td>${s.name}</td><td>${s.total}₪</td></tr>`; });
 
-        // 3. פודיום וזכאויות - ממוין לפי ניקוד שבועי
         sortedByWeekly.forEach(s => {
             if(s.weekly > 0) tW.innerHTML += `<tr><td>${s.name}</td><td>${s.weekly}</td></tr>`;
             db.prizes.forEach(p => {
@@ -175,32 +169,33 @@
             });
         });
 
-        // 4. לוח עריכה
-        db.students.forEach((s, i) => {
-            eL.innerHTML += `<div style="font-size:0.7em;"><button onclick="removeStudent(${i})">x</button> <input type="text" value="${s.name}" onchange="db.students[${i}].name=this.value;render();" style="width:100px; border:none; background:transparent;"></div>`;
+        db.shop.forEach((item, i) => {
+            tS.innerHTML += `<tr><td>${item.name}</td><td>${item.price}₪</td></tr>`;
+            sE.innerHTML += `<span>${item.name}(${item.price})<button onclick="db.shop.splice(${i},1);render();">x</button> | </span>`;
         });
 
-        // 5. רשימת פרסים
-        db.prizes.forEach((p, i) => { pL.innerHTML += `<span>${p.name}(${p.points})<button onclick="db.prizes.splice(${i},1);render();">x</button></span> `; });
+        db.students.forEach((s, i) => { eL.innerHTML += `<div><button onclick="removeStudent(${i})">x</button> <input type="text" value="${s.name}" onchange="db.students[${i}].name=this.value;render();" style="width:110px; border:none; background:transparent;"></div>`; });
+        db.prizes.forEach((p, i) => { pL.innerHTML += `<span>${p.name}(${p.points})<button onclick="db.prizes.splice(${i},1);render();">x</button> | </span> `; });
 
-        // 6. פודיום
         const pod = document.getElementById('podium'), medals = ['🥈', '🥇', '🥉'], colors = ['#c0c0c0', '#ffd700', '#cd7f32'];
         pod.innerHTML = '';
         [1, 0, 2].forEach(pos => {
             const s = sortedByWeekly[pos];
-            if(s && s.weekly > 0) pod.innerHTML += `<div class="podium-step" style="height:${pos==1?100:pos==0?75:55}px; background:${colors[pos]}"><div class="step-name">${s.name}<br>(${s.weekly})</div>${medals[pos]}</div>`;
-            else pod.innerHTML += `<div style="width:70px;"></div>`;
+            if(s && s.weekly > 0) pod.innerHTML += `<div class="podium-step" style="height:${pos==1?90:pos==0?70:50}px; background:${colors[pos]}"><div class="step-name">${s.name}<br>(${s.weekly})</div>${medals[pos]}</div>`;
+            else pod.innerHTML += `<div style="width:65px;"></div>`;
         });
 
-        localStorage.setItem('yeshiva_final_v27', JSON.stringify(db));
+        localStorage.setItem('yeshiva_final_v28', JSON.stringify(db));
     }
 
     function changeScore(i, v, p) { db.students[i].total += v; if(v>0) db.students[i].weekly += v; if(p) db.students[i].hasNote = true; render(); }
+    function clearWeekly(i) { if(confirm("להסיר מהמצטיינים? (הכסף יישאר)")) { db.students[i].weekly = 0; render(); } }
     function addStudent() { const n = document.getElementById('newName').value; if(n){ db.students.push({name:n, total:100, weekly:0, hasNote:false}); render(); } }
     function removeStudent(i) { if(confirm("למחוק?")) { db.students.splice(i,1); render(); } }
     function addPrize() { const n = document.getElementById('pName').value, p = parseInt(document.getElementById('pPoints').value); if(n && p){ db.prizes.push({name:n, points:p, clean:true}); render(); } }
+    function addShopItem() { const n = document.getElementById('shopItem').value, p = parseInt(document.getElementById('shopPrice').value); if(n && p){ db.shop.push({name:n, price:p}); render(); } }
     function saveConfig() { db.config.plusVal = parseInt(document.getElementById('cfgPlus').value); db.config.minVal = parseInt(document.getElementById('cfgMinus').value); db.config.slogan = document.getElementById('cfgSlogan').value; render(); }
-    function resetWeekly() { if(confirm("איפוס שבוע?")) { db.students.forEach(s=>{s.weekly=0; s.hasNote=false;}); render(); } }
+    function resetWeekly() { if(confirm("איפוס שבועי?")) { db.students.forEach(s=>{s.weekly=0; s.hasNote=false;}); render(); } }
     function exportData() { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'backup.json'; a.click(); }
     function importData(e) { const r = new FileReader(); r.onload = f => { db = JSON.parse(f.target.result); render(); }; r.readAsText(e.target.files[0]); }
     render();
