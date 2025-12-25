@@ -3,173 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אוצר הכיתה - גרסה 43 (מצב תצוגה ומצב עריכה)</title>
+    <title>אוצר הכיתה ח'/2 - גרסה 46</title>
     <style>
-        :root { --primary: #5d4037; --secondary: #8d6e63; --bg: #e0d7c6; --card: #fffde7; }
-        body { background-color: var(--bg); background-image: url('https://www.transparenttextures.com/patterns/parchment.png'); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; color: #3e2723; transition: 0.3s; }
+        :root { --primary: #5d4037; --secondary: #8d6e63; --bg: #e0d7c6; --card: #fffde7; --bonus: #2e7d32; --penalty: #c62828; }
+        body { background-color: var(--bg); background-image: url('https://www.transparenttextures.com/patterns/parchment.png'); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; color: #3e2723; }
         .container { max-width: 98%; margin: auto; background: rgba(255, 252, 240, 0.95); padding: 15px; border: 5px double var(--secondary); border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
-        
-        header { text-align: center; position: relative; margin-bottom: 15px; border-bottom: 2px solid var(--secondary); padding-bottom: 10px; }
-        
-        /* כפתור החלפת מצבים */
-        .mode-switch { position: absolute; top: 0; right: 0; background: #37474f; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; border: none; z-index: 1000; }
-        .mode-switch.edit-active { background: #d32f2f; }
-
-        .dashboard { display: grid; grid-template-columns: 1.2fr 1fr 0.9fr 0.9fr 1.1fr; gap: 10px; }
-        .section-card { background: var(--card); border: 1px solid var(--secondary); border-radius: 10px; padding: 10px; height: 620px; overflow-y: auto; position: relative; }
-        
-        /* הסתרת רכיבים במצב תצוגה */
-        body.view-mode .admin-only, body.view-mode .del-btn, body.view-mode .add-btn, body.view-mode .teacher-controls { display: none !important; }
-        body.view-mode .section-card { height: 750px; } /* הגדלה לתצוגה */
-        
-        table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
-        body.view-mode table { font-size: 1em; } /* הגדלת טקסט לתלמידים */
-        th { background: var(--primary); color: white; padding: 8px; position: sticky; top: 0; }
-        td { padding: 6px; border-bottom: 1px solid #ddd; text-align: center; }
-        
-        .btn { cursor: pointer; border: none; font-weight: bold; border-radius: 4px; padding: 6px 12px; }
-        .del-btn { background: #ff5252; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; margin-left: 5px; display: inline-flex; align-items: center; justify-content: center; }
-        .add-btn { background: #4caf50; color: white; border-radius: 50%; width: 24px; height: 24px; border: none; cursor: pointer; margin-right: 5px; }
-
-        .podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 10px; height: 130px; border-bottom: 3px solid var(--secondary); margin-bottom: 15px; }
-        .podium-step { width: 60px; border-radius: 8px 8px 0 0; color: white; text-align: center; font-weight: bold; position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 5px; }
-        .step-name { color: #3e2723; position: absolute; top: -45px; width: 100%; font-size: 0.75em; font-weight: bold; }
-
-        #csvModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border: 4px solid var(--primary); z-index: 2000; border-radius: 15px; width: 400px; box-shadow: 0 0 100px rgba(0,0,0,0.5); }
+        header { text-align: center; position: relative; margin-bottom: 20px; border-bottom: 3px solid var(--secondary); padding-bottom: 15px; }
+        .mode-switch { position: absolute; top: 0; left: 0; background: #37474f; color: white; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; border: none; z-index: 1000; }
+        .mode-switch.edit-active { background: var(--penalty); }
+        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .section-card { background: var(--card); border: 2px solid var(--secondary); border-radius: 12px; padding: 15px; min-height: 400px; box-shadow: 2px 2px 10px rgba(0,0,0,0.05); }
+        body.view-mode .teacher-only { display: none !important; }
+        body.view-mode .dashboard { grid-template-columns: 1fr 1fr 1fr 1fr; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: var(--primary); color: white; padding: 10px; position: sticky; top: 0; }
+        td { padding: 8px; border-bottom: 1px solid #d7ccc8; text-align: center; font-weight: 500; }
+        .btn-bonus { background: var(--bonus); color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-penalty { background: var(--penalty); color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 15px; height: 160px; margin-bottom: 20px; border-bottom: 4px solid var(--secondary); padding-bottom: 10px; }
+        .podium-step { width: 80px; border-radius: 10px 10px 0 0; color: white; text-align: center; font-weight: bold; position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 10px; }
+        .step-name { color: #3e2723; position: absolute; top: -50px; width: 100%; font-size: 0.9em; font-weight: bold; white-space: nowrap; }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border: 4px solid var(--primary); z-index: 2000; border-radius: 20px; width: 450px; }
     </style>
 </head>
-<body class="view-mode"> <div class="container">
-    <button id="toggleMode" class="mode-switch" onclick="switchMode()">🖥️ עבור למצב עריכה</button>
+<body class="view-mode">
+
+<div class="container">
+    <button id="toggleMode" class="mode-switch" onclick="switchMode()">⚙️ מצב ניהול מורה</button>
 
     <header>
-        <h1>🏛️ אוצר הכיתה</h1>
-        <p id="mainSlogan" style="font-weight:bold; font-style:italic; font-size: 1.2em;"></p>
-        <div id="photoWrapper" style="display:none; margin:10px auto;"><img id="classPhoto" style="max-width:300px; border:4px solid var(--primary); border-radius:12px;"></div>
-
-        <div class="teacher-controls" style="margin:10px 0; background:#f0f0f0; padding:10px; border-radius:10px; display:flex; justify-content:center; gap:10px; border: 1px solid #ccc;">
-            <button class="btn" onclick="document.getElementById('excelLoad').click()" style="background:#ff9800; color:white;">📊 טען אקסל</button>
-            <button class="btn" onclick="resetWeekly()" style="background:#1565c0; color:white;">🌀 איפוס שבועי</button>
-            <button class="btn" onclick="exportData()" style="background:#4caf50; color:white;">💾 גיבוי</button>
+        <h1>🏛️ אוצר הכיתה - ח'/2</h1>
+        <p id="mainSlogan" style="font-size: 1.2em; font-weight: bold; color: var(--primary); max-width: 800px; margin: auto;"></p>
+        <div class="teacher-only" style="margin-top: 15px; display: flex; justify-content: center; gap: 10px;">
+            <button class="btn-bonus" onclick="document.getElementById('excelLoad').click()">📊 טען אקסל</button>
+            <button class="btn-penalty" style="background:#607d8b;" onclick="document.getElementById('backupLoad').click()">📂 שחזר מגיבוי</button>
+            <button class="btn-bonus" style="background:#1565c0;" onclick="resetWeekly()">🌀 איפוס שבועי</button>
+            <button class="btn-bonus" style="background:#4caf50;" onclick="exportData()">💾 שמור גיבוי</button>
             <input type="file" id="excelLoad" style="display:none" accept=".csv" onchange="openCsvManager(event)">
+            <input type="file" id="backupLoad" style="display:none" accept=".json" onchange="importData(event)">
         </div>
     </header>
 
     <div class="dashboard">
-        <div class="section-card">
-            <h3>📝 תלמידים</h3>
-            <div class="admin-only">
-                <input type="text" id="search" placeholder="🔍 חפש תלמיד..." style="width:90%; padding:8px; margin-bottom:10px;" oninput="render()">
-            </div>
+        <div class="section-card teacher-only">
+            <h3>📝 ניהול תלמידים</h3>
+            <input type="text" id="search" placeholder="🔍 חפש שם..." style="width:95%; padding:8px; margin-bottom:10px;" oninput="render()">
             <table id="listStudents"></table>
         </div>
-
-        <div class="section-card">
-            <h3>🏆 פודיום</h3>
-            <div id="podium" class="podium-container"></div>
-            <table id="listWeekly"></table>
-            <hr>
-            <h3>🏅 פרסים <button class="add-btn admin-only" onclick="addItem('prizes')">+</button></h3>
-            <table id="listPrizes"></table>
-        </div>
-
+        <div class="section-card"><h3>🏆 המצטיינים השבועיים</h3><div id="podium" class="podium-container"></div><table id="listWeekly"></table></div>
         <div class="section-card"><h3>💰 קופה כללית</h3><table id="listBank"></table></div>
-        
-        <div class="section-card">
-            <h3>📜 מחירון <button class="add-btn admin-only" onclick="addItem('shop')">+</button></h3>
-            <table id="listShop"></table>
-        </div>
-
-        <div class="section-card">
-            <h3>⚖️ תקנון <button class="add-btn admin-only" onclick="addItem('rules')">+</button></h3>
-            <table id="listRules"></table>
-        </div>
+        <div class="section-card"><h3>📜 מחירון <button class="teacher-only" onclick="addItem('shop')">+</button></h3><table id="listShop"></table></div>
+        <div class="section-card"><h3>⚖️ תקנון <button class="teacher-only" onclick="addItem('rules')">+</button></h3><table id="listRules"></table></div>
+        <div class="section-card"><h3>🏅 פרסים <button class="teacher-only" onclick="addItem('prizes')">+</button></h3><table id="listPrizes"></table></div>
     </div>
 
-    <div id="adminSettings" class="admin-only" style="margin-top:20px; text-align:center; background:#cfd8dc; padding:15px; border-radius:10px; border:2px solid #546e7a;">
-        <strong>🛠️ הגדרות עריכה</strong> | 
-        סלוגן: <input type="text" id="setSlogan" style="width:250px" onchange="db.config.slogan=this.value; render()"> |
-        <input type="file" onchange="uploadPhoto(event)"> |
-        <button onclick="fullReset()" style="background:red; color:white; border:none; padding:5px; border-radius:4px; font-weight:bold;">⚠️ איפוס 100₪</button>
+    <div class="teacher-only" style="margin-top:20px; text-align:center; background:#cfd8dc; padding:15px; border-radius:10px;">
+        סלוגן: <input type="text" id="setSlogan" style="width:70%" onchange="db.config.slogan=this.value; render()"> |
+        <button onclick="fullReset()" style="background:red; color:white; border:none; padding:5px; border-radius:4px; font-weight:bold;">⚠️ איפוס כללי</button>
     </div>
 </div>
 
-<div id="csvModal">
-    <h3>📊 הגדרת ניקוד</h3>
-    <table id="csvScoreBody"></table>
-    <button onclick="applyCsvData()" class="btn" style="background:green; color:white; width:100%; margin-top:15px;">עדכן</button>
+<div id="csvModal" class="modal">
+    <h3>📊 זיהוי נתונים מהאקסל</h3>
+    <p>המערכת זיהתה את הקטגוריות הבאות. הניקוד הוגדר לפי הערכים הקבועים שלך:</p>
+    <table id="csvScoreBody"></table><br>
+    <button onclick="applyCsvData()" class="btn-bonus" style="width:100%; padding:10px;">עדכן את כל התלמידים</button>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('yeshiva_v43')) || {
-        config: { slogan: '"אל תהיו כעבדים..."', photo: "" },
+    const DEFAULTS = { "חיסור": -10, "פטפוט": -5, "מילה טובה": 10, "הפרעה": -10, "אי הבאת ציוד": -5, "שוטטות": -5 };
+
+    let db = JSON.parse(localStorage.getItem('yeshiva_v46')) || {
+        config: { slogan: '“אַל תִּהְיוּ כַּעֲבָדִים הַמְשַׁמְּשִׁין אֶת הָרַב עַל מְנָת לְקַבֵּל פְּרָס, אֶלָּא הֱווּ כַּעֲבָדִים הַמְשַׁמְּשִׁין אֶת הָרַב שֶׁלֹּא עַל מְנָת לְקַבֵּל פְּרָס”', photo: "" },
         students: ["אברמוביץ דניאל", "איוב איתן", "אלגרבלי בניה עוז", "אלמו נתנאל", "ארבל אליה אהרון", "בלוסטוצקי הלל ישי", "בן עטר נתאי יוסף", "בן פורת נעם", "גורדון בניה", "גלייזר שלום", "דהן יוסף חיים", "הירשנברגר בועז", "וויסמן יהונתן", "ולר נווה אהרן", "טמנה אביהו", "יושעי נעם", "יעקבי יהודה", "כהן ליאור", "כהן ניתאי", "מנצור הראל", "מרסיאנו אורי", "נדל נוה", "ניאזוב אביאל", "סמני שבח", "פורסט עמיחי", "פלומבו נריה", "פנקר שילה", "פרשל מלאכי", "קצב נעם", "רוזנצוויג בעז אשר"].map(n => ({name:n, total:100, weekly:0, hasNote:false})),
         prizes: [{name:"הודעת נחת", val:45}],
         shop: [{name:"קולה", val:50}, {name:"חטיף", val:20}],
         rules: [{act: "3 איחורים", pun: "חצי שעה עבודה"}]
     };
 
+    let tempLines = [];
+
     function switchMode() {
-        const b = document.body;
-        const btn = document.getElementById('toggleMode');
-        if(b.classList.contains('view-mode')) {
-            b.classList.remove('view-mode');
-            btn.innerText = "📺 חזור למצב תצוגה";
-            btn.classList.add('edit-active');
-        } else {
-            b.classList.add('view-mode');
-            btn.innerText = "🛠️ עבור למצב עריכה";
-            btn.classList.remove('edit-active');
-        }
+        document.body.classList.toggle('view-mode');
+        const isEdit = !document.body.classList.contains('view-mode');
+        document.getElementById('toggleMode').innerText = isEdit ? "📺 חזור לתצוגת תלמידים" : "⚙️ מצב ניהול מורה";
         render();
+    }
+
+    function openCsvManager(e) {
+        const r = new FileReader();
+        r.onload = function(f) {
+            tempLines = f.target.result.split('\n');
+            let found = new Set();
+            tempLines.forEach(l => l.split(',').forEach(c => { if(c.includes(':')) found.add(c.split(':')[0].trim()); }));
+            let b = document.getElementById('csvScoreBody'); b.innerHTML = '<tr><th>קטגוריה</th><th>ניקוד</th></tr>';
+            found.forEach(cat => { 
+                let val = DEFAULTS[cat] || 0;
+                b.innerHTML += `<tr><td>${cat}</td><td><input type="number" class="cv" data-c="${cat}" value="${val}" style="width:60px"></td></tr>`; 
+            });
+            document.getElementById('csvModal').style.display = 'block';
+        };
+        r.readAsText(e.target.files[0]);
+    }
+
+    function applyCsvData() {
+        let sc = {}; document.querySelectorAll('.cv').forEach(i => sc[i.dataset.c] = parseInt(i.value));
+        tempLines.forEach((line, idx) => {
+            if(idx === 0) return;
+            let name = (line.split(',')[1]||"").trim();
+            let s = db.students.find(st => st.name === name);
+            if(s) Object.keys(sc).forEach(cat => { 
+                if(line.includes(cat+':')) { 
+                    let count = parseInt(line.split(cat+':')[1])||1; 
+                    s.total+=(sc[cat]*count); s.weekly+=(sc[cat]*count); 
+                    if(sc[cat] < 0) s.hasNote = true; // סימון איקס אוטומטי על הורדת ניקוד
+                } 
+            });
+        });
+        document.getElementById('csvModal').style.display='none'; render();
     }
 
     function render() {
         document.getElementById('mainSlogan').innerText = db.config.slogan;
-        if(db.config.photo) { document.getElementById('classPhoto').src = db.config.photo; document.getElementById('photoWrapper').style.display='block'; }
-        
         const isView = document.body.classList.contains('view-mode');
         const draw = (id, data, fn) => { let t = document.getElementById(id); t.innerHTML = ''; data.forEach((item, i) => t.innerHTML += fn(item, i)); };
 
         draw('listStudents', db.students, (s, i) => {
-            if(!isView && !s.name.includes(document.getElementById('search').value)) return '';
-            return `<tr><td>${s.name}</td><td class="admin-only"><button onclick="ch(${i},15)">+</button><button onclick="ch(${i},-10,true)">-</button></td><td>${s.hasNote?'❌':'✅'}</td></tr>`;
+            if(!s.name.includes(document.getElementById('search').value)) return '';
+            return `<tr><td>${s.name}</td><td><button class="btn-bonus" onclick="ch(${i},10)">בונוס</button> <button class="btn-penalty" onclick="ch(${i},-5,true)">קנס</button></td><td>${s.hasNote?'❌':'✅'}</td></tr>`;
         });
 
-        draw('listRules', db.rules, (r, i) => `<tr><td>${!isView?`<button class="del-btn" onclick="deleteRow('rules',${i})">×</button>`:''} ${r.act}</td><td style="color:red">${r.pun}</td></tr>`);
-        draw('listShop', db.shop, (item, i) => `<tr><td>${!isView?`<button class="del-btn" onclick="deleteRow('shop',${i})">×</button>`:''} ${item.name}</td><td>${item.val}₪</td></tr>`);
-        draw('listPrizes', db.prizes, (p, i) => `<tr><td>${!isView?`<button class="del-btn" onclick="deleteRow('prizes',${i})">×</button>`:''} ${p.name}</td><td>${p.val}</td></tr>`);
+        draw('listRules', db.rules, (r, i) => `<tr><td>${!isView?`<span onclick="deleteRow('rules',${i})" style="color:red;cursor:pointer">×</span> `:''}${r.act}</td><td style="color:red">${r.pun}</td></tr>`);
+        draw('listShop', db.shop, (item, i) => `<tr><td>${!isView?`<span onclick="deleteRow('shop',${i})" style="color:red;cursor:pointer">×</span> `:''}${item.name}</td><td>${!isView ? `<input type="number" style="width:45px" value="${item.val}" onchange="db.shop[${i}].val=parseInt(this.value);render()">` : item.val}₪</td></tr>`);
+        draw('listPrizes', db.prizes, (p, i) => `<tr><td>${!isView?`<span onclick="deleteRow('prizes',${i})" style="color:red;cursor:pointer">×</span> `:''}${p.name}</td><td>${!isView ? `<input type="number" style="width:45px" value="${p.val}" onchange="db.prizes[${i}].val=parseInt(this.value);render()">` : p.val}</td></tr>`);
 
         let sw = [...db.students].sort((a,b)=>b.weekly-a.weekly);
-        document.getElementById('listWeekly').innerHTML = '';
-        sw.forEach(s => { if(s.weekly !== 0) document.getElementById('listWeekly').innerHTML += `<tr><td>${s.name}</td><td>${s.weekly} נק'</td></tr>`; });
-
+        draw('listWeekly', sw.filter(s=>s.weekly!=0), s => `<tr><td>${s.name}</td><td>${s.weekly}</td></tr>`);
         document.getElementById('podium').innerHTML = '';
         [1,0,2].forEach(p => {
             let s = sw[p];
-            if(s && s.weekly > 0) document.getElementById('podium').innerHTML += `<div class="podium-step" style="height:${p==1?60:p==0?45:30}px; background:${['#c0c0c0','#ffd700','#cd7f32'][p]}"><div class="step-name">${s.name}</div>${['🥈','🥇','🥉'][p]}</div>`;
-            else document.getElementById('podium').innerHTML += `<div style="width:60px"></div>`;
+            if(s && s.weekly > 0) document.getElementById('podium').innerHTML += `<div class="podium-step" style="height:${p==1?80:p==0?110:50}px; background:${['#c0c0c0','#ffd700','#cd7f32'][p]}"><div class="step-name">${s.name}</div>${['🥈','🥇','🥉'][p]}</div>`;
+            else document.getElementById('podium').innerHTML += `<div style="width:80px"></div>`;
         });
-
-        document.getElementById('listBank').innerHTML = '';
-        [...db.students].sort((a,b)=>b.total-a.total).forEach(s => document.getElementById('listBank').innerHTML += `<tr><td>${s.name}</td><td><strong>${s.total}₪</strong></td></tr>`);
-
-        localStorage.setItem('yeshiva_v43', JSON.stringify(db));
+        draw('listBank', [...db.students].sort((a,b)=>b.total-a.total), s => `<tr><td>${s.name}</td><td><strong>${s.total}₪</strong></td></tr>`);
+        localStorage.setItem('yeshiva_v46', JSON.stringify(db));
     }
 
-    // שאר הפונקציות (ch, deleteRow, addItem וכו') נשארות זהות לגרסה 42
     function ch(i,v,n) { db.students[i].total+=v; db.students[i].weekly+=v; if(n) db.students[i].hasNote=true; render(); }
-    function deleteRow(type, index) { if(confirm("למחוק?")) { db[type].splice(index, 1); render(); } }
-    function addItem(type) { 
-        let n = prompt("שם:"), v = prompt("ערך:"); 
-        if(n && type==='rules') db.rules.push({act:n, pun:v});
-        else if(n) db[type].push({name:n, val:parseInt(v)});
-        render(); 
+    function addItem(type) {
+        let n = prompt("שם:"); if(!n) return;
+        if(type==='rules') db.rules.push({act:n, pun:prompt("עונש:")});
+        else db[type].push({name:n, val:parseInt(prompt("ערך:"))||0});
+        render();
     }
+    function deleteRow(t, i) { if(confirm("למחוק?")) { db[t].splice(i,1); render(); } }
     function resetWeekly() { if(confirm("איפוס שבועי?")) { db.students.forEach(s=>{s.weekly=0; s.hasNote=false;}); render(); } }
     function fullReset() { if(confirm("איפוס ל-100₪?")) { db.students.forEach(s=>{s.total=100; s.weekly=0; s.hasNote=false;}); render(); } }
-    function uploadPhoto(e) { const r = new FileReader(); r.onload = ev => { db.config.photo = ev.target.result; render(); }; r.readAsDataURL(e.target.files[0]); }
-    function exportData() { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'backup.json'; a.click(); }
-    
+    function exportData() { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'backup_h2.json'; a.click(); }
+    function importData(e) { const r = new FileReader(); r.onload = ev => { db = JSON.parse(ev.target.result); render(); alert("שוחזר!"); }; r.readAsText(e.target.files[0]); }
+
     render();
 </script>
 </body>
