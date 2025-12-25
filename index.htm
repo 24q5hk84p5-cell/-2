@@ -3,167 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אוצר הכיתה ח'/2 - גרסה 50</title>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <title>אוצר הכיתה ח'/2 - גרסה 52</title>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --primary: #4e342e; --secondary: #795548; --bg: #f4ece1; 
-            --card: #ffffff; --bonus: #1b5e20; --penalty: #b71c1c; 
-            --accent: #ffc107;
-        }
-        
-        body { 
-            background-color: var(--bg); 
-            background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png'); 
-            font-family: 'Assistant', sans-serif; 
-            margin: 0; padding: 15px; color: #2d1d1a; 
-        }
-
-        .container { 
-            max-width: 1400px; margin: auto; 
-            background: rgba(255, 255, 255, 0.7); 
-            padding: 25px; border: 2px solid var(--secondary); 
-            border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-            backdrop-filter: blur(5px);
-        }
-        
-        header { text-align: center; margin-bottom: 30px; }
-        h1 { font-size: 3em; font-weight: 800; color: var(--primary); margin-bottom: 5px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
-        
-        .admin-nav { display: flex; justify-content: center; margin-bottom: 25px; }
-        .mode-switch { 
-            background: var(--primary); color: white; padding: 12px 45px; 
-            border-radius: 50px; cursor: pointer; font-weight: 700; 
-            border: none; font-size: 1.2em; transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(78, 52, 46, 0.4);
-        }
-        .mode-switch:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(78, 52, 46, 0.5); }
-        .edit-active { background: var(--penalty) !important; }
-
+        :root { --primary: #4e342e; --secondary: #795548; --bg: #fdfaf5; --bonus: #2e7d32; --penalty: #d32f2f; }
+        body { background-color: var(--bg); font-family: 'Assistant', sans-serif; margin: 0; padding: 10px; color: #333; }
+        .container { max-width: 1450px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.07); }
+        header { text-align: center; margin-bottom: 25px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px; }
+        h1 { font-size: 3em; font-weight: 800; color: var(--primary); margin: 0; }
+        .admin-nav { display: flex; justify-content: center; margin-bottom: 20px; }
+        .mode-switch { background: #37474f; color: white; padding: 12px 45px; border-radius: 30px; cursor: pointer; font-weight: 700; border: none; font-size: 1.1em; transition: 0.3s; }
+        .edit-active { background: var(--penalty) !important; box-shadow: 0 0 15px rgba(211,47,47,0.4); }
         .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
-        .section-card { 
-            background: var(--card); border-radius: 15px; padding: 20px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 5px solid var(--secondary);
-        }
-        .section-card h3 { 
-            border-bottom: 2px solid #eee; padding-bottom: 10px; 
-            margin-top: 0; color: var(--primary); font-weight: 800;
-        }
-
+        .section-card { background: #fff; border-radius: 12px; padding: 18px; border: 1px solid #eee; }
+        .section-card h3 { color: var(--primary); font-weight: 800; border-right: 5px solid var(--secondary); padding-right: 10px; margin-top: 0; }
         body.view-mode .teacher-only { display: none !important; }
         body.view-mode .dashboard { grid-template-columns: repeat(3, 1fr); }
-
         table { width: 100%; border-collapse: collapse; }
-        th { background: #f8f5f0; color: var(--primary); padding: 12px; font-weight: 700; border-bottom: 2px solid #ddd; }
-        td { padding: 12px; border-bottom: 1px solid #eee; text-align: center; font-weight: 600; }
-        
-        /* פודיום מעוצב */
-        .podium-wrapper { display: flex; justify-content: center; align-items: flex-end; gap: 20px; height: 180px; margin: 40px 0; }
-        .podium-step { 
-            width: 100px; color: white; text-align: center; font-weight: 800; 
-            position: relative; display: flex; flex-direction: column; 
-            justify-content: flex-end; padding-bottom: 15px; border-radius: 12px 12px 0 0;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .step-name { 
-            color: var(--primary); position: absolute; top: -55px; width: 100%; 
-            font-size: 1.1em; font-weight: 800; background: rgba(255,255,255,0.8);
-            border-radius: 5px; padding: 2px 0;
-        }
-        .rank-1 { height: 150px; background: linear-gradient(to top, #fbc02d, #ffeb3b); color: #5f4b00; border: 2px solid #fbc02d; }
-        .rank-2 { height: 110px; background: linear-gradient(to top, #9e9e9e, #e0e0e0); color: #333; border: 2px solid #9e9e9e; }
-        .rank-3 { height: 80px; background: linear-gradient(to top, #8d6e63, #bcaaa4); color: #3e2723; border: 2px solid #8d6e63; }
-
-        .btn-action { 
-            border: none; border-radius: 6px; padding: 8px 12px; 
-            font-weight: 700; cursor: pointer; transition: 0.2s;
-        }
-        .btn-plus { background: var(--bonus); color: white; }
-        .btn-minus { background: var(--penalty); color: white; }
-        
-        .badge-star { color: var(--accent); font-size: 1.2em; text-shadow: 0 0 2px rgba(0,0,0,0.2); }
+        th { background: #fafafa; color: #666; padding: 10px; font-size: 0.9em; border-bottom: 2px solid #eee; }
+        td { padding: 10px; border-bottom: 1px solid #f5f5f5; text-align: center; font-weight: 700; }
+        .podium-wrapper { display: flex; justify-content: center; align-items: flex-end; gap: 15px; height: 160px; margin: 30px 0; border-bottom: 3px solid #eee; }
+        .podium-step { width: 90px; text-align: center; font-weight: 800; position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 10px; border-radius: 8px 8px 0 0; }
+        .step-name { color: var(--primary); position: absolute; top: -45px; width: 100%; font-weight: 800; font-size: 0.95em; }
+        .rank-1 { height: 130px; background: #ffd700; } .rank-2 { height: 95px; background: #c0c0c0; } .rank-3 { height: 65px; background: #cd7f32; color: white; }
+        input[type="number"] { width: 50px; text-align: center; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; font-weight: bold; }
     </style>
 </head>
 <body class="view-mode">
 
 <div class="container">
     <div class="admin-nav">
-        <button id="toggleMode" class="mode-switch" onclick="switchMode()">⚙️ כניסה למצב ניהול מורה</button>
+        <button id="toggleMode" class="mode-switch" onclick="switchMode()">⚙️ מצב ניהול מורה</button>
     </div>
 
     <header>
         <h1>🏛️ אוצר הכיתה - ח'/2</h1>
-        <p id="mainSlogan" style="font-size: 1.4em; font-weight: 600; font-style: italic; color: var(--secondary); max-width: 900px; margin: auto;"></p>
-        
-        <div id="photoWrapper" style="display:none; margin:25px auto;">
-            <img id="classPhoto" style="max-width:500px; border:8px solid white; border-radius:10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
-        </div>
+        <p id="mainSlogan" style="font-size: 1.3em; font-weight: 600; color: var(--secondary); margin-top: 8px;"></p>
+        <div id="photoWrapper" style="display:none; margin:15px auto;"><img id="classPhoto" style="max-width:400px; border-radius:10px; border:4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></div>
 
-        <div class="teacher-only" style="background: white; padding: 20px; border-radius: 15px; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 25px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);">
-            <button onclick="document.getElementById('excelLoad').click()" class="btn-action" style="background:#0277bd; color:white;">📊 טען אקסל</button>
-            <button onclick="resetWeekly()" class="btn-action" style="background:#5e35b1; color:white;">🌀 איפוס שבועי</button>
-            <button onclick="exportData()" class="btn-action" style="background:#2e7d32; color:white;">💾 שמור גיבוי</button>
-            <button onclick="document.getElementById('backupLoad').click()" class="btn-action" style="background:#455a64; color:white;">📂 שחזר גיבוי</button>
+        <div class="teacher-only" style="background:#f1f8e9; padding:15px; border-radius:10px; margin-bottom:20px; display:flex; justify-content:center; gap:10px; border:1px solid #c8e6c9;">
+            <button onclick="document.getElementById('excelLoad').click()" style="background:#1976d2; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; font-weight:700;">📊 טען אקסל</button>
+            <button onclick="resetWeekly()" style="background:#7b1fa2; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; font-weight:700;">🌀 איפוס שבועי</button>
+            <button onclick="exportData()" style="background:#388e3c; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; font-weight:700;">💾 גיבוי</button>
             <input type="file" id="excelLoad" style="display:none" accept=".csv" onchange="processExcel(event)">
-            <input type="file" id="backupLoad" style="display:none" accept=".json" onchange="importData(event)">
         </div>
     </header>
 
     <div class="dashboard">
+        <div class="section-card teacher-only" style="background: #fff3e0; border-top: 5px solid #ff9800;">
+            <h3>⚙️ הגדרת ניקוד קבוע</h3>
+            <table id="listFixedScores"></table>
+            <p style="font-size:0.8em; margin-top:10px;">* המערכת תזהה מילים אלו באקסל ותחשב לפיהן.</p>
+        </div>
+
         <div class="section-card teacher-only">
             <h3>👥 ניהול תלמידים</h3>
-            <input type="text" id="search" placeholder="🔍 חפש שם..." style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:15px; font-family: inherit;" oninput="render()">
+            <input type="text" id="search" placeholder="חפש שם..." style="width:90%; padding:8px; margin-bottom:10px;" oninput="render()">
             <table id="listStudents"></table>
         </div>
 
         <div class="section-card">
-            <h3>🏆 המצטיינים השבועיים</h3>
+            <h3>🏆 פודיום שבועי</h3>
             <div id="podium" class="podium-wrapper"></div>
             <table id="listWeekly"></table>
         </div>
 
-        <div class="section-card">
-            <h3>💰 קופה וזכאות</h3>
-            <table id="listBank"></table>
-        </div>
-        
-        <div class="section-card">
-            <h3>📜 מחירון <button class="teacher-only" onclick="addItem('shop')" style="background:none; border:none; color:green; font-size:1.5em; cursor:pointer;">+</button></h3>
-            <table id="listShop"></table>
-        </div>
-
-        <div class="section-card">
-            <h3>⚖️ תקנון <button class="teacher-only" onclick="addItem('rules')" style="background:none; border:none; color:green; font-size:1.5em; cursor:pointer;">+</button></h3>
-            <table id="listRules"></table>
-        </div>
-
-        <div class="section-card">
-            <h3>🏅 פרסים <button class="teacher-only" onclick="addItem('prizes')" style="background:none; border:none; color:green; font-size:1.5em; cursor:pointer;">+</button></h3>
-            <table id="listPrizes"></table>
-        </div>
+        <div class="section-card"><h3>💰 קופה וזכאות</h3><table id="listBank"></table></div>
+        <div class="section-card"><h3>📜 מחירון <button class="teacher-only" onclick="addItem('shop')">+</button></h3><table id="listShop"></table></div>
+        <div class="section-card"><h3>⚖️ תקנון <button class="teacher-only" onclick="addItem('rules')">+</button></h3><table id="listRules"></table></div>
+        <div class="section-card"><h3>🏅 פרסים <button class="teacher-only" onclick="addItem('prizes')">+</button></h3><table id="listPrizes"></table></div>
     </div>
 
-    <div class="teacher-only" style="margin-top:40px; text-align:center; padding:30px; border-top: 1px solid #ccc;">
-        <strong>הגדרות:</strong> 
-        סלוגן: <input type="text" id="setSlogan" style="width:50%; padding:8px; border-radius:5px;" onchange="db.config.slogan=this.value; render()"> 
+    <div class="teacher-only" style="margin-top:30px; text-align:center; padding:20px; border-top:1px solid #eee;">
+        סלוגן: <input type="text" id="setSlogan" style="width:40%" onchange="db.config.slogan=this.value; render()"> 
         תמונה: <input type="file" onchange="uploadPhoto(event)">
-        <button onclick="fullReset()" style="color:red; background:none; border:1px solid red; padding:5px; cursor:pointer; margin-right:20px;">⚠️ איפוס כללי</button>
+        <button onclick="fullReset()" style="color:red; background:none; border:1px solid red; padding:5px; cursor:pointer; margin-right:15px;">⚠️ איפוס כללי</button>
     </div>
 </div>
 
 <script>
-    // ערכי ניקוד קבועים לפי בקשתך
-    const FIXED_SCORES = { 
-        "חיסור": -10, 
-        "פטפוט": -5, 
-        "מילה טובה": 10, 
-        "הפרעה": -10, 
-        "אי הבאת ציוד": -5, 
-        "שוטטות": -5 
-    };
-
-    let db = JSON.parse(localStorage.getItem('yeshiva_v50')) || {
-        config: { slogan: '“אַל תִּהְיוּ כַּעֲבָדִים הַמְשַׁמְּשִׁין אֶת הָרַב עַל מְנָת לְקַבֵּל פְּרָס, אֶלָּא הֱווּ כַּעֲבָדִים הַמְשַׁמְּשִׁין אֶת הָרַב שֶׁלֹּא עַל מְנָת לְקַבֵּל פְּרָס”', photo: "" },
+    let db = JSON.parse(localStorage.getItem('yeshiva_v52')) || {
+        config: { slogan: '“אַל תִּהְיוּ כַּעֲבָדִים הַמְשַׁמְּשִׁין אֶת הָרַב על מנת...”', photo: "" },
+        // ערכי ניקוד שניתן לערוך
+        fixedScores: { 
+            "חיסור": -10, "פטפוט": -5, "מילה טובה": 10, 
+            "הפרעה": -10, "אי הבאת ציוד": -5, "שוטטות": -5, 
+            "תפילה": 5, "הצטיינות": 10 
+        },
         students: ["אברמוביץ דניאל", "איוב איתן", "אלגרבלי בניה עוז", "אלמו נתנאל", "ארבל אליה אהרון", "בלוסטוצקי הלל ישי", "בן עטר נתאי יוסף", "בן פורת נעם", "גורדון בניה", "גלייזר שלום", "דהן יוסף חיים", "הירשנברגר בועז", "וויסמן יהונתן", "ולר נווה אהרן", "טמנה אביהו", "יושעי נעם", "יעקבי יהודה", "כהן ליאור", "כהן ניתאי", "מנצור הראל", "מרסיאנו אורי", "נדל נוה", "ניאזוב אביאל", "סמני שבח", "פורסט עמיחי", "פלומבו נריה", "פנקר שילה", "פרשל מלאכי", "קצב נעם", "רוזנצוויג בעז אשר"].map(n => ({name:n, total:100, weekly:0, hasNote:false})),
         prizes: [{name:"הודעת נחת", val:45}],
         shop: [{name:"קולה פחית", val:50}, {name:"חטיף", val:20}],
@@ -174,69 +100,65 @@
 
     function render() {
         const isView = document.body.classList.contains('view-mode');
-        document.getElementById('toggleMode').innerText = isView ? "⚙️ כניסה למצב ניהול מורה" : "📺 חזרה לתצוגת תלמידים";
+        document.getElementById('toggleMode').innerText = isView ? "⚙️ מצב ניהול מורה" : "📺 חזרה לתצוגת תלמידים";
         document.getElementById('toggleMode').classList.toggle('edit-active', !isView);
         document.getElementById('mainSlogan').innerText = db.config.slogan;
         if(db.config.photo) { document.getElementById('classPhoto').src = db.config.photo; document.getElementById('photoWrapper').style.display='block'; }
 
-        const draw = (id, data, fn) => { let t = document.getElementById(id); t.innerHTML = ''; data.forEach((item, i) => t.innerHTML += fn(item, i)); };
+        const draw = (id, data, fn) => { let t = document.getElementById(id); if(t) { t.innerHTML = ''; data.forEach((item, i) => t.innerHTML += fn(item, i)); }};
 
-        // תלמידים (עריכה)
-        draw('listStudents', db.students, (s, i) => {
-            if(!s.name.includes(document.getElementById('search').value)) return '';
-            return `<tr><td>${s.name}</td><td><button class="btn-action btn-plus" onclick="ch(${i},10)">+</button> <button class="btn-action btn-minus" onclick="ch(${i},-5,true)">-</button></td><td>${s.hasNote?'❌':'✅'}</td></tr>`;
+        // טבלת ניקוד קבוע (עריכה)
+        let fsTable = document.getElementById('listFixedScores');
+        fsTable.innerHTML = '<tr><th>פעולה</th><th>ניקוד</th></tr>';
+        Object.keys(db.fixedScores).forEach(key => {
+            fsTable.innerHTML += `<tr><td>${key}</td><td><input type="number" value="${db.fixedScores[key]}" onchange="db.fixedScores['${key}']=parseInt(this.value);render()"></td></tr>`;
         });
 
-        // טבלאות
-        draw('listRules', db.rules, (r, i) => `<tr><td>${!isView?`<span onclick="deleteRow('rules',${i})" style="color:red;cursor:pointer">×</span> `:''}${r.act}</td><td style="color:red">${r.pun}</td></tr>`);
-        draw('listShop', db.shop, (item, i) => `<tr><td>${!isView?`<span onclick="deleteRow('shop',${i})" style="color:red;cursor:pointer">×</span> `:''}${item.name}</td><td>${!isView ? `<input type="number" style="width:60px" value="${item.val}" onchange="db.shop[${i}].val=parseInt(this.value);render()">` : item.val}₪</td></tr>`);
-        draw('listPrizes', db.prizes, (p, i) => `<tr><td>${!isView?`<span onclick="deleteRow('prizes',${i})" style="color:red;cursor:pointer">×</span> `:''}${p.name}</td><td>${!isView ? `<input type="number" style="width:60px" value="${p.val}" onchange="db.prizes[${i}].val=parseInt(this.value);render()">` : p.val}</td></tr>`);
+        draw('listStudents', db.students, (s, i) => {
+            if(!s.name.includes(document.getElementById('search').value)) return '';
+            return `<tr><td>${s.name}</td><td><button onclick="ch(${i},10)" style="background:green;color:white;border:none;border-radius:3px;">+</button> <button onclick="ch(${i},-5,true)" style="background:red;color:white;border:none;border-radius:3px;">-</button></td><td>${s.hasNote?'❌':'✅'}</td></tr>`;
+        });
 
-        // פודיום
+        draw('listRules', db.rules, (r, i) => `<tr><td>${!isView?`<span onclick="deleteRow('rules',${i})" style="color:red;cursor:pointer">×</span> `:''}${r.act}</td><td style="color:red">${r.pun}</td></tr>`);
+        draw('listShop', db.shop, (item, i) => `<tr><td>${!isView?`<span onclick="deleteRow('shop',${i})" style="color:red;cursor:pointer">×</span> `:''}${item.name}</td><td>${!isView ? `<input type="number" value="${item.val}" onchange="db.shop[${i}].val=parseInt(this.value);render()">` : item.val}₪</td></tr>`);
+        draw('listPrizes', db.prizes, (p, i) => `<tr><td>${!isView?`<span onclick="deleteRow('prizes',${i})" style="color:red;cursor:pointer">×</span> `:''}${p.name}</td><td>${!isView ? `<input type="number" value="${p.val}" onchange="db.prizes[${i}].val=parseInt(this.value);render()">` : p.val}</td></tr>`);
+
         let sw = [...db.students].sort((a,b)=>b.weekly-a.weekly);
-        draw('listWeekly', sw.filter(s=>s.weekly>0).slice(0, 5), s => `<tr><td>${s.name}</td><td>${s.weekly} נק'</td></tr>`);
+        draw('listWeekly', sw.filter(s=>s.weekly>0).slice(0, 5), s => `<tr><td>${s.name}</td><td>${s.weekly}</td></tr>`);
         const pDiv = document.getElementById('podium'); pDiv.innerHTML = '';
         [{idx:1,c:'rank-2',i:'🥈'},{idx:0,c:'rank-1',i:'🥇'},{idx:2,c:'rank-3',i:'🥉'}].forEach(r => {
             let s = sw[r.idx];
             if(s && s.weekly > 0) pDiv.innerHTML += `<div class="podium-step ${r.c}"><div class="step-name">${s.name}</div>${r.i}</div>`;
-            else pDiv.innerHTML += `<div style="width:100px"></div>`;
+            else pDiv.innerHTML += `<div style="width:90px"></div>`;
         });
 
-        // קופה
         let minVal = Math.min(...db.shop.map(x=>x.val), ...db.prizes.map(x=>x.val));
-        draw('listBank', [...db.students].sort((a,b)=>b.total-a.total), s => {
-            return `<tr style="${s.hasNote?'background:#fff5f5':''}"><td>${s.name} ${s.hasNote?'❌':''}</td><td>${s.total}₪ ${s.total>=minVal?'<span class="badge-star">⭐</span>':''}</td></tr>`;
-        });
+        draw('listBank', [...db.students].sort((a,b)=>b.total-a.total), s => `<tr><td>${s.name} ${s.hasNote?'❌':''}</td><td>${s.total}₪ ${s.total>=minVal?'⭐':''}</td></tr>`);
 
-        localStorage.setItem('yeshiva_v50', JSON.stringify(db));
+        localStorage.setItem('yeshiva_v52', JSON.stringify(db));
     }
 
-    // עיבוד אקסל אוטומטי - ללא שאלות
     function processExcel(e) {
         const reader = new FileReader();
         reader.onload = f => {
             const lines = f.target.result.split('\n');
-            let countUpdates = 0;
+            let updates = 0;
             lines.forEach((line, idx) => {
                 if(idx === 0) return;
-                const parts = line.split(',');
-                const name = (parts[1]||"").trim();
+                const name = (line.split(',')[1]||"").trim();
                 const student = db.students.find(s => s.name === name);
                 if(student) {
-                    Object.keys(FIXED_SCORES).forEach(key => {
-                        if(line.includes(key + ':')) {
-                            const multiplier = parseInt(line.split(key + ':')[1]) || 1;
-                            const points = FIXED_SCORES[key] * multiplier;
-                            student.total += points;
-                            student.weekly += points;
-                            if(points < 0) student.hasNote = true;
-                            countUpdates++;
+                    Object.keys(db.fixedScores).forEach(key => {
+                        if(line.includes(key)) {
+                            const val = db.fixedScores[key];
+                            student.total += val; student.weekly += val;
+                            if(val < 0) student.hasNote = true;
+                            updates++;
                         }
                     });
                 }
             });
-            render();
-            alert(`האקסל עובד בהצלחה! עודכנו ${countUpdates} רישומי ניקוד לפי הערכים הקבועים.`);
+            render(); alert("עודכן בהצלחה!");
         };
         reader.readAsText(e.target.files[0]);
     }
@@ -246,14 +168,13 @@
     function addItem(type) {
         let n = prompt("שם:"); if(!n) return;
         if(type==='rules') db.rules.push({act:n, pun:prompt("תוצאה:")});
-        else db[type].push({name:n, val:parseInt(prompt("עלות:"))||0});
+        else db[type].push({name:n, val:parseInt(prompt("ערך:"))||0});
         render();
     }
-    function resetWeekly() { if(confirm("איפוס שבועי?")) { db.students.forEach(s=>{s.weekly=0; s.hasNote=false;}); render(); } }
+    function resetWeekly() { if(confirm("לאפס שבוע?")) { db.students.forEach(s=>{s.weekly=0; s.hasNote=false;}); render(); } }
     function fullReset() { if(confirm("איפוס כללי?")) { db.students.forEach(s=>{s.total=100; s.weekly=0; s.hasNote=false;}); render(); } }
     function uploadPhoto(e) { const r = new FileReader(); r.onload = ev => { db.config.photo = ev.target.result; render(); }; r.readAsDataURL(e.target.files[0]); }
-    function exportData() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(db)], {type:'application/json'})); a.download = 'h2_treasure.json'; a.click(); }
-    function importData(e) { const r = new FileReader(); r.onload = ev => { db = JSON.parse(ev.target.result); render(); }; r.readAsText(e.target.files[0]); }
+    function exportData() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(db)], {type:'application/json'})); a.download = 'h2_v52.json'; a.click(); }
 
     render();
 </script>
