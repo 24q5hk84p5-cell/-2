@@ -9,35 +9,40 @@
             --bg: #0f172a; --card-bg: #1e293b; --accent: #38bdf8;
             --success: #22c55e; --danger: #ef4444; --text: #f8fafc;
             --gold: #fbbf24; --silver: #94a3b8; --bronze: #d97706;
+            --purple: #a855f7;
         }
         body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; padding-bottom: 50px; direction: rtl; }
         .sticky-header { position: sticky; top: 0; width: 100%; background: rgba(15, 23, 42, 0.95); padding: 15px 0; display: flex; flex-direction: column; align-items: center; z-index: 1000; border-bottom: 2px solid var(--accent); backdrop-filter: blur(10px); }
         .main-title { font-size: 1.8em; font-weight: 800; color: var(--accent); margin: 0; }
-        .slogan { font-size: 0.9em; color: #94a3b8; margin-top: 5px; text-align: center; font-style: italic; }
-        .container { width: 95%; max-width: 850px; background: var(--card-bg); border-radius: 24px; overflow: hidden; border: 1px solid #334155; margin-top: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
-        .btn { background: var(--accent); color: var(--bg); border: none; padding: 10px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn:hover { transform: scale(1.02); opacity: 0.9; }
+        .slogan { font-size: 0.9em; color: #94a3b8; margin-top: 5px; text-align: center; }
         
-        /* עיצוב רשימת תלמידים */
-        .student-row { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px; }
-        .student-header { display: flex; justify-content: space-between; align-items: center; }
-        .controls-manual { display: flex; gap: 8px; margin-left: 15px; }
-        .btn-mini { width: 35px; height: 35px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 1.2em; }
-        .btn-plus { background: var(--success); }
-        .btn-minus { background: var(--danger); }
-        .score-circle { width: 50px; height: 50px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-weight: bold; border: 2px solid var(--accent); background: rgba(56, 189, 248, 0.1); font-size: 1.1em; }
+        .container { width: 95%; max-width: 850px; background: var(--card-bg); border-radius: 24px; overflow: hidden; border: 1px solid #334155; margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
         
-        .history-panel { display: none; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 12px; margin-top: 10px; border: 1px solid rgba(255,255,255,0.05); }
-        .log-line { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dotted #444; font-size: 0.9em; }
+        /* עיצוב רשימה משולבת */
+        .student-row { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 15px; transition: 0.3s; }
+        .student-header { display: flex; align-items: center; gap: 12px; }
+        .student-info { flex-grow: 1; display: flex; flex-direction: column; cursor: pointer; }
+        .student-name { font-weight: bold; font-size: 1.1em; display: flex; align-items: center; gap: 8px; }
+        
+        /* באדג'ים של פרסים */
+        .prize-badge { font-size: 0.7em; padding: 3px 8px; border-radius: 12px; font-weight: bold; color: white; display: inline-flex; align-items: center; gap: 3px; }
+        .badge-nachat { background: var(--purple); box-shadow: 0 0 10px rgba(168, 85, 247, 0.4); }
+        .badge-choopar { background: var(--success); box-shadow: 0 0 10px rgba(34, 197, 94, 0.4); }
 
-        /* פאנל ניהול */
-        .edit-panel { padding: 25px; display: none; }
-        .admin-section { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #334155; }
-        .admin-section h3 { margin-top: 0; color: var(--accent); border-bottom: 1px solid #334155; padding-bottom: 8px; }
-        textarea, input[type="text"] { background: #0f172a; color: white; border: 1px solid var(--accent); border-radius: 8px; padding: 10px; width: 100%; box-sizing: border-box; }
+        .score-box { width: 50px; height: 50px; border-radius: 12px; border: 2px solid var(--accent); display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; background: rgba(56, 189, 248, 0.05); }
+        .weekly-label { font-size: 0.6em; color: var(--accent); margin-top: -2px; }
+
+        .btn-m { width: 35px; height: 35px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; color: white; }
+        .history-panel { display: none; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 12px; margin-top: 10px; border: 1px solid rgba(255,255,255,0.05); font-size: 0.9em; }
         
-        .class-photo { width: 95%; max-width: 850px; max-height: 250px; object-fit: cover; border-radius: 20px; margin-top: 20px; display: none; border: 2px solid var(--accent); }
-        .upload-area { border: 2px dashed var(--accent); padding: 20px; text-align: center; border-radius: 15px; cursor: pointer; margin: 10px 0; background: rgba(56, 189, 248, 0.05); }
+        /* פאנל ניהול */
+        .admin-panel { display: none; padding: 25px; border-top: 2px solid var(--accent); }
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .admin-card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; border: 1px solid #334155; }
+        input, textarea { background: #0f172a; color: white; border: 1px solid #334155; padding: 10px; border-radius: 8px; width: 100%; box-sizing: border-box; }
+        
+        .class-img { width: 95%; max-width: 850px; border-radius: 20px; margin-top: 20px; display: none; border: 2px solid var(--accent); }
+        #podium { display: flex; justify-content: center; align-items: flex-end; gap: 15px; margin: 25px 0; height: 120px; }
     </style>
 </head>
 <body>
@@ -45,102 +50,111 @@
     <div class="sticky-header">
         <div class="main-title" id="displayTitle">בנק הכיתה ח/2</div>
         <div class="slogan" id="displaySlogan">"אל תהיו כעבדים..."</div>
-        <button class="btn" onclick="toggleMode()" style="margin-top: 10px;">⚙️ פתח ניהול והעלאת אקסל</button>
+        <div style="margin-top: 10px; display: flex; gap: 10px;">
+             <button class="tab-btn" style="background:var(--accent); color:var(--bg); border:none; padding:8px 15px; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="toggleAdmin()">⚙️ ניהול והגדרות</button>
+             <button class="tab-btn" style="background:var(--purple); color:white; border:none; padding:8px 15px; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="window.print()">🖨️ הדפסת זכאים</button>
+        </div>
     </div>
 
-    <img id="classPhoto" class="class-photo">
-    <div id="podium" style="display:flex; justify-content: center; gap:10px; margin:20px; height: 120px; align-items: flex-end;"></div>
-    
-    <center><button id="restoreBtn" class="btn" style="background:#6366f1; color:white; display:none; margin-bottom:15px;" onclick="restoreData()">↩️ שחזר איפוס אחרון</button></center>
+    <img id="classPhoto" class="class-img">
+    <div id="podium"></div>
 
     <div class="container">
-        <div id="displaySection" class="active">
-            <div id="studentList"></div>
-        </div>
+        <div id="studentList"></div>
 
-        <div id="editSection" class="edit-panel">
-            
-            <div class="admin-section">
-                <h3>📊 טעינת נתונים מאקסל (XLSX)</h3>
-                <p style="font-size: 0.85em; color: #94a3b8;">העלה כאן את קובץ האקסל עם שמות התלמידים והערות המשמעת:</p>
-                <input type="file" id="fileIn" accept=".xlsx, .xls" onchange="loadExcel(event)" style="padding: 10px; background: var(--accent); color: black; border-radius: 8px; width: auto; cursor: pointer;">
+        <div id="adminPanel" class="admin-panel">
+            <div class="admin-grid">
+                <div class="admin-card">
+                    <h3 style="color:var(--purple); margin-top:0;">🎁 סף פרסים</h3>
+                    <label>נחת (ללא הפרעות):</label>
+                    <input type="number" id="minNachat" onchange="state.prizes.nachat=this.value;save();render();">
+                    <label style="margin-top:10px; display:block;">צ'ופר שבועי:</label>
+                    <input type="number" id="minChoopar" onchange="state.prizes.choopar=this.value;save();render();">
+                </div>
+                <div class="admin-card">
+                    <h3 style="color:var(--accent); margin-top:0;">📁 העלאת נתונים</h3>
+                    <input type="file" id="fileIn" accept=".xlsx, .xls" onchange="loadExcel(event)">
+                    <p style="font-size:0.7em; color:#94a3b8;">העלה אקסל עם מילות מפתח: "חיסור", "מילה טובה", "הפרעה" (15-).</p>
+                </div>
             </div>
-
-            <div class="admin-section">
-                <h3>👥 ניהול רשימת תלמידים</h3>
-                <textarea id="studentNamesInput" rows="4" placeholder="הכנס שמות מופרדים בפסיק..." onchange="updateStudentList()"></textarea>
+            <div class="admin-card" style="margin-bottom:15px;">
+                <h3>📝 עריכת כיתה</h3>
+                <input type="text" id="inputTitle" oninput="updateTexts()" placeholder="שם הכיתה"><br><br>
+                <input type="file" accept="image/*" onchange="uploadPhoto(event)">
             </div>
-
-            <div class="admin-section">
-                <h3>📸 תמונה וכותרות</h3>
-                <input type="text" id="inputTitle" placeholder="שם הכיתה" oninput="updateTexts()" style="margin-bottom:10px;">
-                <input type="text" id="inputSlogan" placeholder="סלוגן הכיתה" oninput="updateTexts()"><br><br>
-                <input type="file" accept="image/*" onchange="uploadPhoto(event)" class="btn" style="background: #475569; color: white;">
-            </div>
-            
-            <div class="admin-section" style="display: flex; gap: 10px;">
-                <button class="btn" style="background: #8b5cf6; color:white; flex:1;" onclick="exportData()">📥 גיבוי נתונים</button>
-                <button class="btn" style="background: #ec4899; color:white; flex:1;" onclick="document.getElementById('importFile').click()">📤 טעינת גיבוי</button>
-                <input type="file" id="importFile" style="display:none" onchange="importData(event)">
-            </div>
-
-            <button class="btn" style="background:var(--danger); color:white; width:100%; padding: 15px;" onclick="resetDataOnly()">🔄 איפוס ניקוד והיסטוריה (שבועי)</button>
+            <button class="btn-m" style="background:var(--danger); width:100%; height:45px;" onclick="resetWeek()">🔄 איפוס שבועי (מוחק ניקוד והיסטוריה)</button>
         </div>
     </div>
 
 <script>
-    // לוגיקת נתונים
-    let state = JSON.parse(localStorage.getItem('class_bank_v19')) || {
-        data: [],
-        rules: { "חיסור": -5, "מילה טובה": 10, "עזרה": 15, "השתתפות": 5, "הפרעה": -15, "איחור": -5 },
-        photo: "", title: "בנק הכיתה ח/2", slogan: '"אל תהיו כעבדים המשמשים את הרב..."'
+    let state = JSON.parse(localStorage.getItem('class_bank_v21')) || {
+        data: [], photo: "", title: "בנק הכיתה ח/2", slogan: '"אל תהיו כעבדים המשמשים את הרב..."',
+        prizes: { nachat: 25, choopar: 45 }
     };
 
     if (state.data.length === 0) {
         const names = ["אברמוביץ דניאל", "איוב איתן", "אלגרבלי בניה עוז", "אלמו נתנאל", "ארבל אליה אהרון", "בלוסטוצקי הלל ישי", "בן עטר נתאי יוסף", "בן פורת נעם", "גורדון בניה", "גלייזר שלום", "דהן יוסף חיים", "הירשנברגר בועז", "וויסמן יהונתן", "ולר נווה אהרן", "טמנה אביהו", "יושעי נעם", "יעקבי יהודה", "כהן ליאור", "כהן ניתאי", "מנצור הראל", "מרסיאנו אורי", "נדל נוה", "ניאזוב אביאל", "סמני שבח", "פורסט עמיחי", "פלומבו נריה", "פנקר שילה", "פרשל מלאכי", "קצב נעם", "רוזנצוויג בעז אשר"];
-        state.data = names.map(n => ({ name: n, balance: 100, logs: [] }));
+        state.data = names.map(n => ({ name: n, balance: 100, logs: [], weeklyEarned: 0 }));
     }
 
-    let backupState = null;
+    function save() { localStorage.setItem('class_bank_v21', JSON.stringify(state)); }
 
-    function save() { localStorage.setItem('class_bank_v19', JSON.stringify(state)); }
+    function updateManual(name, delta) {
+        let s = state.data.find(x => x.name === name);
+        let pts = delta * 5;
+        s.balance += pts;
+        s.weeklyEarned += pts;
+        s.logs.unshift({ text: "עדכון ידני", val: pts });
+        render();
+    }
 
     function render() {
         document.getElementById('displayTitle').innerText = state.title;
         document.getElementById('displaySlogan').innerText = state.slogan;
-        document.getElementById('inputTitle').value = state.title;
-        document.getElementById('inputSlogan').value = state.slogan;
-        document.getElementById('studentNamesInput').value = state.data.map(s => s.name).join(', ');
+        document.getElementById('minNachat').value = state.prizes.nachat;
+        document.getElementById('minChoopar').value = state.prizes.choopar;
         
-        const list = document.getElementById('studentList');
-        list.innerHTML = '';
+        const list = document.getElementById('studentList'); list.innerHTML = '';
         const sorted = [...state.data].sort((a,b) => b.balance - a.balance);
-        
+
         sorted.forEach((s, idx) => {
+            // חישוב זכאות לפרסים
+            let hasDisturbance = s.logs.some(l => l.text.includes("הפרעה") || l.val < 0);
+            let eligibleNachat = (s.weeklyEarned >= state.prizes.nachat && !hasDisturbance);
+            let eligibleChoopar = (s.weeklyEarned >= state.prizes.choopar);
+
             list.innerHTML += `
                 <div class="student-row">
                     <div class="student-header">
-                        <div class="controls-manual">
-                            <button class="btn-mini btn-plus" onclick="updateManual('${s.name}', 1)">+</button>
-                            <button class="btn-mini btn-minus" onclick="updateManual('${s.name}', -1)">-</button>
+                        <div class="controls">
+                            <button class="btn-m" style="background:var(--success)" onclick="updateManual('${s.name}', 1)">+</button>
+                            <button class="btn-m" style="background:var(--danger); margin-right:5px;" onclick="updateManual('${s.name}', -1)">-</button>
                         </div>
-                        <div style="flex-grow:1; cursor:pointer; font-weight:bold; padding: 0 10px;" onclick="toggleHistory('hist-${idx}')">
-                            ${idx + 1}. ${s.name}
+                        <div class="student-info" onclick="toggleHistory('hist-${idx}')">
+                            <div class="student-name">
+                                ${idx+1}. ${s.name}
+                                ${eligibleNachat ? '<span class="prize-badge badge-nachat">💌 נחת</span>' : ''}
+                                ${eligibleChoopar ? '<span class="prize-badge badge-choopar">🍫 צ\'ופר</span>' : ''}
+                            </div>
                         </div>
-                        <div class="score-circle">${s.balance}</div>
+                        <div class="score-box">
+                            <span>${s.balance}</span>
+                            <span class="weekly-label">${s.weeklyEarned >= 0 ? '+' : ''}${s.weeklyEarned}</span>
+                        </div>
                     </div>
                     <div id="hist-${idx}" class="history-panel">
-                        ${s.logs.length > 0 ? s.logs.map(l => `<div class="log-line"><span>${l.text}</span><span style="color:${l.val>=0?'var(--success)':'var(--danger)'}">${l.val>=0?'+':''}${l.val}</span></div>`).join('') : 'אין פעולות רשומות'}
+                        ${s.logs.length > 0 ? s.logs.map(l => `<div style="display:flex; justify-content:space-between;"><span>${l.text}</span><span style="color:${l.val>=0?'var(--success)':'var(--danger)'}">${l.val>=0?'+':''}${l.val}</span></div>`).join('') : 'אין פעולות שבועיות'}
                     </div>
                 </div>`;
         });
+
+        const pod = document.getElementById('podium');
+        pod.innerHTML = `
+            <div style="text-align:center"><small>${sorted[1].name}</small><div style="background:var(--silver); width:50px; height:50px; border-radius:8px; color:black; font-weight:bold; margin:0 auto;">🥈</div></div>
+            <div style="text-align:center"><small>${sorted[0].name}</small><div style="background:var(--gold); width:60px; height:80px; border-radius:8px; color:black; font-weight:bold; margin:0 auto;">🥇</div></div>
+            <div style="text-align:center"><small>${sorted[2].name}</small><div style="background:var(--bronze); width:50px; height:35px; border-radius:8px; color:black; font-weight:bold; margin:0 auto;">🥉</div></div>`;
         
         if(state.photo) { document.getElementById('classPhoto').src = state.photo; document.getElementById('classPhoto').style.display='block'; }
-        
-        const pod = document.getElementById('podium');
-        pod.innerHTML = `<div style="text-align:center"><small>${sorted[1].name}</small><div style="background:var(--silver); width:60px; height:60px; border-radius:10px 10px 0 0; color:black; font-weight:bold; padding-top:5px;">🥈</div></div>
-                         <div style="text-align:center"><small>${sorted[0].name}</small><div style="background:var(--gold); width:70px; height:90px; border-radius:10px 10px 0 0; color:black; font-weight:bold; padding-top:5px;">🥇</div></div>
-                         <div style="text-align:center"><small>${sorted[2].name}</small><div style="background:var(--bronze); width:60px; height:40px; border-radius:10px 10px 0 0; color:black; font-weight:bold; padding-top:5px;">🥉</div></div>`;
         save();
     }
 
@@ -153,45 +167,32 @@
                 const rowStr = row.join(" ");
                 let s = state.data.find(n => rowStr.includes(n.name));
                 if (s) {
-                    Object.keys(state.rules).forEach(key => {
-                        const regex = new RegExp(`${key}(?:\\s*:\\s*(\\d+))?`, 'g');
-                        let match;
-                        while ((match = regex.exec(rowStr)) !== null) {
-                            let count = match[1] ? parseInt(match[1]) : 1;
-                            let pts = 0;
-                            if (key === "חיסור") {
-                                let prevAbsences = s.logs.filter(l => l.text.includes("חיסור")).length;
-                                for(let i=1; i<=count; i++) { if (prevAbsences + i > 10) pts -= 5; }
-                            } else { pts = count * state.rules[key]; }
-                            if (pts !== 0 || key === "חיסור") {
-                                s.balance += pts;
-                                s.logs.unshift({ text: key + (count > 1 ? ` (x${count})` : ''), val: pts });
+                    const rules = { "חיסור": -5, "מילה טובה": 10, "עזרה": 15, "השתתפות": 5, "הפרעה": -15 };
+                    Object.keys(rules).forEach(key => {
+                        if(rowStr.includes(key)) {
+                            let val = rules[key];
+                            // חוק חיסורים (מעל 10 חיסורים מוריד 5)
+                            if(key === "חיסור") {
+                                let absences = s.logs.filter(l => l.text.includes("חיסור")).length;
+                                val = (absences >= 10) ? -5 : 0;
                             }
+                            s.balance += val;
+                            s.weeklyEarned += val;
+                            s.logs.unshift({ text: key, val: val });
                         }
                     });
                 }
             });
-            render(); toggleMode(); alert("הקובץ נקלט בהצלחה!");
+            render(); alert("נתוני אקסל עודכנו!");
         };
         reader.readAsArrayBuffer(e.target.files[0]);
     }
 
-    function updateManual(name, delta) {
-        let s = state.data.find(x => x.name === name);
-        s.balance += (delta * 5);
-        s.logs.unshift({ text: "עדכון ידני", val: delta * 5 });
-        render();
-    }
-
-    function toggleMode() { const el = document.getElementById('editSection'); el.style.display = (el.style.display === 'block') ? 'none' : 'block'; }
+    function toggleAdmin() { const p = document.getElementById('adminPanel'); p.style.display = (p.style.display === 'block') ? 'none' : 'block'; }
     function toggleHistory(id) { const el = document.getElementById(id); el.style.display = (el.style.display === 'block') ? 'none' : 'block'; }
-    function updateTexts() { state.title = document.getElementById('inputTitle').value; state.slogan = document.getElementById('inputSlogan').value; render(); }
-    function updateStudentList() { const names = document.getElementById('studentNamesInput').value.split(',').map(n => n.trim()).filter(n => n !== ""); state.data = names.map(n => { let existing = state.data.find(e => e.name === n); return existing ? existing : { name: n, balance: 100, logs: [] }; }); render(); }
+    function resetWeek() { if(confirm("לאפס את הניקוד השבועי וההיסטוריה?")) { state.data.forEach(s => { s.balance=100; s.logs=[]; s.weeklyEarned=0; }); render(); } }
+    function updateTexts() { state.title = document.getElementById('inputTitle').value; render(); }
     function uploadPhoto(e) { const r = new FileReader(); r.onload = (f) => { state.photo = f.target.result; render(); }; r.readAsDataURL(e.target.files[0]); }
-    function exportData() { const blob = new Blob([JSON.stringify(state)], {type: 'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'backup_h2.json'; a.click(); }
-    function importData(e) { const r = new FileReader(); r.onload = (f) => { state = JSON.parse(f.target.result); render(); }; r.readAsText(e.target.files[0]); }
-    function resetDataOnly() { if(confirm("לאפס ניקוד לכל הכיתה?")) { backupState = JSON.parse(JSON.stringify(state)); state.data.forEach(s => { s.balance = 100; s.logs = []; }); document.getElementById('restoreBtn').style.display = 'block'; render(); } }
-    function restoreData() { state = JSON.parse(JSON.stringify(backupState)); backupState = null; document.getElementById('restoreBtn').style.display = 'none'; render(); }
 
     render();
 </script>
