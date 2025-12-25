@@ -3,46 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אוצר הכיתה ח'/2 - גרסה 56</title>
+    <title>אוצר הכיתה ח'/2 - גרסה 61</title>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #3e2723; --secondary: #5d4037; --bg: #fdfaf5; --card: #ffffff; --accent: #af935a; }
+        :root { --primary: #3e2723; --secondary: #5d4037; --bg: #fdfaf5; --card: #ffffff; --accent: #af935a; --success: #2e7d32; --danger: #c62828; --undo: #1976d2; }
         body { background-color: var(--bg); font-family: 'Assistant', sans-serif; margin: 0; padding: 20px; color: var(--primary); }
         .container { max-width: 1200px; margin: auto; }
         header { text-align: center; margin-bottom: 30px; }
         h1 { font-size: 3.5em; font-weight: 800; margin: 0; color: var(--primary); }
-        .mode-switch { background: var(--primary); color: white; padding: 10px 30px; border-radius: 50px; cursor: pointer; font-weight: 700; border: none; transition: 0.3s; }
-        .edit-active { background: #c62828 !important; }
+        .mode-switch { background: var(--primary); color: white; padding: 10px 30px; border-radius: 50px; cursor: pointer; font-weight: 700; border: none; transition: 0.3s; font-family: inherit; }
         .dashboard { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; }
         .full-width { grid-column: span 2; }
         .section-card { background: var(--card); border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #eee; }
-        .section-card h3 { font-size: 1.5em; font-weight: 800; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; text-align: center; }
-        .podium-wrapper { display: flex; justify-content: center; align-items: flex-end; gap: 20px; height: 180px; margin: 20px auto; border-bottom: 4px solid #e0e0e0; max-width: 600px; }
-        .podium-step { width: 100px; position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 15px; border-radius: 8px; color: white; font-weight: 800; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .step-name { color: var(--primary); position: absolute; top: -35px; width: 100%; font-size: 0.9em; text-align: center; font-weight: 700; }
+        .section-card h3 { font-size: 1.5em; font-weight: 800; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; text-align: center; margin-top:0; }
+        
+        /* פודיום */
+        .podium-wrapper { display: flex; justify-content: center; align-items: flex-end; gap: 20px; height: 180px; margin: 40px auto; border-bottom: 4px solid #e0e0e0; max-width: 600px; }
+        .podium-step { width: 110px; position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 15px; border-radius: 10px 10px 0 0; color: white; font-weight: 800; text-align: center; }
+        .step-name { color: var(--primary); position: absolute; top: -45px; width: 100%; font-size: 0.9em; font-weight: 800; }
         .rank-1 { height: 140px; background: linear-gradient(#d4af37, #f1c40f); }
         .rank-2 { height: 100px; background: linear-gradient(#95a5a6, #bdc3c7); }
         .rank-3 { height: 70px; background: linear-gradient(#a0522d, #cd7f32); }
+
+        /* חנות */
+        .shop-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #eee; align-items: center; }
+        .can-afford { border-right: 5px solid var(--success); background: #f8fff8; }
+        .cant-afford { opacity: 0.5; border-right: 5px solid var(--danger); }
+        .status-badge { font-size: 0.8em; padding: 3px 8px; border-radius: 4px; font-weight: 800; }
+        .status-ok { background: var(--success); color: white; }
+        .status-no { background: var(--danger); color: white; }
+
         table { width: 100%; border-collapse: collapse; }
-        th { color: #888; font-weight: 600; padding: 10px; border-bottom: 1px solid #eee; font-size: 0.9em; }
-        td { padding: 12px; border-bottom: 1px solid #fafafa; text-align: center; font-weight: 700; font-size: 1.1em; }
+        td, th { padding: 12px; text-align: center; border-bottom: 1px solid #fafafa; }
+        th { color: #888; font-size: 0.9em; }
+        
         body.view-mode .teacher-only { display: none !important; }
-        .log-btn { background: #f0f0f0; border: none; cursor: pointer; padding: 5px 12px; border-radius: 5px; font-weight: 600; font-family: inherit; font-size: 0.85em; }
-        #logModal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:25px; border-radius:15px; box-shadow:0 0 50px rgba(0,0,0,0.3); z-index:1000; width:350px; border:2px solid var(--primary); }
+        .log-btn { background: #f5f5f5; border: 1px solid #ddd; cursor: pointer; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-family: inherit; }
+        
+        #customModal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:25px; border-radius:15px; box-shadow:0 0 50px rgba(0,0,0,0.3); z-index:1000; width:400px; border:2px solid var(--primary); }
         #overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; }
+
+        .btn-reset { background: var(--danger); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; margin: 5px; }
+        .btn-undo { background: var(--undo); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; margin: 5px; display: none; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
     </style>
 </head>
 <body class="view-mode">
 
-<div id="overlay" onclick="closeLog()"></div>
-<div id="logModal">
-    <h3 id="logTitle" style="margin-top:0">פירוט מאזן</h3>
-    <div id="logList" style="text-align:right; max-height:250px; overflow-y:auto; margin-bottom:20px; font-weight: 600;"></div>
-    <button onclick="closeLog()" style="width:100%; padding:10px; background:var(--primary); color:white; border:none; border-radius:8px; cursor:pointer; font-weight:700;">סגור</button>
+<div id="overlay" onclick="closeModal()"></div>
+<div id="customModal">
+    <h3 id="modalTitle"></h3>
+    <div id="modalContent"></div>
+    <button onclick="closeModal()" style="width:100%; padding:10px; background:var(--primary); color:white; border:none; border-radius:8px; cursor:pointer; font-weight:700; margin-top:15px;">סגור</button>
 </div>
 
 <div class="container">
-    <div class="admin-nav">
+    <div class="admin-nav" style="text-align:center; margin-bottom:20px;">
         <button id="toggleMode" class="mode-switch" onclick="document.body.classList.toggle('view-mode'); render();">⚙️ מצב ניהול מורה</button>
     </div>
 
@@ -63,127 +79,168 @@
             <table id="listBank"></table>
         </div>
 
-        <div class="section-card teacher-only">
-            <h3>👥 ניהול תלמידים</h3>
-            <input type="text" id="search" placeholder="חפש תלמיד..." style="width:100%; padding:10px; margin-bottom:15px; border-radius:8px; border:1px solid #ddd;" oninput="render()">
-            <table id="listStudents"></table>
+        <div class="section-card">
+            <h3>📜 מחירון החנות <button class="teacher-only" onclick="addItem('shop')">+</button></h3>
+            <div id="shopContainer"></div>
         </div>
 
         <div class="section-card teacher-only full-width">
-            <h3>⚙️ ערכי ניקוד קבועים (אוטומציה)</h3>
-            <table id="listFixedScores"></table>
+            <h3>👥 ניהול מערכת (מורה בלבד)</h3>
+            <div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px; flex-wrap: wrap;">
+                <button class="btn-reset" onclick="globalReset()">⚠️ איפוס כל הנתונים</button>
+                <button id="undoBtn" class="btn-undo" onclick="undoReset()">↩️ שחזר נתונים (Undo)</button>
+                <button onclick="document.getElementById('excelLoad').click()" style="background:#1976d2; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:700;">טען אקסל 📊</button>
+                <button onclick="exportData()" style="background:#388e3c; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:700;">גיבוי קובץ 💾</button>
+            </div>
+            <input type="text" id="search" placeholder="חפש תלמיד לביצוע מכירה/עדכון..." style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:15px;" oninput="render()">
+            <table id="listStudents"></table>
         </div>
-
-        <div class="section-card"><h3>📜 מחירון <button class="teacher-only" onclick="addItem('shop')">+</button></h3><table id="listShop"></table></div>
-        <div class="section-card"><h3>⚖️ תקנון <button class="teacher-only" onclick="addItem('rules')">+</button></h3><table id="listRules"></table></div>
     </div>
 
-    <div class="teacher-only" style="margin-top:40px; text-align:center; padding:30px; background:#fff; border-radius:15px; border:1px solid #eee;">
-        <button onclick="document.getElementById('excelLoad').click()" style="background:#1976d2; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; font-weight:700;">📊 טען אקסל</button>
-        <button onclick="resetWeekly()" style="background:#7b1fa2; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; font-weight:700; margin-right:10px;">🌀 איפוס שבועי</button>
-        <button onclick="exportData()" style="background:#388e3c; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; font-weight:700; margin-right:10px;">💾 גיבוי נתונים</button>
-        <input type="file" id="excelLoad" style="display:none" accept=".csv" onchange="processExcel(event)">
-        <br><br>
-        סלוגן: <input type="text" id="setSlogan" style="width:300px" onchange="db.config.slogan=this.value; render()">
-    </div>
+    <input type="file" id="excelLoad" style="display:none" accept=".csv" onchange="processExcel(event)">
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('yeshiva_v56')) || {
+    let dbBackup = null;
+    let db = JSON.parse(localStorage.getItem('yeshiva_v61')) || {
         config: { slogan: '“אַל תִּהְיוּ כַּעֲבָדִים הַמְשַׁמְּשִׁין אֶת הָרַב...”' },
-        fixedScores: { "חיסור": -10, "פטפוט": -5, "מילה טובה": 10, "הפרעה": -10, "אי הבאת ציוד": -5, "שוטטות": -5, "תפילה": 5, "הצטיינות": 10 },
+        fixedScores: { "תפילה": 5, "הצטיינות": 10, "חיסור": -10, "פטפוט": -5 },
         students: ["אברמוביץ דניאל", "איוב איתן", "אלגרבלי בניה עוז", "אלמו נתנאל", "ארבל אליה אהרון", "בלוסטוצקי הלל ישי", "בן עטר נתאי יוסף", "בן פורת נעם", "גורדון בניה", "גלייזר שלום", "דהן יוסף חיים", "הירשנברגר בועז", "וויסמן יהונתן", "ולר נווה אהרן", "טמנה אביהו", "יושעי נעם", "יעקבי יהודה", "כהן ליאור", "כהן ניתאי", "מנצור הראל", "מרסיאנו אורי", "נדל נוה", "ניאזוב אביאל", "סמני שבח", "פורסט עמיחי", "פלומבו נריה", "פנקר שילה", "פרשל מלאכי", "קצב נעם", "רוזנצוויג בעז אשר"].map(n => ({name:n, total:100, weekly:0, history:[]})),
-        shop: [{name:"קולה פחית", val:50}, {name:"חטיף", val:20}],
-        rules: [{act: "3 איחורים", pun: "חצי שעה עבודה"}]
+        shop: [{name:"קולה פחית", val:50}, {name:"חטיף", val:20}, {name:"פיצה", val:150}]
     };
 
     function render() {
         const isView = document.body.classList.contains('view-mode');
         document.getElementById('toggleMode').innerText = isView ? "⚙️ כניסה למצב ניהול מורה" : "📺 חזרה לתצוגת תלמידים";
-        document.getElementById('toggleMode').classList.toggle('edit-active', !isView);
         document.getElementById('mainSlogan').innerText = db.config.slogan;
-
-        const draw = (id, data, fn) => { let t = document.getElementById(id); if(t) { t.innerHTML = ''; data.forEach((item, i) => t.innerHTML += fn(item, i)); }};
-
-        // ניקוד קבוע
-        let fsTable = document.getElementById('listFixedScores');
-        if(fsTable) {
-            fsTable.innerHTML = '<tr><th>פעולה</th><th>ניקוד</th></tr>';
-            Object.keys(db.fixedScores).forEach(key => {
-                fsTable.innerHTML += `<tr><td>${key}</td><td><input type="number" value="${db.fixedScores[key]}" onchange="db.fixedScores['${key}']=parseInt(this.value);render()"></td></tr>`;
-            });
-        }
-
-        // קופה וזכאות + מאזן
-        draw('listBank', [...db.students].sort((a,b)=>b.total-a.total), s => {
-            const sIdx = db.students.findIndex(x => x.name === s.name);
-            return `<tr><td>${s.name}</td><td>${s.total}₪</td><td><button class="log-btn" onclick="showLog(${sIdx})">מאזן 📊</button></td></tr>`;
-        });
-
-        // ניהול תלמידים
-        draw('listStudents', db.students, (s, i) => {
-            if(!s.name.includes(document.getElementById('search').value)) return '';
-            return `<tr><td>${s.name}</td><td><button onclick="ch(${i},10,'בונוס')">+</button><button onclick="ch(${i},-5,'חיסור')">-</button></td></tr>`;
-        });
 
         // פודיום
         let sw = [...db.students].sort((a,b)=>b.weekly-a.weekly);
         const pDiv = document.getElementById('podium'); pDiv.innerHTML = '';
         [{idx:1,c:'rank-2',i:'🥈'},{idx:0,c:'rank-1',i:'🥇'},{idx:2,c:'rank-3',i:'🥉'}].forEach(r => {
             let s = sw[r.idx];
-            if(s && s.weekly > 0) pDiv.innerHTML += `<div class="podium-step ${r.c}"><div class="step-name">${s.name}</div>${r.i}</div>`;
-            else pDiv.innerHTML += `<div style="width:100px"></div>`;
+            if(s && s.weekly > 0) pDiv.innerHTML += `<div class="podium-step ${r.c}"><div class="step-name">${s.name}<br>(${s.weekly})</div>${r.i}</div>`;
+            else pDiv.innerHTML += `<div style="width:110px"></div>`;
         });
-        draw('listWeekly', sw.filter(s=>s.weekly>0).slice(0, 5), s => `<tr><td>${s.name}</td><td>${s.weekly} נק'</td></tr>`);
 
-        draw('listShop', db.shop, (item, i) => `<tr><td>${item.name}</td><td>${item.val}₪</td></tr>`);
-        draw('listRules', db.rules, (r, i) => `<tr><td>${r.act}</td><td>${r.pun}</td></tr>`);
+        // בנק
+        const bank = document.getElementById('listBank');
+        bank.innerHTML = '<tr><th>שם התלמיד</th><th>קופה</th><th>אישי</th></tr>';
+        [...db.students].sort((a,b)=>b.total-a.total).forEach(s => {
+            const idx = db.students.findIndex(x => x.name === s.name);
+            bank.innerHTML += `<tr><td>${s.name}</td><td>${s.total}₪</td><td><button class="log-btn" onclick="showPersonalShop(${idx})">🛒</button></td></tr>`;
+        });
 
-        localStorage.setItem('yeshiva_v56', JSON.stringify(db));
+        // חנות
+        const shopCont = document.getElementById('shopContainer');
+        shopCont.innerHTML = '';
+        db.shop.forEach(item => { shopCont.innerHTML += `<div class="shop-item"><span>${item.name}</span><b>${item.val}₪</b></div>`; });
+
+        // ניהול מורה
+        const teacherTable = document.getElementById('listStudents');
+        teacherTable.innerHTML = '<tr><th>תלמיד</th><th>מכירה</th><th>תיקון</th></tr>';
+        db.students.forEach((s, i) => {
+            if(!s.name.includes(document.getElementById('search').value)) return;
+            teacherTable.innerHTML += `<tr><td>${s.name}</td>
+                <td><button onclick="openTeacherSale(${i})" style="background:var(--success); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">מכירה 🛒</button></td>
+                <td><button onclick="adjust(${i},5)" style="color:green; font-weight:bold;">+5</button> <button onclick="adjust(${i},-5)" style="color:red; font-weight:bold;">-5</button></td>
+            </tr>`;
+        });
+
+        localStorage.setItem('yeshiva_v61', JSON.stringify(db));
+    }
+
+    // איפוס ושחזור
+    function globalReset() {
+        if(confirm("⚠️ אזהרה: פעולה זו תאפס את כל היתרות והנקודות של כל התלמידים. האם אתה בטוח?")) {
+            dbBackup = JSON.parse(JSON.stringify(db)); // שמירת גיבוי לפני איפוס
+            db.students.forEach(s => { s.total = 0; s.weekly = 0; s.history = []; });
+            document.getElementById('undoBtn').style.display = 'inline-block';
+            render();
+            alert("כל הנתונים אופסו. ניתן לשחזר ב-30 השניות הקרובות.");
+            setTimeout(() => { document.getElementById('undoBtn').style.display = 'none'; }, 30000);
+        }
+    }
+
+    function undoReset() {
+        if(dbBackup) {
+            db = JSON.parse(JSON.stringify(dbBackup));
+            dbBackup = null;
+            document.getElementById('undoBtn').style.display = 'none';
+            render();
+            alert("הנתונים שוחזרו בהצלחה!");
+        }
+    }
+
+    // פונקציות קיימות
+    function showPersonalShop(idx) {
+        const s = db.students[idx];
+        document.getElementById('modalTitle').innerText = "חנות אישית: " + s.name;
+        let html = `<p>יתרה: <b>${s.total}₪</b></p>`;
+        db.shop.forEach(item => {
+            const can = s.total >= item.val;
+            html += `<div class="shop-item ${can ? 'can-afford' : 'cant-afford'}">
+                <span>${item.name} (${item.val}₪)</span>
+                <span class="status-badge ${can ? 'status-ok' : 'status-no'}">${can ? '✅' : '❌'}</span>
+            </div>`;
+        });
+        document.getElementById('modalContent').innerHTML = html;
+        document.getElementById('customModal').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+    }
+
+    function openTeacherSale(idx) {
+        const s = db.students[idx];
+        document.getElementById('modalTitle').innerText = "מכירה ל" + s.name;
+        let html = `<p>יתרה: ${s.total}₪</p><hr>`;
+        db.shop.forEach(item => {
+            html += `<div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <span>${item.name} (${item.val}₪)</span>
+                <button onclick="confirmSale(${idx},'${item.name}',${item.val})" ${s.total >= item.val ? '' : 'disabled'} style="cursor:pointer;">מכור</button>
+            </div>`;
+        });
+        document.getElementById('modalContent').innerHTML = html;
+        document.getElementById('customModal').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+    }
+
+    function confirmSale(idx, item, price) {
+        db.students[idx].total -= price;
+        db.students[idx].history.push(`קנייה: ${item} (-${price}₪)`);
+        render(); closeModal();
     }
 
     function processExcel(e) {
         const reader = new FileReader();
         reader.onload = f => {
             const lines = f.target.result.split('\n');
-            lines.forEach((line, idx) => {
-                if(idx === 0) return;
+            lines.forEach((line, i) => {
+                if(i===0) return;
                 const name = (line.split(',')[1]||"").trim();
                 const student = db.students.find(s => s.name === name);
                 if(student) {
                     Object.keys(db.fixedScores).forEach(key => {
                         if(line.includes(key)) {
-                            const val = db.fixedScores[key];
-                            student.total += val; student.weekly += val;
-                            if(!student.history) student.history = [];
-                            student.history.push(`${key}: ${val > 0 ? '+' : ''}${val}`);
+                            const v = db.fixedScores[key];
+                            student.total += v; student.weekly += v;
+                            student.history.push(`${key}: ${v>0?'+':''}${v}`);
                         }
                     });
                 }
             });
-            render(); alert("נתוני האקסל והמאזן עודכנו!");
+            render(); alert("אקסל נטען!");
         };
         reader.readAsText(e.target.files[0]);
     }
 
-    function ch(i,v,r) { db.students[i].total+=v; db.students[i].weekly+=v; if(!db.students[i].history) db.students[i].history=[]; db.students[i].history.push(`${r}: ${v>0?'+':''}${v}`); render(); }
-    function showLog(idx) {
-        const s = db.students[idx];
-        document.getElementById('logTitle').innerText = "מאזן: " + s.name;
-        document.getElementById('logList').innerHTML = s.history && s.history.length ? s.history.map(h => `• ${h}`).join('<br>') : "אין פעולות מתועדות השבוע";
-        document.getElementById('logModal').style.display = 'block';
-        document.getElementById('overlay').style.display = 'block';
-    }
-    function closeLog() { document.getElementById('logModal').style.display = 'none'; document.getElementById('overlay').style.display = 'none'; }
-    function resetWeekly() { if(confirm("איפוס שבועי?")) { db.students.forEach(s=>{s.weekly=0; s.history=[];}); render(); } }
+    function adjust(i, v) { db.students[i].total += v; db.students[i].weekly += v; render(); }
+    function closeModal() { document.getElementById('customModal').style.display = 'none'; document.getElementById('overlay').style.display = 'none'; }
+    function exportData() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(db)], {type:'application/json'})); a.download = 'backup_h2.json'; a.click(); }
     function addItem(type) {
         let n = prompt("שם:"); if(!n) return;
-        if(type==='rules') db.rules.push({act:n, pun:prompt("תוצאה:")});
-        else db[type].push({name:n, val:parseInt(prompt("ערך:"))||0});
-        render();
+        let p = parseInt(prompt("מחיר:"));
+        db.shop.push({name:n, val:p}); render();
     }
-    function exportData() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(db)], {type:'application/json'})); a.download = 'h2_v56.json'; a.click(); }
-
     render();
 </script>
 </body>
