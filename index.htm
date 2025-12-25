@@ -2,173 +2,184 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>בנק הכיתה - מצב תצוגה ועריכה</title>
+    <title>ClassBank Pro - Smart Automation</title>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <style>
-        :root { --primary: #3498db; --success: #2ecc71; --danger: #e74c3c; --warning: #f39c12; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .container { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 800px; }
+        :root {
+            --bg: #0f172a; --card-bg: #1e293b; --accent: #38bdf8;
+            --gold: #fbbf24; --silver: #94a3b8; --bronze: #d97706;
+            --success: #22c55e; --danger: #ef4444; --text: #f8fafc;
+        }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 900px; background: var(--card-bg); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); overflow: hidden; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 30px; }
+        .header { padding: 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); }
+        .btn-toggle { background: var(--accent); color: var(--bg); border: none; padding: 10px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         
-        /* ניהול מצבים */
-        .mode-toggle { margin-bottom: 20px; }
-        .edit-mode, .display-mode { display: none; }
+        .podium { display: flex; justify-content: center; align-items: flex-end; gap: 20px; padding: 40px 20px; background: linear-gradient(180deg, rgba(56,189,248,0.1) 0%, transparent 100%); min-height: 250px; }
+        .podium-item { display: flex; flex-direction: column; align-items: center; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .rank-bar { width: 100px; border-radius: 15px 15px 5px 5px; display: flex; flex-direction: column; justify-content: center; align-items: center; font-weight: bold; color: rgba(0,0,0,0.7); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .first .rank-bar { height: 160px; background: var(--gold); }
+        .second .rank-bar { height: 120px; background: var(--silver); }
+        .third .rank-bar { height: 90px; background: var(--bronze); }
+
+        .student-grid { padding: 20px; display: grid; gap: 12px; }
+        .student-card { background: rgba(255,255,255,0.03); border-radius: 16px; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
+        .score-circle { background: var(--bg); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2em; font-weight: 800; border: 3px solid var(--accent); }
+
+        .edit-panel { padding: 30px; display: none; }
         .active { display: block; }
-
-        /* פודיום */
-        .podium { display: flex; justify-content: center; align-items: flex-end; gap: 15px; margin-bottom: 30px; padding: 20px; background: #fff; border-bottom: 2px solid #eee; }
-        .podium-place { display: flex; flex-direction: column; align-items: center; text-align: center; }
-        .podium-bar { width: 80px; border-radius: 10px 10px 0 0; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; font-weight: bold; }
-        .first { height: 120px; background: #ffd700; order: 2; font-size: 1.5em; }
-        .second { height: 90px; background: #c0c0c0; order: 1; }
-        .third { height: 70px; background: #cd7f32; order: 3; }
-        .podium-name { font-size: 0.9em; font-weight: bold; margin-bottom: 5px; width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        /* רשימת תלמידים */
-        .student-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee; }
-        .student-name { font-size: 1.2em; font-weight: 600; flex-grow: 1; }
-        .balance { font-size: 1.4em; font-weight: bold; margin: 0 20px; min-width: 80px; text-align: center; }
-        .positive { color: var(--success); }
-        .negative { color: var(--danger); }
-
-        /* כפתורים */
-        .btn { border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; margin: 0 2px; }
-        .btn-mode { background: #2c3e50; color: white; padding: 12px 25px; font-size: 1em; }
-        .btn-plus { background: var(--success); color: white; }
-        .btn-minus { background: var(--danger); color: white; }
-        .btn-info { background: #9b59b6; color: white; font-size: 0.8em; }
+        .history-box { display: none; width: 100%; margin-top: 5px; padding: 12px; background: rgba(0,0,0,0.3); border-radius: 12px; font-size: 0.85em; color: #cbd5e1; border: 1px dashed rgba(255,255,255,0.1); }
         
-        /* היסטוריה/סיבות */
-        .history-list { font-size: 0.85em; color: #666; margin-top: 5px; display: none; background: #f9f9f9; padding: 10px; border-radius: 5px; }
+        #classPhoto { max-width: 900px; width: 100%; border-radius: 20px; margin-top: 20px; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 4px solid var(--card-bg); }
         
-        .toolbar { background: #f8f9fa; padding: 20px; border-radius: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .rules-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .rule-tag { background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 8px; font-size: 0.8em; display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
 
-    <div class="mode-toggle">
-        <button class="btn btn-mode" onclick="toggleMode()">🔄 החלף למצב עריכה / תצוגה</button>
+    <div class="header" style="width:100%; max-width:900px; margin-bottom:15px;">
+        <h2 id="displayTitle" style="margin:0; color:var(--accent); font-size: 1.8em;">🏦 בנק הכיתה</h2>
+        <button class="btn-toggle" onclick="toggleMode()">⚙️ ניהול מערכת</button>
     </div>
 
     <div class="container">
-        <div id="displaySection" class="display-mode active">
-            <h1 style="text-align:center;">🏆 לוח הניקוד הכיתתי</h1>
+        <div id="displaySection" class="active">
             <div id="podium" class="podium"></div>
-            <div id="studentListDisplay"></div>
+            <div id="studentList" class="student-grid"></div>
         </div>
 
-        <div id="editSection" class="edit-mode">
-            <h1>⚙️ ניהול נתוני בנק</h1>
-            <div class="toolbar">
-                <div>
-                    <h3>טעינת נתונים</h3>
-                    <button class="btn" style="background:var(--primary); color:white;" onclick="document.getElementById('excelInput').click()">📊 טען אקסל (.xlsx)</button>
-                    <input type="file" id="excelInput" style="display:none" accept=".xlsx, .xls" onchange="importExcel(event)">
+        <div id="editSection" class="edit-panel">
+            <h2>⚙️ הגדרות וחוקי ניקוד</h2>
+            <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:15px; margin-bottom:20px;">
+                <label>כותרת:</label>
+                <input type="text" id="titleInput" style="width:100%; padding:10px; margin:10px 0; background:#0f172a; color:white; border:1px solid #334155; border-radius:8px;" oninput="updateTitle(this.value)">
+                
+                <h3>מחירון התנהגות אוטומטי:</h3>
+                <div id="rulesDisplay" class="rules-list"></div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:15px;">
+                    <h3>טעינת אקסל</h3>
+                    <p style="font-size:0.8em; color:#94a3b8;">העלה קובץ עם שמות והתנהגויות.</p>
+                    <button class="btn-toggle" style="width:100%;" onclick="document.getElementById('fileIn').click()">📁 בחר קובץ XLSX</button>
+                    <input type="file" id="fileIn" style="display:none" onchange="handleExcel(event)">
                 </div>
-                <div>
-                    <h3>פעולות מערכת</h3>
-                    <button class="btn" style="background:var(--warning); color:white;" onclick="resetAll()">🔄 איפוס ל-100</button>
-                    <button class="btn" style="background:#7f8c8d; color:white;" onclick="exportData()">💾 גיבוי ידני</button>
+                <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:15px;">
+                    <h3>תמונה ואיפוס</h3>
+                    <button class="btn-toggle" style="width:100%; margin-bottom:10px;" onclick="document.getElementById('photoIn').click()">📷 העלה תמונה</button>
+                    <input type="file" id="photoIn" style="display:none" accept="image/*" onchange="handlePhoto(event)">
+                    <button class="btn-toggle" style="background:var(--danger); width:100%;" onclick="resetAll()">🔄 איפוס מלא</button>
                 </div>
             </div>
-            <div id="studentListEdit" style="margin-top:20px;"></div>
         </div>
     </div>
 
-<script>
-    const initialNames = ["אברמוביץ דניאל", "איוב איתן", "אלגרבלי בניה עוז", "אלמו נתנאל", "ארבל אליה אהרון", "בלוסטוצקי הלל ישי", "בן עטר נתאי יוסף", "בן פורת נעם", "גורדון בניה", "גלייזר שלום", "דהן יוסף חיים", "הירשנברגר בועז", "וויסמן יהונתן", "ולר נווה אהרן", "טמנה אביהו", "יושעי נעם", "יעקבי יהודה", "כהן ליאור", "כהן ניתאי", "מנצור הראל", "מרסיאנו אורי", "נדל נוה", "ניאזוב אביאל", "סמני שבח", "פורסט עמיחי", "פלומבו נריה", "פנקר שילה", "פרשל מלאכי", "קצב נעם", "רוזנצוויג בעז אשר"];
+    <img id="classPhoto" src="" alt="תמונה כיתתית">
 
-    // טעינת נתונים כולל היסטוריה
-    let state = JSON.parse(localStorage.getItem('class_bank_final')) || {
-        students: initialNames.map(name => ({ name, points: 100, history: [] })),
-        isEditMode: false
+<script>
+    const defaultNames = ["אברמוביץ דניאל", "איוב איתן", "אלגרבלי בניה עוז", "אלמו נתנאל", "ארבל אליה אהרון", "בלוסטוצקי הלל ישי", "בן עטר נתאי יוסף", "בן פורת נעם", "גורדון בניה", "גלייזר שלום", "דהן יוסף חיים", "הירשנברגר בועז", "וויסמן יהונתן", "ולר נווה אהרן", "טמנה אביהו", "יושעי נעם", "יעקבי יהודה", "כהן ליאור", "כהן ניתאי", "מנצור הראל", "מרסיאנו אורי", "נדל נוה", "ניאזוב אביאל", "סמני שבח", "פורסט עמיחי", "פלומבו נריה", "פנקר שילה", "פרשל מלאכי", "קצב נעם", "רוזנצוויג בעז אשר"];
+
+    // חוקי ההתנהגות - המערכת תחפש את המילים הללו באקסל
+    const behaviorRules = {
+        "מילה טובה": 10,
+        "הערה טובה": 10,
+        "עזרה לחבר": 15,
+        "השתתפות": 5,
+        "הפרעה": -10,
+        "הערה לא טובה": -10,
+        "אי הבאת ציוד": -5,
+        "דיבור": -5,
+        "התנהגות טובה": 10,
+        "ויתור": 15
+    };
+
+    let state = JSON.parse(localStorage.getItem('cb_v9_auto')) || {
+        data: defaultNames.map(n => ({ name: n, balance: 100, logs: [] })),
+        title: "🏦 בנק הכיתה", photo: ""
     };
 
     function render() {
-        const sorted = [...state.students].sort((a, b) => b.points - a.points);
-        
-        // רינדור פודיום
+        document.getElementById('displayTitle').innerText = state.title;
+        document.getElementById('titleInput').value = state.title;
+        if(state.photo) { document.getElementById('classPhoto').src = state.photo; document.getElementById('classPhoto').style.display = 'block'; }
+
+        // הצגת החוקים במצב עריכה
+        document.getElementById('rulesDisplay').innerHTML = Object.entries(behaviorRules).map(([name, val]) => `
+            <div class="rule-tag"><span>${name}</span><b style="color:${val > 0 ? 'var(--success)' : 'var(--danger)'}">${val > 0 ? '+' : ''}${val}</b></div>
+        `).join('');
+
+        // עדכון פודיום אוטומטי
+        const sorted = [...state.data].sort((a,b) => b.balance - a.balance);
         document.getElementById('podium').innerHTML = `
-            <div class="podium-place"><div class="podium-name">${sorted[1]?.name}</div><div class="podium-bar second"><span>${sorted[1]?.points}</span></div></div>
-            <div class="podium-place"><div class="podium-name">${sorted[0]?.name}</div><div class="podium-bar first"><span>${sorted[0]?.points}</span></div></div>
-            <div class="podium-place"><div class="podium-name">${sorted[2]?.name}</div><div class="podium-bar third"><span>${sorted[2]?.points}</span></div></div>
+            <div class="podium-item second"><div class="podium-name">${sorted[1].name}</div><div class="rank-bar"><span>${sorted[1].balance}</span></div></div>
+            <div class="podium-item first"><div class="podium-name">👑<br>${sorted[0].name}</div><div class="rank-bar"><span>${sorted[0].balance}</span></div></div>
+            <div class="podium-item third"><div class="podium-name">${sorted[2].name}</div><div class="rank-bar"><span>${sorted[2].balance}</span></div></div>
         `;
 
-        // רינדור רשימת תצוגה
-        const displayList = document.getElementById('studentListDisplay');
-        displayList.innerHTML = '';
-        [...state.students].sort((a,b) => a.name.localeCompare(b.name)).forEach((s, i) => {
-            const originalIndex = state.students.findIndex(st => st.name === s.name);
-            displayList.innerHTML += `
-                <div class="student-item">
-                    <div class="student-name">${s.name}</div>
-                    <button class="btn btn-info" onclick="toggleHistory(${originalIndex})">📋 סיבות</button>
-                    <span class="balance ${s.points < 100 ? 'negative' : 'positive'}">${s.points} ₪</span>
-                    <div class="controls">
-                        <button class="btn btn-plus" onclick="updatePoints(${originalIndex}, 5)">+5</button>
-                        <button class="btn btn-minus" onclick="updatePoints(${originalIndex}, -5)">-5</button>
+        const list = document.getElementById('studentList');
+        list.innerHTML = '';
+        [...state.data].sort((a,b) => a.name.localeCompare(b.name)).forEach((s, i) => {
+            const realIdx = state.data.findIndex(x => x.name === s.name);
+            list.innerHTML += `
+                <div>
+                    <div class="student-card">
+                        <div style="display:flex; align-items:center; gap:12px; flex:1;">
+                            <button onclick="toggleLog(${realIdx})" style="background:none; border:none; cursor:pointer; font-size:1.2em;">📋</button>
+                            <span style="font-weight:600;">${s.name}</span>
+                        </div>
+                        <div class="score-circle" style="border-color:${s.balance < 100 ? 'var(--danger)' : 'var(--success)'}">${s.balance}</div>
                     </div>
-                    <div id="hist-${originalIndex}" class="history-list">
-                        ${s.history.length ? s.history.map(h => `• ${h}`).join('<br>') : 'אין היסטוריה רשומה'}
+                    <div id="log-${realIdx}" class="history-box">
+                        <strong>פירוט ניקוד:</strong><br>
+                        ${s.logs.length ? s.logs.join('<br>') : 'אין עדכונים רשומים'}
                     </div>
                 </div>
             `;
         });
-
-        localStorage.setItem('class_bank_final', JSON.stringify(state));
+        localStorage.setItem('cb_v9_auto', JSON.stringify(state));
     }
 
-    function toggleMode() {
-        state.isEditMode = !state.isEditMode;
-        document.getElementById('displaySection').classList.toggle('active', !state.isEditMode);
-        document.getElementById('editSection').classList.toggle('active', state.isEditMode);
+    // פונקציית עדכון חכמה
+    function updateStudent(idx, val, reason) {
+        state.data[idx].balance += val;
+        const now = new Date();
+        const timestamp = `${now.toLocaleDateString()} ${now.toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit'})}`;
+        state.data[idx].logs.unshift(`${timestamp}: ${val > 0 ? '+' : ''}${val} ₪ - ${reason}`);
         render();
     }
 
-    function updatePoints(index, amount, reason = "עדכון ידני") {
-        state.students[index].points += amount;
-        const date = new Date().toLocaleDateString('he-IL');
-        state.students[index].history.unshift(`${date}: ${amount > 0 ? '+' : ''}${amount} (${reason})`);
-        render();
-    }
-
-    function toggleHistory(index) {
-        const el = document.getElementById(`hist-${index}`);
-        el.style.display = el.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function importExcel(e) {
-        const file = e.target.files[0];
+    // קריאת אקסל אוטומטית
+    function handleExcel(e) {
         const reader = new FileReader();
-        reader.onload = (event) => {
-            const data = new Uint8Array(event.target.result);
-            const workbook = XLSX.read(data, {type: 'array'});
+        reader.onload = (evt) => {
+            const workbook = XLSX.read(new Uint8Array(evt.target.result), {type: 'array'});
             const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1});
-
-            rows.forEach(row => {
-                const name = row[0]?.toString().trim();
-                const value = parseInt(row[1]);
-                const reason = row[2] || "עדכון מאקסל";
+            
+            let successCount = 0;
+            rows.forEach(r => {
+                const nameInExcel = r[0]?.toString().trim();
+                const behaviorInExcel = r[1]?.toString().trim();
                 
-                if (name && !isNaN(value)) {
-                    const idx = state.students.findIndex(s => s.name === name);
-                    if (idx !== -1) {
-                        state.students[idx].points += value;
-                        state.students[idx].history.unshift(`${new Date().toLocaleDateString('he-IL')}: ${value > 0 ? '+' : ''}${value} (${reason})`);
-                    }
+                const studentIdx = state.data.findIndex(s => s.name === nameInExcel);
+                const pointValue = behaviorRules[behaviorInExcel];
+
+                if (studentIdx !== -1 && pointValue !== undefined) {
+                    updateStudent(studentIdx, pointValue, behaviorInExcel);
+                    successCount++;
                 }
             });
-            alert("הנתונים עודכנו!");
-            render();
+            alert(`הפעולה הושלמה! ${successCount} עדכוני התנהגות בוצעו והפודיום עודכן.`);
         };
-        reader.readAsArrayBuffer(file);
+        reader.readAsArrayBuffer(e.target.files[0]);
     }
 
-    function resetAll() {
-        if(confirm("לאפס את כולם ל-100 ולמחוק היסטוריה?")) {
-            state.students.forEach(s => { s.points = 100; s.history = []; });
-            render();
-        }
-    }
+    function toggleMode() { document.getElementById('displaySection').classList.toggle('active'); document.getElementById('editSection').classList.toggle('active'); }
+    function toggleLog(i) { const el = document.getElementById(`log-${i}`); el.style.display = el.style.display === 'block' ? 'none' : 'block'; }
+    function updateTitle(val) { state.title = val; render(); }
+    function handlePhoto(e) { const r = new FileReader(); r.onload = (ev) => { state.photo = ev.target.result; render(); }; r.readAsDataURL(e.target.files[0]); }
+    function resetAll() { if(confirm("לאפס הכל?")) { state.data.forEach(s => {s.balance=100; s.logs=[];}); render(); } }
 
     render();
 </script>
