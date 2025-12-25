@@ -13,20 +13,31 @@
         body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; padding-bottom: 50px; direction: rtl; }
         .sticky-header { position: sticky; top: 0; width: 100%; background: rgba(15, 23, 42, 0.95); padding: 15px 0; display: flex; flex-direction: column; align-items: center; z-index: 1000; border-bottom: 2px solid var(--accent); backdrop-filter: blur(10px); }
         .main-title { font-size: 1.8em; font-weight: 800; color: var(--accent); margin: 0; }
-        .slogan { font-size: 0.9em; color: #94a3b8; margin-top: 5px; text-align: center; }
-        .container { width: 95%; max-width: 850px; background: var(--card-bg); border-radius: 24px; overflow: hidden; border: 1px solid #334155; margin-top: 20px; }
-        .btn { background: var(--accent); color: var(--bg); border: none; padding: 10px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; }
-        .student-row { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 10px; }
+        .slogan { font-size: 0.9em; color: #94a3b8; margin-top: 5px; text-align: center; font-style: italic; }
+        .container { width: 95%; max-width: 850px; background: var(--card-bg); border-radius: 24px; overflow: hidden; border: 1px solid #334155; margin-top: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+        .btn { background: var(--accent); color: var(--bg); border: none; padding: 10px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn:hover { transform: scale(1.02); opacity: 0.9; }
+        
+        /* עיצוב רשימת תלמידים */
+        .student-row { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 12px; }
         .student-header { display: flex; justify-content: space-between; align-items: center; }
-        .controls-manual { display: flex; gap: 10px; margin-left: 15px; }
-        .btn-mini { width: 35px; height: 35px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 1.1em; }
+        .controls-manual { display: flex; gap: 8px; margin-left: 15px; }
+        .btn-mini { width: 35px; height: 35px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 1.2em; }
         .btn-plus { background: var(--success); }
         .btn-minus { background: var(--danger); }
-        .score-circle { width: 50px; height: 50px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-weight: bold; border: 2px solid var(--accent); background: rgba(56, 189, 248, 0.1); }
-        .history-panel { display: none; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; margin-top: 10px; }
+        .score-circle { width: 50px; height: 50px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-weight: bold; border: 2px solid var(--accent); background: rgba(56, 189, 248, 0.1); font-size: 1.1em; }
+        
+        .history-panel { display: none; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 12px; margin-top: 10px; border: 1px solid rgba(255,255,255,0.05); }
+        .log-line { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dotted #444; font-size: 0.9em; }
+
+        /* פאנל ניהול */
         .edit-panel { padding: 25px; display: none; }
-        textarea, input { background: #0f172a; color: white; border: 1px solid var(--accent); border-radius: 8px; padding: 8px; width: 100%; box-sizing: border-box; }
-        .class-photo { width: 100%; max-width: 850px; max-height: 250px; object-fit: cover; border-radius: 20px; margin-top: 20px; display: none; border: 2px solid var(--accent); }
+        .admin-section { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #334155; }
+        .admin-section h3 { margin-top: 0; color: var(--accent); border-bottom: 1px solid #334155; padding-bottom: 8px; }
+        textarea, input[type="text"] { background: #0f172a; color: white; border: 1px solid var(--accent); border-radius: 8px; padding: 10px; width: 100%; box-sizing: border-box; }
+        
+        .class-photo { width: 95%; max-width: 850px; max-height: 250px; object-fit: cover; border-radius: 20px; margin-top: 20px; display: none; border: 2px solid var(--accent); }
+        .upload-area { border: 2px dashed var(--accent); padding: 20px; text-align: center; border-radius: 15px; cursor: pointer; margin: 10px 0; background: rgba(56, 189, 248, 0.05); }
     </style>
 </head>
 <body>
@@ -34,13 +45,13 @@
     <div class="sticky-header">
         <div class="main-title" id="displayTitle">בנק הכיתה ח/2</div>
         <div class="slogan" id="displaySlogan">"אל תהיו כעבדים..."</div>
-        <button class="btn" onclick="toggleMode()" style="margin-top: 10px;">⚙️ ניהול</button>
+        <button class="btn" onclick="toggleMode()" style="margin-top: 10px;">⚙️ פתח ניהול והעלאת אקסל</button>
     </div>
 
     <img id="classPhoto" class="class-photo">
     <div id="podium" style="display:flex; justify-content: center; gap:10px; margin:20px; height: 120px; align-items: flex-end;"></div>
     
-    <center><button id="restoreBtn" class="btn" style="background:#6366f1; color:white; display:none; margin-bottom:15px;" onclick="restoreData()">↩️ שחזר איפוס</button></center>
+    <center><button id="restoreBtn" class="btn" style="background:#6366f1; color:white; display:none; margin-bottom:15px;" onclick="restoreData()">↩️ שחזר איפוס אחרון</button></center>
 
     <div class="container">
         <div id="displaySection" class="active">
@@ -48,26 +59,38 @@
         </div>
 
         <div id="editSection" class="edit-panel">
-            <h3>👥 עריכת תלמידים (הפרד בפסיק)</h3>
-            <textarea id="studentNamesInput" rows="5" onchange="updateStudentList()"></textarea>
             
-            <h3>📝 כותרות וסלוגן</h3>
-            <input type="text" id="inputTitle" placeholder="שם הכיתה" oninput="updateTexts()"><br><br>
-            <input type="text" id="inputSlogan" placeholder="סלוגן" oninput="updateTexts()">
-            
-            <h3>💾 גיבוי</h3>
-            <button class="btn" onclick="exportData()">📥 הורד גיבוי</button>
-            <button class="btn" onclick="document.getElementById('importFile').click()">📤 טען גיבוי</button>
-            <input type="file" id="importFile" style="display:none" onchange="importData(event)">
+            <div class="admin-section">
+                <h3>📊 טעינת נתונים מאקסל (XLSX)</h3>
+                <p style="font-size: 0.85em; color: #94a3b8;">העלה כאן את קובץ האקסל עם שמות התלמידים והערות המשמעת:</p>
+                <input type="file" id="fileIn" accept=".xlsx, .xls" onchange="loadExcel(event)" style="padding: 10px; background: var(--accent); color: black; border-radius: 8px; width: auto; cursor: pointer;">
+            </div>
 
-            <hr>
-            <h3>🔄 איפוס שבועי</h3>
-            <button class="btn" style="background:var(--danger); color:white; width:100%" onclick="resetDataOnly()">איפוס ניקוד (שומר תמונה ושמות)</button>
+            <div class="admin-section">
+                <h3>👥 ניהול רשימת תלמידים</h3>
+                <textarea id="studentNamesInput" rows="4" placeholder="הכנס שמות מופרדים בפסיק..." onchange="updateStudentList()"></textarea>
+            </div>
+
+            <div class="admin-section">
+                <h3>📸 תמונה וכותרות</h3>
+                <input type="text" id="inputTitle" placeholder="שם הכיתה" oninput="updateTexts()" style="margin-bottom:10px;">
+                <input type="text" id="inputSlogan" placeholder="סלוגן הכיתה" oninput="updateTexts()"><br><br>
+                <input type="file" accept="image/*" onchange="uploadPhoto(event)" class="btn" style="background: #475569; color: white;">
+            </div>
+            
+            <div class="admin-section" style="display: flex; gap: 10px;">
+                <button class="btn" style="background: #8b5cf6; color:white; flex:1;" onclick="exportData()">📥 גיבוי נתונים</button>
+                <button class="btn" style="background: #ec4899; color:white; flex:1;" onclick="document.getElementById('importFile').click()">📤 טעינת גיבוי</button>
+                <input type="file" id="importFile" style="display:none" onchange="importData(event)">
+            </div>
+
+            <button class="btn" style="background:var(--danger); color:white; width:100%; padding: 15px;" onclick="resetDataOnly()">🔄 איפוס ניקוד והיסטוריה (שבועי)</button>
         </div>
     </div>
 
 <script>
-    let state = JSON.parse(localStorage.getItem('class_bank_v18')) || {
+    // לוגיקת נתונים
+    let state = JSON.parse(localStorage.getItem('class_bank_v19')) || {
         data: [],
         rules: { "חיסור": -5, "מילה טובה": 10, "עזרה": 15, "השתתפות": 5, "הפרעה": -15, "איחור": -5 },
         photo: "", title: "בנק הכיתה ח/2", slogan: '"אל תהיו כעבדים המשמשים את הרב..."'
@@ -80,18 +103,13 @@
 
     let backupState = null;
 
-    function save() { localStorage.setItem('class_bank_v18', JSON.stringify(state)); }
-
-    function updateManual(name, delta) {
-        let s = state.data.find(x => x.name === name);
-        s.balance += (delta * 5); // כל לחיצה היא 5 נקודות
-        s.logs.unshift({ text: "עדכון ידני", val: delta * 5 });
-        render();
-    }
+    function save() { localStorage.setItem('class_bank_v19', JSON.stringify(state)); }
 
     function render() {
         document.getElementById('displayTitle').innerText = state.title;
         document.getElementById('displaySlogan').innerText = state.slogan;
+        document.getElementById('inputTitle').value = state.title;
+        document.getElementById('inputSlogan').value = state.slogan;
         document.getElementById('studentNamesInput').value = state.data.map(s => s.name).join(', ');
         
         const list = document.getElementById('studentList');
@@ -106,18 +124,23 @@
                             <button class="btn-mini btn-plus" onclick="updateManual('${s.name}', 1)">+</button>
                             <button class="btn-mini btn-minus" onclick="updateManual('${s.name}', -1)">-</button>
                         </div>
-                        <div style="flex-grow:1; cursor:pointer; font-weight:bold;" onclick="toggleHistory('hist-${idx}')">
+                        <div style="flex-grow:1; cursor:pointer; font-weight:bold; padding: 0 10px;" onclick="toggleHistory('hist-${idx}')">
                             ${idx + 1}. ${s.name}
                         </div>
                         <div class="score-circle">${s.balance}</div>
                     </div>
                     <div id="hist-${idx}" class="history-panel">
-                        ${s.logs.map(l => `<div style="display:flex; justify-content:space-between; border-bottom:1px solid #444;"><span>${l.text}</span><span style="color:${l.val>=0?'var(--success)':'var(--danger)'}">${l.val>=0?'+':''}${l.val}</span></div>`).join('')}
+                        ${s.logs.length > 0 ? s.logs.map(l => `<div class="log-line"><span>${l.text}</span><span style="color:${l.val>=0?'var(--success)':'var(--danger)'}">${l.val>=0?'+':''}${l.val}</span></div>`).join('') : 'אין פעולות רשומות'}
                     </div>
                 </div>`;
         });
         
         if(state.photo) { document.getElementById('classPhoto').src = state.photo; document.getElementById('classPhoto').style.display='block'; }
+        
+        const pod = document.getElementById('podium');
+        pod.innerHTML = `<div style="text-align:center"><small>${sorted[1].name}</small><div style="background:var(--silver); width:60px; height:60px; border-radius:10px 10px 0 0; color:black; font-weight:bold; padding-top:5px;">🥈</div></div>
+                         <div style="text-align:center"><small>${sorted[0].name}</small><div style="background:var(--gold); width:70px; height:90px; border-radius:10px 10px 0 0; color:black; font-weight:bold; padding-top:5px;">🥇</div></div>
+                         <div style="text-align:center"><small>${sorted[2].name}</small><div style="background:var(--bronze); width:60px; height:40px; border-radius:10px 10px 0 0; color:black; font-weight:bold; padding-top:5px;">🥉</div></div>`;
         save();
     }
 
@@ -136,17 +159,10 @@
                         while ((match = regex.exec(rowStr)) !== null) {
                             let count = match[1] ? parseInt(match[1]) : 1;
                             let pts = 0;
-                            
                             if (key === "חיסור") {
-                                // ספירת חיסורים קיימים
                                 let prevAbsences = s.logs.filter(l => l.text.includes("חיסור")).length;
-                                for(let i=1; i<=count; i++) {
-                                    if (prevAbsences + i > 10) pts -= 5;
-                                }
-                            } else {
-                                pts = count * state.rules[key];
-                            }
-                            
+                                for(let i=1; i<=count; i++) { if (prevAbsences + i > 10) pts -= 5; }
+                            } else { pts = count * state.rules[key]; }
                             if (pts !== 0 || key === "חיסור") {
                                 s.balance += pts;
                                 s.logs.unshift({ text: key + (count > 1 ? ` (x${count})` : ''), val: pts });
@@ -155,26 +171,26 @@
                     });
                 }
             });
-            render(); alert("עיבוד אקסל הושלם!");
+            render(); toggleMode(); alert("הקובץ נקלט בהצלחה!");
         };
         reader.readAsArrayBuffer(e.target.files[0]);
     }
 
-    function updateStudentList() {
-        const names = document.getElementById('studentNamesInput').value.split(',').map(n => n.trim()).filter(n => n !== "");
-        state.data = names.map(n => {
-            let existing = state.data.find(e => e.name === n);
-            return existing ? existing : { name: n, balance: 100, logs: [] };
-        });
+    function updateManual(name, delta) {
+        let s = state.data.find(x => x.name === name);
+        s.balance += (delta * 5);
+        s.logs.unshift({ text: "עדכון ידני", val: delta * 5 });
         render();
     }
 
-    function toggleMode() { document.getElementById('editSection').style.display = document.getElementById('editSection').style.display === 'block' ? 'none' : 'block'; }
-    function toggleHistory(id) { document.getElementById(id).style.display = document.getElementById(id).style.display === 'block' ? 'none' : 'block'; }
+    function toggleMode() { const el = document.getElementById('editSection'); el.style.display = (el.style.display === 'block') ? 'none' : 'block'; }
+    function toggleHistory(id) { const el = document.getElementById(id); el.style.display = (el.style.display === 'block') ? 'none' : 'block'; }
     function updateTexts() { state.title = document.getElementById('inputTitle').value; state.slogan = document.getElementById('inputSlogan').value; render(); }
-    function exportData() { const blob = new Blob([JSON.stringify(state)], {type: 'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'bank_backup.json'; a.click(); }
+    function updateStudentList() { const names = document.getElementById('studentNamesInput').value.split(',').map(n => n.trim()).filter(n => n !== ""); state.data = names.map(n => { let existing = state.data.find(e => e.name === n); return existing ? existing : { name: n, balance: 100, logs: [] }; }); render(); }
+    function uploadPhoto(e) { const r = new FileReader(); r.onload = (f) => { state.photo = f.target.result; render(); }; r.readAsDataURL(e.target.files[0]); }
+    function exportData() { const blob = new Blob([JSON.stringify(state)], {type: 'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'backup_h2.json'; a.click(); }
     function importData(e) { const r = new FileReader(); r.onload = (f) => { state = JSON.parse(f.target.result); render(); }; r.readAsText(e.target.files[0]); }
-    function resetDataOnly() { backupState = JSON.parse(JSON.stringify(state)); state.data.forEach(s => { s.balance = 100; s.logs = []; }); document.getElementById('restoreBtn').style.display = 'block'; render(); }
+    function resetDataOnly() { if(confirm("לאפס ניקוד לכל הכיתה?")) { backupState = JSON.parse(JSON.stringify(state)); state.data.forEach(s => { s.balance = 100; s.logs = []; }); document.getElementById('restoreBtn').style.display = 'block'; render(); } }
     function restoreData() { state = JSON.parse(JSON.stringify(backupState)); backupState = null; document.getElementById('restoreBtn').style.display = 'none'; render(); }
 
     render();
