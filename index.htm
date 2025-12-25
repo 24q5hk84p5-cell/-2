@@ -3,83 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אוצר הכיתה - מוגן בסיסמה</title>
+    <title>אוצר הכיתה - ניהול מלא</title>
     <style>
         :root { --primary: #5d4037; --secondary: #8d6e63; --bg: #e0d7c6; --card: #fffde7; }
-        body { background-color: var(--bg); background-image: url('https://www.transparenttextures.com/patterns/parchment.png'); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; }
+        body { background-color: var(--bg); background-image: url('https://www.transparenttextures.com/patterns/parchment.png'); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 10px; color: #3e2723; }
         .container { max-width: 98%; margin: auto; background: rgba(255, 252, 240, 0.95); padding: 15px; border: 5px double var(--secondary); border-radius: 15px; }
-        .main-photo-wrapper { width: 100%; display: flex; justify-content: center; margin-bottom: 10px; }
-        #classPhoto { max-width: 400px; width: 80%; border-radius: 10px; display: none; border: 3px solid var(--primary); }
+        
+        /* תמונה */
+        .main-photo-wrapper { width: 100%; display: flex; justify-content: center; margin-bottom: 15px; }
+        #classPhoto { max-width: 500px; width: 90%; height: auto; border: 4px solid var(--primary); border-radius: 10px; display: none; }
+
+        /* פודיום */
+        .podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 8px; margin: 10px 0; height: 140px; }
+        .podium-step { width: 75px; display: flex; flex-direction: column; justify-content: flex-end; border-radius: 8px 8px 0 0; color: white; padding-bottom: 5px; font-weight: bold; position: relative; text-align: center; }
+        .step-name { color: #3e2723; position: absolute; top: -45px; width: 100%; font-size: 0.8em; font-weight: bold; height: 40px; display: flex; align-items: center; justify-content: center; }
+        .first { height: 100px; background: #ffd700; border: 2px solid #b8860b; order: 2; }
+        .second { height: 75px; background: #c0c0c0; border: 2px solid #808080; order: 1; }
+        .third { height: 55px; background: #cd7f32; border: 2px solid #8b4513; order: 3; }
+
         .dashboard { display: grid; grid-template-columns: 1.3fr 1.2fr 1fr 1.1fr; gap: 10px; }
         .section-card { background: var(--card); border: 1px solid var(--secondary); border-radius: 8px; padding: 10px; height: 500px; overflow-y: auto; }
+        
         table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
-        th { background: var(--primary); color: white; padding: 8px; }
+        th { background: var(--primary); color: white; padding: 8px; position: sticky; top: 0; }
         td { padding: 6px; border-bottom: 1px solid #ddd; text-align: center; }
+        
         .btn { cursor: pointer; border: none; font-weight: bold; border-radius: 4px; padding: 5px 8px; }
         .plus { background: #4caf50; color: white; }
         .minus { background: #e53935; color: white; }
-        .teacher-only { display: none; } /* מוסתר כברירת מחדל */
-        .admin-visible { display: block !important; }
-        .podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 8px; height: 120px; }
-        .podium-step { width: 70px; border-radius: 8px 8px 0 0; color: white; text-align: center; font-weight: bold; position: relative; }
-        .step-name { color: #3e2723; position: absolute; top: -35px; width: 100%; font-size: 0.75em; }
+        
+        /* הסתרה למצב תלמיד */
+        .teacher-only { display: none; }
+        
+        .admin-section { margin-top: 20px; background: #d7ccc8; padding: 15px; border-radius: 10px; border: 2px solid var(--primary); }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header style="text-align: center; position: relative;">
-        <button id="loginBtn" onclick="teacherLogin()" style="position: absolute; left: 0; top: 0; background: none; border: 1px solid #ccc; font-size: 0.7em; cursor: pointer;">🔑 כניסת מורה</button>
-        <button id="logoutBtn" onclick="logout()" class="teacher-only" style="position: absolute; left: 0; top: 0; background: #3e2723; color: white; font-size: 0.7em;">🔒 יציאה</button>
-        
+        <button id="loginBtn" onclick="teacherLogin()" style="position: absolute; left: 0; top: 0; background: white; border: 1px solid #ccc; border-radius: 4px; padding: 5px; cursor: pointer;">🔑 כניסת מורה</button>
+        <button id="logoutBtn" onclick="logout()" class="teacher-only" style="position: absolute; left: 0; top: 0; background: #3e2723; color: white; border-radius: 4px; padding: 5px; cursor: pointer;">🔒 יציאה</button>
+
         <h1 id="mainTitle">טוען...</h1>
         <div class="main-photo-wrapper"><img id="classPhoto" src=""></div>
 
-        <div class="teacher-only" id="teacherBar" style="margin-bottom: 15px; display: flex; justify-content: center; gap: 5px;">
+        <div class="teacher-only" id="topTeacherBar" style="margin-bottom: 15px; display: flex; justify-content: center; gap: 5px; flex-wrap: wrap;">
             <button class="btn" onclick="exportData()" style="background:#2e7d32; color:white;">💾 גיבוי</button>
+            <button class="btn" onclick="document.getElementById('fileInp').click()" style="background:#1565c0; color:white;">📂 טעינה</button>
             <button class="btn" onclick="resetWeekly()" style="background:#795548; color:white;">🌀 איפוס שבועי</button>
             <button class="btn" onclick="fullReset()" style="background:#b71c1c; color:white;">⚠️ איפוס כללי</button>
+            <input type="file" id="fileInp" style="display:none" onchange="importData(event)">
         </div>
     </header>
 
     <div class="dashboard">
-        <div class="section-card"><h3>📝 ניהול</h3><table><thead><tr><th>שם</th><th class="teacher-only">+/-</th><th>נקי</th></tr></thead><tbody id="tableManage"></tbody></table></div>
-        <div class="section-card"><h3>🏆 פודיום</h3><div class="podium-container" id="podium"></div><table id="tableWeekly"></table></div>
-        <div class="section-card"><h3>💰 קופה</h3><table><thead><tr><th>שם</th><th>₪</th></tr></thead><tbody id="tableBank"></tbody></table></div>
-        <div class="section-card" style="background:#e3f2fd;"><h3>🏅 זכאויות</h3><table><tbody id="tablePrizes"></tbody></table></div>
+        <div class="section-card">
+            <h3>📝 ניהול רישום</h3>
+            <table>
+                <thead><tr><th>שם</th><th class="teacher-only">+/-</th><th>נקי</th></tr></thead>
+                <tbody id="tableManage"></tbody>
+            </table>
+        </div>
+        <div class="section-card">
+            <h3>🏆 פודיום</h3>
+            <div class="podium-container" id="podium"></div>
+            <table id="tableWeekly"></table>
+        </div>
+        <div class="section-card">
+            <h3>💰 קופה</h3>
+            <table><thead><tr><th>שם</th><th>₪</th></tr></thead><tbody id="tableBank"></tbody></table>
+        </div>
+        <div class="section-card" style="background:#e3f2fd;">
+            <h3>🏅 זכאויות</h3>
+            <table><tbody id="tablePrizes"></tbody></table>
+        </div>
     </div>
 
-    <div class="admin-section teacher-only" id="adminPanel" style="margin-top: 20px; background: #d7ccc8; padding: 15px; border-radius: 10px;">
-        <strong>⚙️ הגדרות מורה:</strong><br>
-        שנה סיסמה: <input type="password" id="newPass" style="width:80px"> <button class="btn" onclick="updatePass()">עדכן</button> |
-        הוסף תלמיד: <input type="text" id="newName" style="width:100px"> <button class="btn plus" onclick="addStudent()">+</button>
-        <div id="editList" style="margin-top: 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 5px;"></div>
+    <div class="admin-section teacher-only" id="adminPanel">
+        <strong>⚙️ לוח בקרה למורה:</strong><br><br>
+        <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+            <div style="background:white; padding:10px; border-radius:5px;">
+                <label>📷 תמונה כיתתית: </label>
+                <input type="file" accept="image/*" onchange="uploadPhoto(event)">
+            </div>
+            <div style="background:white; padding:10px; border-radius:5px;">
+                <label>👤 הוסף תלמיד: </label>
+                <input type="text" id="newName" style="width:100px">
+                <button class="btn plus" onclick="addStudent()">+</button>
+            </div>
+            <div style="background:white; padding:10px; border-radius:5px;">
+                <label>🔑 שנה סיסמה: </label>
+                <input type="password" id="newPass" style="width:80px">
+                <button class="btn" onclick="updatePass()">עדכן</button>
+            </div>
+        </div>
+        <div id="editList" style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; max-height: 150px; overflow-y: auto; background: rgba(255,255,255,0.5); padding: 10px;"></div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('yeshiva_v12')) || {
+    let db = JSON.parse(localStorage.getItem('yeshiva_v13')) || {
         config: { title: "🏛️ אוצר הכיתה", plusVal: 15, minVal: -10, threshold: 45, classPhoto: "", pass: "1234" },
         students: ["אברמוביץ דניאל", "איוב איתן", "אלגרבלי בניה עוז", "אלמו נתנאל", "ארבל אליה אהרון", "בלוסטוצקי הלל ישי", "בן עטר נתאי יוסף", "בן פורת נעם", "גורדון בניה", "גלייזר שלום", "דהן יוסף חיים", "הירשנברגר בועז", "וויסמן יהונתן", "ולר נווה אהרן", "טמנה אביהו", "יושעי נעם", "יעקבי יהודה", "כהן ליאור", "כהן ניתאי", "מנצור הראל", "מרסיאנו אורי", "נדל נוה", "ניאזוב אביאל", "סמני שבח", "פורסט עמיחי", "פלומבו נריה", "פנקר שילה", "פרשל מלאכי", "קצב נעם", "רוזנצוויג בעז אשר"].map(n => ({name: n, total: 100, weekly: 0, hasNote: false}))
     };
 
     function teacherLogin() {
-        let p = prompt("הכנס סיסמת מורה:");
-        if (p === db.config.pass) { showAdmin(true); } 
-        else if (p === "איפוס") { 
-            let code = prompt("הכנס קוד אימות לאיפוס (רמז: תרי\"ג):");
-            if (code === "613") { db.config.pass = "1234"; alert("הסיסמה אופסה ל-1234"); }
-        } else { alert("סיסמה שגויה"); }
+        let p = prompt("הכנס סיסמה:");
+        if (p === db.config.pass) { showAdmin(true); }
+        else if (p === "איפוס") {
+            if (prompt("קוד אימות (613):") === "613") { db.config.pass = "1234"; alert("הסיסמה אופסה ל-1234"); }
+        } else { alert("טעות"); }
     }
 
-    function showAdmin(show) {
-        document.querySelectorAll('.teacher-only').forEach(el => el.style.display = show ? 'block' : 'none');
-        document.getElementById('loginBtn').style.display = show ? 'none' : 'block';
+    function showAdmin(status) {
+        const els = document.querySelectorAll('.teacher-only');
+        els.forEach(el => el.style.display = status ? 'block' : 'none');
+        document.getElementById('loginBtn').style.display = status ? 'none' : 'block';
         render();
     }
 
     function logout() { showAdmin(false); }
-    function updatePass() { let np = document.getElementById('newPass').value; if(np){ db.config.pass = np; alert("סיסמה עודכנה!"); render(); } }
+    function updatePass() { let np = document.getElementById('newPass').value; if(np){ db.config.pass = np; alert("עודכן!"); render(); } }
 
     function render() {
         document.getElementById('mainTitle').innerText = db.config.title;
@@ -90,26 +135,33 @@
         t1.innerHTML = ''; t3.innerHTML = ''; tP.innerHTML = ''; editL.innerHTML = '';
 
         db.students.forEach((s, i) => {
-            t1.innerHTML += `<tr><td><b>${s.name}</b></td><td class="teacher-only"><button class="plus" onclick="changeScore(${i},15,false)">+</button><button class="minus" onclick="changeScore(${i},-10,true)">-</button></td><td>${s.hasNote ? '❌' : '✅'}</td></tr>`;
-            if (!s.hasNote && s.weekly >= db.config.threshold) tP.innerHTML += `<tr><td>${s.name}</td><td><span style="background:#fbc02d;padding:2px 5px;border-radius:4px;font-weight:bold;">הודעת נחת</span></td></tr>`;
-            editL.innerHTML += `<div><button onclick="removeStudent(${i})">x</button> ${s.name}</div>`;
+            let isAdmin = document.getElementById('loginBtn').style.display === 'none';
+            t1.innerHTML += `<tr><td><b>${s.name}</b></td><td class="${isAdmin?'':'teacher-only'}"><button class="btn plus" onclick="changeScore(${i},15,false)">+</button><button class="btn minus" onclick="changeScore(${i},-10,true)">-</button></td><td>${s.hasNote ? '❌' : '✅'}</td></tr>`;
+            if (!s.hasNote && s.weekly >= db.config.threshold) tP.innerHTML += `<tr><td>${s.name}</td><td><span style="background:#fbc02d;padding:2px 5px;border-radius:4px;">הודעת נחת</span></td></tr>`;
+            editL.innerHTML += `<div style="background:white;padding:3px;border-radius:3px;"><button class="btn minus" style="padding:0 5px;" onclick="removeStudent(${i})">x</button> <input type="text" value="${s.name}" onchange="db.students[${i}].name=this.value;render();" style="border:none;width:100px;"></div>`;
         });
 
         const sorted = [...db.students].sort((a,b)=>b.weekly - a.weekly);
         const podium = document.getElementById('podium'), medals = ['🥈', '🥇', '🥉'], classes = ['second', 'first', 'third'];
-        podium.innerHTML = ''; [1, 0, 2].forEach(idx => { if(sorted[idx] && sorted[idx].weekly > 0) podium.innerHTML += `<div class="podium-step ${classes[idx]}" style="background:${idx==0?'#ffd700':idx==1?'#c0c0c0':'#cd7f32'}"><div class="step-name">${sorted[idx].name}</div>${medals[idx]}</div>`; });
+        podium.innerHTML = '';
+        [1, 0, 2].forEach(idx => {
+            if(sorted[idx] && sorted[idx].weekly > 0) {
+                podium.innerHTML += `<div class="podium-step ${classes[idx]}" style="background:${idx==0?'#ffd700':idx==1?'#c0c0c0':'#cd7f32'}"><div class="step-name">${sorted[idx].name}</div>${medals[idx]}</div>`;
+            }
+        });
 
         [...db.students].sort((a,b)=>a.name.localeCompare(b.name)).forEach(s => { t3.innerHTML += `<tr><td>${s.name}</td><td>${s.total}₪</td></tr>`; });
-        localStorage.setItem('yeshiva_v12', JSON.stringify(db));
+        localStorage.setItem('yeshiva_v13', JSON.stringify(db));
     }
 
     function changeScore(i, v, p) { db.students[i].total += v; if(v>0) db.students[i].weekly += v; if(p) db.students[i].hasNote = true; render(); }
     function addStudent() { const n = document.getElementById('newName').value; if(n){ db.students.push({name:n, total:100, weekly:0, hasNote:false}); render(); } }
     function removeStudent(i) { if(confirm("למחוק?")) { db.students.splice(i,1); render(); } }
     function uploadPhoto(event) { const r = new FileReader(); r.onload = e => { db.config.classPhoto = e.target.result; render(); }; r.readAsDataURL(event.target.files[0]); }
-    function resetWeekly() { if(confirm("איפוס שבוע?")) { db.students.forEach(s=>{s.weekly=0; s.hasNote=false;}); render(); } }
-    function fullReset() { if(confirm("איפוס כללי ל-100₪?")) { db.students.forEach(s=>{s.total=100; s.weekly=0; s.hasNote=false;}); render(); } }
+    function resetWeekly() { if(confirm("איפוס שבועי?")) { db.students.forEach(s=>{s.weekly=0; s.hasNote=false;}); render(); } }
+    function fullReset() { if(confirm("איפוס כללי?")) { db.students.forEach(s=>{s.total=100; s.weekly=0; s.hasNote=false;}); render(); } }
     function exportData() { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'backup.json'; a.click(); }
+    function importData(e) { const r = new FileReader(); r.onload = (f) => { db = JSON.parse(f.target.result); render(); }; r.readAsText(e.target.files[0]); }
     render();
 </script>
 </body>
