@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אוצר הכיתה - ניהול חוקים ופרסים</title>
+    <title>אוצר הכיתה - ניהול מלא</title>
     <style>
         :root { --primary: #5d4037; --secondary: #8d6e63; --bg: #e0d7c6; --card: #fffde7; }
         body { background-color: var(--bg); background-image: url('https://www.transparenttextures.com/patterns/parchment.png'); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; color: #3e2723; }
@@ -15,13 +15,12 @@
         table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
         th { background: var(--primary); color: white; padding: 8px; position: sticky; top: 0; }
         td { padding: 6px; border-bottom: 1px solid #ddd; text-align: center; }
-        .btn { cursor: pointer; border: none; font-weight: bold; border-radius: 4px; padding: 5px 8px; }
+        .btn { cursor: pointer; border: none; font-weight: bold; border-radius: 4px; padding: 5px 12px; }
         .plus { background: #4caf50; color: white; }
         .minus { background: #e53935; color: white; }
         .teacher-only { display: none; }
         .admin-section { margin-top: 20px; background: #d7ccc8; padding: 15px; border-radius: 10px; border: 2px solid var(--primary); }
         .prize-tag { background: #fbc02d; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.8em; display: block; margin-bottom: 2px; }
-        .config-box { background: white; padding: 10px; border-radius: 5px; border: 1px solid #ccc; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -30,66 +29,55 @@
     <header>
         <button id="loginBtn" onclick="teacherLogin()" style="position: absolute; left: 0; top: 0; background: white; border: 1px solid #ccc; padding: 5px; cursor: pointer;">🔑 כניסת מורה</button>
         <button id="logoutBtn" onclick="logout()" class="teacher-only" style="position: absolute; left: 0; top: 0; background: #3e2723; color: white; padding: 5px; cursor: pointer;">🔒 יציאה</button>
+        
         <h1 id="mainTitle">טוען...</h1>
         <p id="mainSlogan"></p>
-        <div class="teacher-only" style="margin-bottom: 10px; display: flex; justify-content: center; gap: 5px;">
-            <button class="btn" onclick="exportData()" style="background:#2e7d32; color:white;">💾 גיבוי</button>
-            <button class="btn" onclick="resetWeekly()" style="background:#795548; color:white;">🌀 איפוס שבועי</button>
+
+        <div class="teacher-only" id="mainAdminBtns" style="margin: 15px 0; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+            <button class="btn" onclick="exportData()" style="background:#2e7d32; color:white;">💾 גיבוי נתונים</button>
+            <button class="btn" onclick="resetWeekly()" style="background:#795548; color:white;">🌀 איפוס שבועי (רק נקודות)</button>
+            <button class="btn" onclick="fullReset()" style="background:#b71c1c; color:white; border: 2px solid black;">⚠️ איפוס כללי (כולל קופה)</button>
         </div>
     </header>
 
     <div class="dashboard">
         <div class="section-card"><h3>📝 ניהול</h3><table><thead><tr><th>שם</th><th class="teacher-only">+/-</th><th>נקי</th></tr></thead><tbody id="tableManage"></tbody></table></div>
-        <div class="section-card"><h3>🏆 פודיום</h3><div id="podium" style="display:flex; justify-content:center; align-items:flex-end; gap:5px; height:100px; margin-bottom:15px;"></div><table id="tableWeekly"></table></div>
-        <div class="section-card"><h3>💰 קופה</h3><table><thead><tr><th>שם</th><th>₪</th></tr></thead><tbody id="tableBank"></tbody></table></div>
+        <div class="section-card"><h3>🏆 פודיום שבועי</h3><div id="podium" style="display:flex; justify-content:center; align-items:flex-end; gap:5px; height:100px; margin-bottom:15px;"></div><table id="tableWeekly"></table></div>
+        <div class="section-card"><h3>💰 קופת חסד</h3><table><thead><tr><th>שם</th><th>₪</th></tr></thead><tbody id="tableBank"></tbody></table></div>
         <div class="section-card" style="background:#e3f2fd;"><h3>🏅 זכאויות</h3><table><tbody id="tablePrizes"></tbody></table></div>
     </div>
 
     <div class="admin-section teacher-only">
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
-            <div class="config-box">
-                <strong>⚖️ ערכי ניקוד (קנס/פרס):</strong><br><br>
-                פלוס (התנהגות טובה): <input type="number" id="cfgPlus" style="width:40px" onchange="db.config.plusVal=parseInt(this.value);render();"><br>
-                מינוס (קנס): <input type="number" id="cfgMinus" style="width:40px" onchange="db.config.minVal=parseInt(this.value);render();">
+        <strong>⚙️ לוח בקרה והגדרות:</strong><br><br>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div style="background:white; padding:10px; border-radius:5px;">
+                <strong>⚖️ הגדרת ניקוד:</strong><br>
+                פלוס: <input type="number" id="cfgPlus" style="width:45px"> | 
+                מינוס: <input type="number" id="cfgMinus" style="width:45px">
+                <button onclick="saveConfig()" class="btn" style="background:gray; color:white; font-size:0.7em;">שמור</button>
             </div>
-            <div class="config-box">
-                <strong>🎁 הוספת פרס חדש:</strong><br><br>
-                שם: <input type="text" id="pName" style="width:80px"> 
-                נק': <input type="number" id="pPoints" style="width:40px"><br>
-                <label><input type="checkbox" id="pClean"> דורש "נקי"?</label> 
-                <button class="btn plus" onclick="addPrize()">הוסף</button>
-            </div>
-            <div class="config-box">
-                <strong>👤 תלמיד חדש:</strong><br><br>
-                שם: <input type="text" id="newName" style="width:100px">
-                <button class="btn plus" onclick="addStudent()">הוסף</button>
+            <div style="background:white; padding:10px; border-radius:5px;">
+                <strong>🎁 הוספת פרס:</strong><br>
+                שם: <input type="text" id="pName" style="width:70px"> 
+                נק': <input type="number" id="pPoints" style="width:40px">
+                <button onclick="addPrize()" class="btn plus">+</button>
             </div>
         </div>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px;">
-            <div style="background:white; padding:10px; max-height:120px; overflow-y:auto;">
-                <strong>רשימת פרסים:</strong>
-                <div id="prizeList"></div>
-            </div>
-            <div style="background:white; padding:10px; max-height:120px; overflow-y:auto;">
-                <strong>רשימת תלמידים (למחיקה):</strong>
-                <div id="editList"></div>
-            </div>
-        </div>
+        <div id="prizeList" style="margin-top:10px; background:rgba(255,255,255,0.5); padding:5px;"></div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('yeshiva_v18')) || {
+    let db = JSON.parse(localStorage.getItem('yeshiva_v19')) || {
         config: { title: "🏛️ אוצר הכיתה", slogan: '"אל תהיו כעבדים..."', plusVal: 15, minVal: -10, pass: "1234" },
-        prizes: [{name: "הודעת נחת", points: 45, clean: true}, {name: "ממתק", points: 25, clean: false}],
+        prizes: [{name: "הודעת נחת", points: 45, clean: true}],
         students: ["אברמוביץ דניאל", "איוב איתן", "אלגרבלי בניה עוז", "אלמו נתנאל", "ארבל אליה אהרון", "בלוסטוצקי הלל ישי", "בן עטר נתאי יוסף", "בן פורת נעם", "גורדון בניה", "גלייזר שלום", "דהן יוסף חיים", "הירשנברגר בועז", "וויסמן יהונתן", "ולר נווה אהרן", "טמנה אביהו", "יושעי נעם", "יעקבי יהודה", "כהן ליאור", "כהן ניתאי", "מנצור הראל", "מרסיאנו אורי", "נדל נוה", "ניאזוב אביאל", "סמני שבח", "פורסט עמיחי", "פלומבו נריה", "פנקר שילה", "פרשל מלאכי", "קצב נעם", "רוזנצוויג בעז אשר"].map(n => ({name: n, total: 100, weekly: 0, hasNote: false}))
     };
 
     function teacherLogin() {
         let p = prompt("סיסמה:");
         if (p === db.config.pass) showAdmin(true);
-        else if (p === "איפוס" && prompt("קוד 613:") === "613") { db.config.pass="1234"; alert("אופס ל-1234"); }
+        else if (p === "איפוס" && prompt("קוד 613:") === "613") { db.config.pass="1234"; alert("אופס ל-1234"); render(); }
     }
 
     function showAdmin(s) {
@@ -100,14 +88,32 @@
 
     function logout() { showAdmin(false); }
 
+    function saveConfig() {
+        db.config.plusVal = parseInt(document.getElementById('cfgPlus').value);
+        db.config.minVal = parseInt(document.getElementById('cfgMinus').value);
+        render();
+    }
+
+    function fullReset() {
+        if(confirm("⚠️ אזהרה חמורה: זה יאפס את כל הכסף של כל התלמידים ל-100₪. האם אתה בטוח?")) {
+            db.students.forEach(s => { s.total = 100; s.weekly = 0; s.hasNote = false; });
+            render();
+            alert("המערכת אותחלה בהצלחה");
+        }
+    }
+
+    function resetWeekly() {
+        if(confirm("איפוס שבועי: מאפס נקודות שבועיות וסימני X. הכסף נשמר. להמשיך?")) {
+            db.students.forEach(s => { s.weekly = 0; s.hasNote = false; });
+            render();
+        }
+    }
+
     function addPrize() {
         const name = document.getElementById('pName').value;
         const pts = parseInt(document.getElementById('pPoints').value);
-        const clean = document.getElementById('pClean').checked;
-        if(name && pts) { db.prizes.push({name, points: pts, clean}); render(); }
+        if(name && pts) { db.prizes.push({name, points: pts, clean: true}); render(); }
     }
-
-    function removePrize(i) { db.prizes.splice(i,1); render(); }
 
     function render() {
         document.getElementById('mainTitle').innerText = db.config.title;
@@ -115,15 +121,14 @@
         document.getElementById('cfgPlus').value = db.config.plusVal;
         document.getElementById('cfgMinus').value = db.config.minVal;
 
-        const t1 = document.getElementById('tableManage'), t3 = document.getElementById('tableBank'), tP = document.getElementById('tablePrizes'), editL = document.getElementById('editList'), pL = document.getElementById('prizeList');
-        t1.innerHTML = t3.innerHTML = tP.innerHTML = editL.innerHTML = pL.innerHTML = '';
+        const t1 = document.getElementById('tableManage'), t3 = document.getElementById('tableBank'), tP = document.getElementById('tablePrizes'), pL = document.getElementById('prizeList');
+        t1.innerHTML = t3.innerHTML = tP.innerHTML = pL.innerHTML = '';
 
         let isAdmin = document.getElementById('loginBtn').style.display === 'none';
 
         db.students.forEach((s, i) => {
             t1.innerHTML += `<tr><td><b>${s.name}</b></td><td class="${isAdmin?'':'teacher-only'}"><button class="plus" onclick="changeScore(${i},${db.config.plusVal},false)">+</button><button class="minus" onclick="changeScore(${i},${db.config.minVal},true)">-</button></td><td>${s.hasNote ? '❌' : '✅'}</td></tr>`;
             t3.innerHTML += `<tr><td>${s.name}</td><td>${s.total}₪</td></tr>`;
-            editL.innerHTML += `<div><button onclick="removeStudent(${i})">x</button> ${s.name}</div>`;
             
             db.prizes.forEach(p => {
                 if(s.weekly >= p.points && (p.clean ? !s.hasNote : true)) {
@@ -133,24 +138,20 @@
         });
 
         db.prizes.forEach((p, i) => {
-            pL.innerHTML += `<div style="font-size:0.8em;">${p.name} (${p.points} נק') <button onclick="removePrize(${i})">x</button></div>`;
+            pL.innerHTML += `<span style="font-size:0.8em; margin-right:10px;">${p.name} (${p.points} נק') <button onclick="db.prizes.splice(${i},1);render();">x</button></span>`;
         });
 
-        // פודיום פשוט
         const sorted = [...db.students].sort((a,b)=>b.weekly - a.weekly);
         const pod = document.getElementById('podium'); pod.innerHTML = '';
         [1, 0, 2].forEach(idx => {
             if(sorted[idx] && sorted[idx].weekly > 0)
-                pod.innerHTML += `<div style="width:50px; background:${idx==1?'#ffd700':idx==0?'#c0c0c0':'#cd7f32'}; height:${idx==1?80:idx==0?60:40}px; border-radius:5px 5px 0 0; text-align:center; font-size:0.6em; color:black; font-weight:bold;">${sorted[idx].name}</div>`;
+                pod.innerHTML += `<div style="width:60px; background:${idx==1?'#ffd700':idx==0?'#c0c0c0':'#cd7f32'}; height:${idx==1?80:idx==0?60:40}px; border-radius:5px 5px 0 0; text-align:center; font-size:0.65em; font-weight:bold; color:black;">${sorted[idx].name}</div>`;
         });
 
-        localStorage.setItem('yeshiva_v18', JSON.stringify(db));
+        localStorage.setItem('yeshiva_v19', JSON.stringify(db));
     }
 
     function changeScore(i, v, p) { db.students[i].total += v; if(v>0) db.students[i].weekly += v; if(p) db.students[i].hasNote = true; render(); }
-    function addStudent() { const n = document.getElementById('newName').value; if(n){ db.students.push({name:n, total:100, weekly:0, hasNote:false}); render(); } }
-    function removeStudent(i) { if(confirm("למחוק?")) { db.students.splice(i,1); render(); } }
-    function resetWeekly() { if(confirm("איפוס שבוע?")) { db.students.forEach(s=>{s.weekly=0; s.hasNote=false;}); render(); } }
     function exportData() { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'backup.json'; a.click(); }
     render();
 </script>
