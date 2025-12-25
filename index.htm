@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אוצר הכיתה ח'/2 - גרסה 70</title>
+    <title>אוצר הכיתה ח'/2 - גרסה 71</title>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root { --primary: #2c3e50; --accent: #d4af37; --bg: #f4f7f6; --card: #ffffff; --success: #27ae60; --danger: #e74c3c; }
-        body { background-color: var(--bg); font-family: 'Assistant', sans-serif; margin: 0; padding: 20px; color: var(--primary); transition: 0.3s; }
+        body { background-color: var(--bg); font-family: 'Assistant', sans-serif; margin: 0; padding: 20px; color: var(--primary); }
         .container { max-width: 1100px; margin: auto; }
         
-        /* כפתור מעבר מצבים נגיש בצד */
-        .mode-toggle-btn { position: fixed; top: 20px; left: 20px; z-index: 1001; padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: 700; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        
+        /* כפתור מעבר מצבים נגיש - ללא סיסמה */
+        .mode-toggle-btn { position: fixed; top: 20px; left: 20px; z-index: 1001; padding: 12px 25px; background: var(--primary); color: white; border: 2px solid var(--accent); border-radius: 50px; cursor: pointer; font-weight: 800; font-family: inherit; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .mode-toggle-btn:hover { background: var(--secondary); transform: scale(1.05); }
+
         header { text-align: center; margin-bottom: 20px; }
-        #classImg { max-width: 200px; border-radius: 15px; margin-bottom: 10px; border: 3px solid var(--accent); }
+        #classImg { max-width: 200px; border-radius: 15px; margin-bottom: 10px; border: 3px solid var(--accent); object-fit: cover; }
         h1 { font-size: 2.8em; margin: 5px 0; }
         #sloganText { font-style: italic; color: #666; font-size: 1.2em; }
 
-        /* פודיום */
-        .podium-area { display: flex; justify-content: center; align-items: flex-end; gap: 10px; height: 160px; margin: 40px 0; }
+        .podium-area { display: flex; justify-content: center; align-items: flex-end; gap: 10px; height: 160px; margin: 40px 0; border-bottom: 3px solid #eee; }
         .step { width: 100px; color: white; text-align: center; border-radius: 8px 8px 0 0; position: relative; font-weight: bold; }
-        .step-info { position: absolute; top: -50px; width: 120px; color: var(--primary); font-size: 0.8em; }
+        .step-info { position: absolute; top: -55px; width: 120px; color: var(--primary); font-size: 0.85em; font-weight: 800; }
         .gold { height: 120px; background: var(--accent); }
         .silver { height: 90px; background: #bdc3c7; }
         .bronze { height: 65px; background: #cd7f32; }
@@ -31,30 +31,31 @@
         .card { background: var(--card); border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         .full { grid-column: span 2; }
         
-        /* חנות ותצוגה */
-        .search-box { width: 100%; padding: 12px; border: 2px solid var(--accent); border-radius: 10px; text-align: center; font-size: 1.1em; font-family: inherit; margin-bottom: 10px; }
+        .search-box { width: 100%; padding: 12px; border: 2px solid var(--accent); border-radius: 10px; text-align: center; font-size: 1.1em; font-family: inherit; margin-bottom: 10px; box-sizing: border-box; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
         
-        /* מצב מורה למטה */
-        .teacher-panel { border-top: 5px solid var(--primary); margin-top: 50px; background: #fff; padding: 30px; border-radius: 20px; }
-        .config-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
-        .teacher-only { display: none; }
-        body.admin-mode .teacher-only { display: block; }
+        /* פאנל מורה - מופיע למטה */
+        .teacher-panel { border-top: 8px solid var(--primary); margin-top: 50px; background: #fff; padding: 30px; border-radius: 20px; display: none; }
+        body.admin-mode .teacher-panel { display: block; }
         
+        .config-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .input-style { width: 100%; padding: 8px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; font-family: inherit; }
+
         #modal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:30px; border-radius:20px; z-index:2000; width:450px; box-shadow: 0 0 100px rgba(0,0,0,0.5); border: 2px solid var(--accent); }
         #overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:1999; }
+        .btn { padding: 8px 15px; border-radius: 5px; border: none; cursor: pointer; font-weight: 700; font-family: inherit; }
     </style>
 </head>
 <body class="view-mode">
 
-<button class="mode-toggle-btn" onclick="toggleMode()">🔄 החלף תצוגה</button>
+<button class="mode-toggle-btn" onclick="toggleMode()">⚙️ מעבר לניהול / תצוגה</button>
 
 <div id="overlay" onclick="closeModal()"></div>
 <div id="modal">
     <h3 id="mTitle" style="text-align:center"></h3>
     <div id="mBody"></div>
-    <button onclick="closeModal()" style="width:100%; margin-top:15px; padding:10px; cursor:pointer; background:var(--primary); color:white; border:none; border-radius:8px;">סגור</button>
+    <button onclick="closeModal()" class="btn" style="width:100%; margin-top:15px; background:var(--primary); color:white;">סגור</button>
 </div>
 
 <div class="container">
@@ -68,63 +69,62 @@
 
     <div class="dashboard">
         <div class="card">
-            <h3>🛍️ עמדת רכישה ובדיקה</h3>
-            <input type="text" class="search-box" placeholder="הקלד שם תלמיד..." list="namesList" onchange="openStudent(this.value)">
+            <h3>🛍️ בדיקת יתרה וחנות</h3>
+            <input type="text" class="search-box" placeholder="חפש שם תלמיד..." list="namesList" onchange="openStudent(this.value)">
             <datalist id="namesList"></datalist>
-            <p style="text-align:center; font-size:0.9em;">כאן תוכלו לראות מה צברתם ומה אפשר לקנות</p>
         </div>
 
         <div class="card">
-            <h3>💰 מצב הבנק הכיתתי</h3>
+            <h3>💰 מצב הבנק</h3>
             <div style="max-height: 250px; overflow-y: auto;">
                 <table id="bankTable"></table>
             </div>
         </div>
 
-        <div class="card full teacher-only teacher-panel">
-            <h2 style="text-align:center; color:var(--primary)">🛠️ פאנל ניהול ועריכה</h2>
+        <div class="card full teacher-panel">
+            <h2 style="text-align:center; color:var(--primary); border-bottom: 2px solid #eee; padding-bottom: 10px;">🛠️ הגדרות וניהול מורה</h2>
             
             <div class="config-grid">
-                <div>
-                    <h4>🖼️ עיצוב</h4>
-                    סלוגן: <input type="text" id="editSlogan" onchange="updateConfig()"><br><br>
-                    URL תמונה: <input type="text" id="editImg" onchange="updateConfig()">
+                <div class="card" style="background:#f9f9f9">
+                    <h4>🖼️ עיצוב כללי</h4>
+                    סלוגן: <input type="text" id="editSlogan" class="input-style" onchange="updateConfig()">
+                    URL תמונה: <input type="text" id="editImg" class="input-style" onchange="updateConfig()">
                 </div>
-                <div>
+                <div class="card" style="background:#f9f9f9">
                     <h4>📂 טעינת נתונים</h4>
-                    <button onclick="document.getElementById('fileIn').click()" style="background:var(--success); color:white; padding:10px; border:none; border-radius:5px; cursor:pointer;">📁 העלה קובץ Excel</button>
+                    <button onclick="document.getElementById('fileIn').click()" class="btn" style="background:var(--success); color:white; width:100%; padding:15px;">📁 העלה קובץ Excel</button>
                     <input type="file" id="fileIn" style="display:none" onchange="importExcel(event)">
-                    <p style="font-size:0.8em;">האקסל מעדכן את הפודיום אוטומטית</p>
+                    <p style="font-size:0.8em; text-align:center; margin-top:10px;">העלאת קובץ מעדכנת את הפודיום אוטומטית</p>
                 </div>
-                <div>
-                    <h4>🔑 אבטחה ואיפוס</h4>
-                    <button onclick="changePass()" style="background:#555; color:white; padding:5px; border:none; border-radius:5px; cursor:pointer;">שנה סיסמה</button><br><br>
-                    <button onclick="globalReset()" style="background:var(--danger); color:white; padding:5px; border:none; border-radius:5px; cursor:pointer;">איפוס כללי (0)</button>
+                <div class="card" style="background:#f9f9f9">
+                    <h4>⚠️ פעולות מיוחדות</h4>
+                    <button onclick="globalReset()" class="btn" style="background:var(--danger); color:white; width:100%;">איפוס כל הקופה ל-100</button>
+                    <p style="font-size:0.8em; text-align:center; margin-top:10px;">פעולה זו תחזיר את כל התלמידים ל-100₪</p>
                 </div>
             </div>
 
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
                 <div class="card">
-                    <h4>🏷️ ניהול חנות (שם וסכום)</h4>
+                    <h4>🏷️ ניהול מוצרי חנות</h4>
                     <div id="editShop"></div>
-                    <button onclick="addItem('shop')" style="margin-top:5px;">+ הוסף מוצר</button>
+                    <button onclick="addItem('shop')" class="btn" style="margin-top:10px; background:#eee;">+ הוסף מוצר</button>
                 </div>
                 <div class="card">
                     <h4>📝 מילות מפתח לניקוד</h4>
                     <div id="editKeys"></div>
-                    <button onclick="addItem('keys')" style="margin-top:5px;">+ הוסף מילה</button>
+                    <button onclick="addItem('keys')" class="btn" style="margin-top:10px; background:#eee;">+ הוסף מילת זיהוי</button>
                 </div>
             </div>
 
-            <h4 style="margin-top:20px;">👥 רשימת תלמידים (ניהול ידני)</h4>
+            <h4 style="margin-top:30px;">👥 רשימת תלמידים מלאה (עדכון ידני)</h4>
             <table id="adminTable"></table>
         </div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('bank_v70')) || {
-        config: { slogan: '“בכל דרכיך דעהו”', img: 'https://via.placeholder.com/200x150?text=ח/2', pass: '1234' },
+    let db = JSON.parse(localStorage.getItem('bank_v71')) || {
+        config: { slogan: '“בכל דרכיך דעהו”', img: 'https://via.placeholder.com/200x150?text=ח/2' },
         keys: { "תפילה": 5, "הצטיינות": 10, "חיסור": -10, "פטפוט": -5 },
         students: ["אברמוביץ דניאל", "איוב איתן", "אלגרבלי בניה עוז", "אלמו נתנאל", "ארבל אליה אהרון", "בלוסטוצקי הלל ישי", "בן עטר נתאי יוסף", "בן פורת נעם", "גורדון בניה", "גלייזר שלום", "דהן יוסף חיים", "הירשנברגר בועז", "וויסמן יהונתן", "ולר נווה אהרן", "טמנה אביהו", "יושעי נעם", "יעקבי יהודה", "כהן ליאור", "כהן ניתאי", "מנצור הראל", "מרסיאנו אורי", "נדל נוה", "ניאזוב אביאל", "סמני שבח", "פורסט עמיחי", "פלומבו נריה", "פנקר שילה", "פרשל מלאכי", "קצב נעם", "רוזנצוויג בעז אשר"].map(n => ({name:n, total:100, weekly:0, history:[]})),
         shop: [{n:"קולה", v:40}, {n:"חטיף", v:25}, {n:"פיצה", v:120}]
@@ -139,7 +139,6 @@
         const nList = document.getElementById('namesList'); nList.innerHTML = '';
         db.students.forEach(s => nList.innerHTML += `<option value="${s.name}">`);
 
-        // פודיום
         let sorted = [...db.students].filter(s => s.weekly > 0).sort((a,b)=>b.weekly-a.weekly);
         const p = document.getElementById('podium'); p.innerHTML = '';
         [{i:1,c:'silver',m:'🥈'},{i:0,c:'gold',m:'🥇'},{i:2,c:'bronze',m:'🥉'}].forEach(r => {
@@ -148,33 +147,25 @@
             else p.innerHTML += `<div style="width:100px"></div>`;
         });
 
-        // טבלאות
         const bTable = document.getElementById('bankTable');
         bTable.innerHTML = '<tr><th>שם</th><th>קופה</th></tr>';
         [...db.students].sort((a,b)=>b.total-a.total).forEach(s => bTable.innerHTML += `<tr><td>${s.name}</td><td><b>${s.total}₪</b></td></tr>`);
 
         const aTable = document.getElementById('adminTable');
-        aTable.innerHTML = '<tr><th>שם</th><th>קופה</th><th>שבועי</th><th>תיקון</th></tr>';
-        db.students.forEach((s, i) => aTable.innerHTML += `<tr><td>${s.name}</td><td>${s.total}</td><td>${s.weekly}</td><td><button onclick="adjust(${i},5)">+5</button><button onclick="adjust(${i},-5)">-5</button></td></tr>`);
+        aTable.innerHTML = '<tr><th>שם</th><th>קופה</th><th>שבועי</th><th>תיקון 5 נק\'</th></tr>';
+        db.students.forEach((s, i) => aTable.innerHTML += `<tr><td>${s.name}</td><td>${s.total}</td><td>${s.weekly}</td><td><button class="btn" onclick="adjust(${i},5)" style="background:var(--success); color:white; margin-left:5px;">+</button><button class="btn" onclick="adjust(${i},-5)" style="background:var(--danger); color:white;">-</button></td></tr>`);
 
-        // עריכת חנות ומילים
         const eShop = document.getElementById('editShop'); eShop.innerHTML = '';
-        db.shop.forEach((it, i) => eShop.innerHTML += `<div style="margin-bottom:5px;"><input value="${it.n}" onchange="db.shop[${i}].n=this.value; render()"> <input type="number" value="${it.v}" style="width:50px" onchange="db.shop[${i}].v=parseInt(this.value); render()"> <button onclick="db.shop.splice(${i},1); render()">🗑️</button></div>`);
+        db.shop.forEach((it, i) => eShop.innerHTML += `<div style="margin-bottom:8px;"><input class="input-style" style="width:120px" value="${it.n}" onchange="db.shop[${i}].n=this.value; render()"> <input class="input-style" type="number" value="${it.v}" style="width:60px" onchange="db.shop[${i}].v=parseInt(this.value); render()"> <button onclick="db.shop.splice(${i},1); render()">🗑️</button></div>`);
         
         const eKeys = document.getElementById('editKeys'); eKeys.innerHTML = '';
-        Object.keys(db.keys).forEach(k => eKeys.innerHTML += `<div style="margin-bottom:5px;"><span>${k}</span>: <input type="number" value="${db.keys[k]}" style="width:50px" onchange="db.keys['${k}']=parseInt(this.value); render()"> <button onclick="delete db.keys['${k}']; render()">🗑️</button></div>`);
+        Object.keys(db.keys).forEach(k => eKeys.innerHTML += `<div style="margin-bottom:8px;"><span>${k}</span>: <input class="input-style" type="number" value="${db.keys[k]}" style="width:60px" onchange="db.keys['${k}']=parseInt(this.value); render()"> <button onclick="delete db.keys['${k}']; render()">🗑️</button></div>`);
 
-        localStorage.setItem('bank_v70', JSON.stringify(db));
+        localStorage.setItem('bank_v71', JSON.stringify(db));
     }
 
     function toggleMode() {
-        if(document.body.classList.contains('view-mode')) {
-            let p = prompt("סיסמת מורה:");
-            if(p === db.config.pass) document.body.classList.add('admin-mode'), document.body.classList.remove('view-mode');
-            else if(p !== null && confirm("שכחת? לאפס ל-1234?")) db.config.pass='1234', render();
-        } else {
-            document.body.classList.remove('admin-mode'), document.body.classList.add('view-mode');
-        }
+        document.body.classList.toggle('admin-mode');
     }
 
     function importExcel(e) {
@@ -196,18 +187,18 @@
                     });
                 }
             });
-            render(); alert("עודכן!");
+            render(); alert("הנתונים נטענו בהצלחה!");
         };
         reader.readAsArrayBuffer(file);
     }
 
     function openStudent(name) {
         const s = db.students.find(x => x.name === name); if(!s) return;
-        document.getElementById('mTitle').innerText = "החשבון של " + s.name;
-        let html = `<h4>יתרה: ${s.total}₪</h4><hr><b>התקדמות לחנות:</b>`;
+        document.getElementById('mTitle').innerText = "מצב החשבון: " + s.name;
+        let html = `<div style="text-align:center; font-size:1.4em; margin-bottom:15px;">יתרה נוכחית: <b>${s.total}₪</b></div><hr><b>זכאות למוצרים:</b>`;
         db.shop.forEach(it => {
             let per = Math.min((s.total/it.v)*100, 100);
-            html += `<div style="margin-top:10px;">${it.n} (${it.v}₪)<div style="background:#eee; height:10px; border-radius:5px; overflow:hidden;"><div style="background:var(--accent); width:${per}%; height:100%;"></div></div></div>`;
+            html += `<div style="margin-top:12px;">${it.n} (${it.v}₪)<div style="background:#eee; height:12px; border-radius:10px; overflow:hidden; margin-top:5px;"><div style="background:${per===100?'var(--success)':'var(--accent)'}; width:${per}%; height:100%;"></div></div></div>`;
         });
         document.getElementById('mBody').innerHTML = html;
         document.getElementById('modal').style.display = 'block'; document.getElementById('overlay').style.display = 'block';
@@ -215,9 +206,8 @@
 
     function updateConfig() { db.config.slogan = document.getElementById('editSlogan').value; db.config.img = document.getElementById('editImg').value; render(); }
     function adjust(i, v) { db.students[i].total += v; render(); }
-    function addItem(type) { if(type==='shop') db.shop.push({n:"חדש", v:10}); else { let k = prompt("מילה חדשה:"); if(k) db.keys[k] = 5; } render(); }
-    function changePass() { let n = prompt("סיסמה חדשה:"); if(n) db.config.pass = n; render(); }
-    function globalReset() { if(confirm("לאפס הכל?")) { db.students.forEach(s => {s.total=100; s.weekly=0; s.history=[];}); render(); } }
+    function addItem(type) { if(type==='shop') db.shop.push({n:"מוצר חדש", v:50}); else { let k = prompt("הכנס מילת זיהוי מהאקסל (למשל: איחור):"); if(k) db.keys[k] = -5; } render(); }
+    function globalReset() { if(confirm("האם אתה בטוח? כל היתרות יחזרו ל-100₪")) { db.students.forEach(s => {s.total=100; s.weekly=0; s.history=[];}); render(); } }
     function closeModal() { document.getElementById('modal').style.display = 'none'; document.getElementById('overlay').style.display = 'none'; }
 
     render();
