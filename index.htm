@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אוצר הכיתה - גרסה 38 סופית</title>
+    <title>אוצר הכיתה - גרסה 42 (פתוח ללא סיסמה)</title>
     <style>
         :root { --primary: #5d4037; --secondary: #8d6e63; --bg: #e0d7c6; --card: #fffde7; }
         body { background-color: var(--bg); background-image: url('https://www.transparenttextures.com/patterns/parchment.png'); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; color: #3e2723; }
         .container { max-width: 98%; margin: auto; background: rgba(255, 252, 240, 0.95); padding: 15px; border: 5px double var(--secondary); border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
         header { text-align: center; position: relative; margin-bottom: 15px; border-bottom: 2px solid var(--secondary); padding-bottom: 10px; }
         
-        .login-box { display: none; background: white; border: 2px solid var(--primary); padding: 15px; border-radius: 8px; position: absolute; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .dashboard { display: grid; grid-template-columns: 1.2fr 1fr 0.9fr 0.9fr 1.1fr; gap: 10px; }
         .section-card { background: var(--card); border: 1px solid var(--secondary); border-radius: 10px; padding: 10px; height: 620px; overflow-y: auto; position: relative; }
         
@@ -19,152 +18,103 @@
         td { padding: 6px; border-bottom: 1px solid #ddd; text-align: center; }
         
         .btn { cursor: pointer; border: none; font-weight: bold; border-radius: 4px; padding: 6px 12px; transition: 0.2s; }
-        .btn:hover { transform: scale(1.05); }
-        .teacher-view, .admin-view { display: none; }
-        .delete-btn { color: red; cursor: pointer; font-weight: bold; font-size: 1.2em; margin-right: 5px; }
+        .btn:hover { opacity: 0.8; }
         
-        .podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 10px; height: 130px; border-bottom: 3px solid var(--secondary); margin-bottom: 15px; padding-bottom: 5px; }
-        .podium-step { width: 60px; border-radius: 8px 8px 0 0; color: white; text-align: center; font-weight: bold; position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 5px; box-shadow: 0 -3px 6px rgba(0,0,0,0.1); }
-        .step-name { color: #3e2723; position: absolute; top: -45px; width: 100%; font-size: 0.75em; font-weight: bold; line-height: 1.2; text-shadow: 1px 1px 0 white; }
+        .del-btn { background: #ff5252; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-weight: bold; margin-left: 5px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; }
+        .add-btn { background: #4caf50; color: white; border-radius: 50%; width: 24px; height: 24px; border: none; cursor: pointer; font-weight: bold; margin-right: 5px; }
 
-        #csvModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border: 4px solid var(--primary); z-index: 2000; border-radius: 15px; box-shadow: 0 0 50px rgba(0,0,0,0.5); width: 400px; max-height: 80vh; overflow-y: auto; }
-        
-        @media print { .no-print { display: none; } body { background: white; } .container { border: none; } .section-card { height: auto; border: 1px solid #ccc; } }
+        .podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 10px; height: 130px; border-bottom: 3px solid var(--secondary); margin-bottom: 15px; }
+        .podium-step { width: 60px; border-radius: 8px 8px 0 0; color: white; text-align: center; font-weight: bold; position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 5px; }
+        .step-name { color: #3e2723; position: absolute; top: -45px; width: 100%; font-size: 0.75em; font-weight: bold; }
+
+        #csvModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border: 4px solid var(--primary); z-index: 2000; border-radius: 15px; width: 400px; max-height: 80vh; overflow-y: auto; box-shadow: 0 0 100px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header class="no-print">
-        <button id="topLoginBtn" onclick="toggleBox('topLogin')" style="position: absolute; left: 0; top: 0; padding: 8px; border-radius: 5px; border: 1px solid #ccc; cursor: pointer;">🔑 ניהול נקודות</button>
-        <div id="topLogin" class="login-box" style="left:0; top:40px;">
-            <strong>סיסמת ניהול:</strong><br>
-            <input type="password" id="passTop" style="width:100px; margin:5px 0;" onkeypress="if(event.key==='Enter') checkPass('top')">
-            <button onclick="checkPass('top')" class="btn" style="background:green; color:white; width:100%;">כניסה</button>
-        </div>
-
+    <header>
         <h1>🏛️ אוצר הכיתה</h1>
-        <p id="mainSlogan" style="font-size: 1.2em; font-weight: bold; font-style: italic; color: var(--secondary);"></p>
-        
-        <div id="photoWrapper" style="display:none; margin:10px auto; max-width:400px;">
-            <img id="classPhoto" style="width:100%; border:4px solid var(--primary); border-radius:12px;">
-        </div>
+        <p id="mainSlogan" style="font-weight:bold; font-style:italic; font-size: 1.2em;"></p>
+        <div id="photoWrapper" style="display:none; margin:10px auto;"><img id="classPhoto" style="max-width:300px; border:4px solid var(--primary); border-radius:12px;"></div>
 
-        <div class="teacher-view" style="margin:10px 0; background:#f5f5f5; padding:10px; border-radius:10px; display:flex; justify-content:center; gap:10px;">
-            <button class="btn" onclick="exportData()" style="background:#2e7d32; color:white;">💾 גיבוי</button>
-            <button class="btn" onclick="document.getElementById('excelLoad').click()" style="background:#ff9800; color:white;">📊 טעינת אקסל וניקוד קטגוריות</button>
-            <button class="btn" onclick="resetWeekly()" style="background:#1565c0; color:white;">🌀 איפוס שבוע</button>
+        <div style="margin:10px 0; background:#f0f0f0; padding:10px; border-radius:10px; display:flex; justify-content:center; gap:10px; border: 1px solid #ccc;">
+            <button class="btn" onclick="document.getElementById('excelLoad').click()" style="background:#ff9800; color:white; font-size:1.1em;">📊 טען אקסל ועדכן ניקוד</button>
+            <button class="btn" onclick="resetWeekly()" style="background:#1565c0; color:white;">🌀 איפוס שבועי</button>
+            <button class="btn" onclick="exportData()" style="background:#4caf50; color:white;">💾 גיבוי נתונים</button>
             <input type="file" id="excelLoad" style="display:none" accept=".csv" onchange="openCsvManager(event)">
         </div>
     </header>
 
     <div class="dashboard">
-        <div class="section-card no-print">
-            <h3>📝 תלמידים</h3>
-            <input type="text" id="search" placeholder="🔍 חפש תלמיד..." style="width:90%; padding:8px; margin-bottom:10px; border-radius:5px; border:1px solid #ccc;" oninput="render()">
-            <table>
-                <thead><tr><th>שם</th><th class="teacher-view">+/-</th><th>נקי</th></tr></thead>
-                <tbody id="listStudents"></tbody>
-            </table>
+        <div class="section-card">
+            <h3>📝 רשימת תלמידים</h3>
+            <input type="text" id="search" placeholder="🔍 חפש תלמיד..." style="width:90%; padding:8px; margin-bottom:10px;" oninput="render()">
+            <table id="listStudents"></table>
         </div>
 
         <div class="section-card">
-            <h3>🏆 פודיום</h3>
+            <h3>🏆 פודיום שבועי</h3>
             <div id="podium" class="podium-container"></div>
             <table id="listWeekly"></table>
             <hr>
-            <h3>🏅 פרסים <button class="admin-view btn" onclick="addItem('prize')" style="background:green; color:white; padding:2px 6px;">+</button></h3>
+            <h3>🏅 זכאות לפרסים <button class="add-btn" onclick="addItem('prizes')">+</button></h3>
             <table id="listPrizes"></table>
         </div>
 
-        <div class="section-card no-print">
+        <div class="section-card">
             <h3>💰 קופה כללית</h3>
             <table id="listBank"></table>
         </div>
-
-        <div class="section-card" style="background:#f1f8e9;">
-            <h3>📜 מחירון <button class="admin-view btn" onclick="addItem('shop')" style="background:green; color:white; padding:2px 6px;">+</button></h3>
+        
+        <div class="section-card">
+            <h3>📜 מחירון קניות <button class="add-btn" onclick="addItem('shop')">+</button></h3>
             <table id="listShop"></table>
         </div>
 
-        <div class="section-card" style="background:#fff3e0;">
-            <h3>⚖️ תקנון <button class="admin-view btn" onclick="addItem('rule')" style="background:green; color:white; padding:2px 6px;">+</button></h3>
+        <div class="section-card">
+            <h3>⚖️ תקנון וענישה <button class="add-btn" onclick="addItem('rules')">+</button></h3>
             <table id="listRules"></table>
         </div>
     </div>
 
-    <div class="no-print" style="margin-top:20px; text-align:center; border-top:1px solid #ccc; padding-top:15px;">
-        <button id="botLoginBtn" onclick="toggleBox('botLogin')" class="btn" style="background:#607d8b; color:white;">⚙️ עריכת תוכן המערכת (תקנון/סלוגן)</button>
-        <div id="botLogin" class="login-box" style="bottom:60px; left:50%; transform:translateX(-50%);">
-            <strong>סיסמת עריכה:</strong><br>
-            <input type="password" id="passBot" style="width:120px; margin:5px 0;" onkeypress="if(event.key==='Enter') checkPass('bot')">
-            <button onclick="checkPass('bot')" class="btn" style="background:green; color:white; width:100%;">כניסה לעריכה</button>
-        </div>
-        
-        <div id="adminPanel" class="admin-view" style="background:#cfd8dc; padding:15px; border-radius:10px; margin-top:10px; border:2px solid #546e7a;">
-            <strong>🛠️ מצב עריכת תוכן פעיל</strong><br><br>
-            סלוגן כיתתי: <input type="text" id="setSlogan" style="width:250px" onchange="db.config.slogan=this.value; render()"> |
-            תמונת כיתה: <input type="file" onchange="uploadPhoto(event)"> |
-            סיסמת ניקוד: <input type="text" id="newPassTop" style="width:60px" onchange="db.config.passTop=this.value"> |
-            <button onclick="fullReset()" class="btn" style="background:red; color:white;">⚠️ איפוס כללי (ל-100₪)</button>
-        </div>
+    <div style="margin-top:20px; text-align:center; background:#cfd8dc; padding:15px; border-radius:10px; border:2px solid #546e7a;">
+        <strong>🛠️ הגדרות מערכת ועריכה</strong><br><br>
+        סלוגן: <input type="text" id="setSlogan" style="width:250px" onchange="db.config.slogan=this.value; render()"> |
+        תמונת כיתה: <input type="file" onchange="uploadPhoto(event)"> |
+        <button onclick="fullReset()" style="background:red; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer; font-weight:bold;">⚠️ איפוס כל הכסף ל-100₪</button>
     </div>
 </div>
 
 <div id="csvModal">
-    <h3 style="margin-top:0;">📊 ניקוד קטגוריות מהקובץ</h3>
-    <p style="font-size:0.85em;">המערכת זיהתה את הקטגוריות הבאות. קבע כמה שווה כל אחת:</p>
-    <table style="font-size:1em;">
-        <thead><tr><th>קטגוריה</th><th>₪ / נק'</th><th>❌?</th></tr></thead>
-        <tbody id="csvScoreBody"></tbody>
-    </table>
-    <br>
-    <button class="btn" onclick="applyCsvData()" style="background:green; color:white; width:100%; padding:10px;">אשר ועדכן את כולם</button>
-    <button class="btn" onclick="document.getElementById('csvModal').style.display='none'" style="background:#ccc; width:100%; margin-top:5px;">ביטול</button>
+    <h3>📊 הגדרת ניקוד מהאקסל</h3>
+    <p>קבע ערך לכל קטגוריה שנמצאה בקובץ:</p>
+    <table id="csvScoreBody"></table>
+    <button onclick="applyCsvData()" class="btn" style="background:green; color:white; width:100%; margin-top:15px; padding:10px;">עדכן את כולם</button>
+    <button onclick="document.getElementById('csvModal').style.display='none'" class="btn" style="background:#ccc; width:100%; margin-top:5px;">ביטול</button>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('yeshiva_v38')) || {
-        config: { slogan: '"אל תהיו כעבדים המשמשים את הרב..."', passTop: "1234", passBot: "4321", photo: "" },
+    let db = JSON.parse(localStorage.getItem('yeshiva_v42')) || {
+        config: { slogan: '"אל תהיו כעבדים המשמשים את הרב..."', photo: "" },
         students: ["אברמוביץ דניאל", "איוב איתן", "אלגרבלי בניה עוז", "אלמו נתנאל", "ארבל אליה אהרון", "בלוסטוצקי הלל ישי", "בן עטר נתאי יוסף", "בן פורת נעם", "גורדון בניה", "גלייזר שלום", "דהן יוסף חיים", "הירשנברגר בועז", "וויסמן יהונתן", "ולר נווה אהרן", "טמנה אביהו", "יושעי נעם", "יעקבי יהודה", "כהן ליאור", "כהן ניתאי", "מנצור הראל", "מרסיאנו אורי", "נדל נוה", "ניאזוב אביאל", "סמני שבח", "פורסט עמיחי", "פלומבו נריה", "פנקר שילה", "פרשל מלאכי", "קצב נעם", "רוזנצוויג בעז אשר"].map(n => ({name:n, total:100, weekly:0, hasNote:false})),
         prizes: [{name:"הודעת נחת", val:45}],
         shop: [{name:"פחית קולה", val:50}, {name:"חטיף", val:20}],
-        rules: [{act: "3 איחורים לתפילה", pun: "1/2 שעה עבודה"}, {act: "חוצפה", pun: "הזמנת הורים"}]
+        rules: [{act: "3 איחורים", pun: "חצי שעה עבודה"}]
     };
 
-    let tempCsvData = [];
-
-    function toggleBox(id) { let e = document.getElementById(id); e.style.display = e.style.display === 'block' ? 'none' : 'block'; }
-    
-    function checkPass(type) {
-        let val = type === 'top' ? document.getElementById('passTop').value : document.getElementById('passBot').value;
-        let correct = type === 'top' ? db.config.passTop : db.config.passBot;
-        if (val === correct || val === "613") {
-            document.querySelectorAll(type === 'top' ? '.teacher-view' : '.admin-view').forEach(e => e.style.display = 'inline-block');
-            if(type === 'top') document.getElementById('topLoginBtn').style.display = 'none';
-            toggleBox(type === 'top' ? 'topLogin' : 'botLogin');
-            render();
-        } else alert("סיסמה שגויה");
-    }
+    let tempLines = [];
 
     function openCsvManager(event) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            const lines = e.target.result.split('\n');
-            let foundCategories = new Set();
-            tempCsvData = lines;
-            lines.forEach(line => {
-                if(line.includes(':')) {
-                    line.split(',').forEach(cell => {
-                        if(cell.includes(':')) foundCategories.add(cell.split(':')[0].trim());
-                    });
-                }
+            tempLines = e.target.result.split('\n');
+            let found = new Set();
+            tempLines.forEach(l => {
+                l.split(',').forEach(cell => { if(cell.includes(':')) found.add(cell.split(':')[0].trim()); });
             });
-            let body = document.getElementById('csvScoreBody');
-            body.innerHTML = '';
-            foundCategories.forEach(cat => {
-                body.innerHTML += `<tr><td>${cat}</td><td><input type="number" class="cat-val" data-cat="${cat}" value="0" style="width:50px"></td><td><input type="checkbox" class="cat-note" data-cat="${cat}"></td></tr>`;
-            });
+            let b = document.getElementById('csvScoreBody'); b.innerHTML = '<tr><th>קטגוריה</th><th>₪ / נקודות</th><th>❌?</th></tr>';
+            found.forEach(cat => { b.innerHTML += `<tr><td>${cat}</td><td><input type="number" class="cv" data-c="${cat}" value="0" style="width:55px"></td><td><input type="checkbox" class="cn" data-c="${cat}"></td></tr>`; });
             document.getElementById('csvModal').style.display = 'block';
         };
         reader.readAsText(event.target.files[0]);
@@ -172,89 +122,68 @@
 
     function applyCsvData() {
         let scores = {};
-        document.querySelectorAll('.cat-val').forEach(input => {
-            let cat = input.dataset.cat;
-            scores[cat] = { val: parseInt(input.value), note: document.querySelector(`.cat-note[data-cat="${cat}"]`).checked };
-        });
-        tempCsvData.forEach((line, i) => {
-            if(i === 0) return;
+        document.querySelectorAll('.cv').forEach(i => { scores[i.dataset.c] = {v: parseInt(i.value), n: document.querySelector(`.cn[data-c="${i.dataset.c}"]`).checked}; });
+        tempLines.forEach((line, idx) => {
+            if(idx === 0) return;
             let name = (line.split(',')[1]||"").trim();
-            let student = db.students.find(s => s.name === name);
-            if(student) {
+            let s = db.students.find(st => st.name === name);
+            if(s) {
                 Object.keys(scores).forEach(cat => {
-                    if(line.includes(cat)) {
-                        student.total += scores[cat].val;
-                        student.weekly += scores[cat].val;
-                        if(scores[cat].note) student.hasNote = true;
+                    if(line.includes(cat + ':')) {
+                        let count = parseInt(line.split(cat + ':')[1]) || 1;
+                        s.total += (scores[cat].v * count); s.weekly += (scores[cat].v * count);
+                        if(scores[cat].n) s.hasNote = true;
                     }
                 });
             }
         });
-        document.getElementById('csvModal').style.display = 'none';
-        render(); alert("המערכת עודכנה לפי הקובץ!");
+        document.getElementById('csvModal').style.display='none'; render(); alert("הנתונים עודכנו בהצלחה!");
     }
 
     function addItem(type) {
-        if(type === 'rule') { let a = prompt("הנהגה:"), p = prompt("תוצאה:"); if(a) db.rules.push({act:a, pun:p}); }
-        if(type === 'shop') { let n = prompt("שם המוצר:"), v = prompt("מחיר:"); if(n) db.shop.push({name:n, val:parseInt(v)}); }
-        if(type === 'prize') { let n = prompt("שם הפרס:"), v = prompt("נקודות דרושות:"); if(n) db.prizes.push({name:n, val:parseInt(v)}); }
+        if(type === 'rules') { let a = prompt("הנהגה חדשה:"), p = prompt("עונש/תוצאה:"); if(a) db.rules.push({act:a, pun:p}); }
+        else if(type === 'shop') { let n = prompt("מוצר:"), v = prompt("מחיר:"); if(n) db.shop.push({name:n, val:parseInt(v)}); }
+        else if(type === 'prizes') { let n = prompt("פרס:"), v = prompt("נקודות:"); if(n) db.prizes.push({name:n, val:parseInt(v)}); }
         render();
     }
 
-    function deleteItem(type, index) { if(confirm("למחוק שורה זו?")) { db[type].splice(index, 1); render(); } }
+    function deleteRow(type, index) { if(confirm("למחוק שורה זו?")) { db[type].splice(index, 1); render(); } }
 
     function render() {
         document.getElementById('mainSlogan').innerText = db.config.slogan;
         if(db.config.photo) { document.getElementById('classPhoto').src = db.config.photo; document.getElementById('photoWrapper').style.display='block'; }
         
-        const isEditMode = document.getElementById('adminPanel').style.display === 'block';
-        
-        // רשימת תלמידים
-        const listS = document.getElementById('listStudents');
-        listS.innerHTML = '';
-        db.students.forEach((s, i) => {
-            if(s.name.includes(document.getElementById('search').value))
-                listS.innerHTML += `<tr><td>${s.name}</td><td class="teacher-view"><button onclick="changeS(${i},15)">+</button><button onclick="changeS(${i},-10,true)">-</button></td><td>${s.hasNote?'❌':'✅'}</td></tr>`;
+        const draw = (id, data, fn) => { let t = document.getElementById(id); t.innerHTML = ''; data.forEach((item, i) => t.innerHTML += fn(item, i)); };
+
+        draw('listStudents', db.students, (s, i) => {
+            if(!s.name.includes(document.getElementById('search').value)) return '';
+            return `<tr><td>${s.name}</td><td><button onclick="ch(${i},15)">+</button><button onclick="ch(${i},-10,true)">-</button></td><td>${s.hasNote?'❌':'✅'}</td></tr>`;
         });
 
-        // קופה
-        const listB = document.getElementById('listBank');
-        listB.innerHTML = '';
-        [...db.students].sort((a,b)=>b.total-a.total).forEach(s => listB.innerHTML += `<tr><td>${s.name}</td><td><strong>${s.total}₪</strong></td></tr>`);
+        draw('listRules', db.rules, (r, i) => `<tr><td><button class="del-btn" onclick="deleteRow('rules',${i})">×</button> ${r.act}</td><td style="color:red">${r.pun}</td></tr>`);
+        draw('listShop', db.shop, (item, i) => `<tr><td><button class="del-btn" onclick="deleteRow('shop',${i})">×</button> ${item.name}</td><td>${item.val}₪</td></tr>`);
+        draw('listPrizes', db.prizes, (p, i) => `<tr><td><button class="del-btn" onclick="deleteRow('prizes',${i})">×</button> ${p.name}</td><td>${p.val}</td></tr>`);
 
-        // תקנון
-        const listR = document.getElementById('listRules');
-        listR.innerHTML = '';
-        db.rules.forEach((r, i) => listR.innerHTML += `<tr><td>${isEditMode?`<span class="delete-btn" onclick="deleteItem('rules',${i})">×</span>`:''}${r.act}</td><td style="color:red">${r.pun}</td></tr>`);
-
-        // מחירון
-        const listSh = document.getElementById('listShop');
-        listSh.innerHTML = '';
-        db.shop.forEach((item, i) => listSh.innerHTML += `<tr><td>${isEditMode?`<span class="delete-btn" onclick="deleteItem('shop',${i})">×</span>`:''}${item.name}</td><td>${item.val}₪</td></tr>`);
-
-        // פודיום וזכאות
         let sw = [...db.students].sort((a,b)=>b.weekly-a.weekly);
-        const listW = document.getElementById('listWeekly'), listP = document.getElementById('listPrizes');
-        listW.innerHTML = listP.innerHTML = '';
-        sw.forEach(s => {
-            if(s.weekly !== 0) listW.innerHTML += `<tr><td>${s.name}</td><td>${s.weekly} נק'</td></tr>`;
-            db.prizes.forEach(p => { if(s.weekly >= p.val && !s.hasNote) listP.innerHTML += `<tr><td>${s.name}</td><td><span style="background:#fbc02d; padding:2px 5px; border-radius:3px;">${p.name}</span></td></tr>`; });
-        });
+        document.getElementById('listWeekly').innerHTML = '';
+        sw.forEach(s => { if(s.weekly !== 0) document.getElementById('listWeekly').innerHTML += `<tr><td>${s.name}</td><td>${s.weekly} נק'</td></tr>`; });
 
-        const pod = document.getElementById('podium');
-        pod.innerHTML = '';
+        document.getElementById('podium').innerHTML = '';
         [1,0,2].forEach(p => {
             let s = sw[p];
-            if(s && s.weekly > 0) pod.innerHTML += `<div class="podium-step" style="height:${p==1?65:p==0?45:30}px; background:${['#c0c0c0','#ffd700','#cd7f32'][p]}"><div class="step-name">${s.name}</div>${['🥈','🥇','🥉'][p]}</div>`;
-            else pod.innerHTML += `<div style="width:60px"></div>`;
+            if(s && s.weekly > 0) document.getElementById('podium').innerHTML += `<div class="podium-step" style="height:${p==1?60:p==0?45:30}px; background:${['#c0c0c0','#ffd700','#cd7f32'][p]}"><div class="step-name">${s.name}</div>${['🥈','🥇','🥉'][p]}</div>`;
+            else document.getElementById('podium').innerHTML += `<div style="width:60px"></div>`;
         });
 
-        localStorage.setItem('yeshiva_v38', JSON.stringify(db));
+        document.getElementById('listBank').innerHTML = '';
+        [...db.students].sort((a,b)=>b.total-a.total).forEach(s => document.getElementById('listBank').innerHTML += `<tr><td>${s.name}</td><td><strong>${s.total}₪</strong></td></tr>`);
+
+        localStorage.setItem('yeshiva_v42', JSON.stringify(db));
     }
 
-    function changeS(i,v,n) { db.students[i].total+=v; db.students[i].weekly+=v; if(n) db.students[i].hasNote=true; render(); }
-    function resetWeekly() { if(confirm("איפוס שבוע? (הכסף בקופה נשמר)")) { db.students.forEach(s=>{s.weekly=0; s.hasNote=false;}); render(); } }
-    function fullReset() { if(confirm("⚠️ איפוס כללי! כולם חוזרים ל-100₪. האם אתה בטוח?")) { db.students.forEach(s=>{s.total=100; s.weekly=0; s.hasNote=false;}); render(); } }
+    function ch(i,v,n) { db.students[i].total+=v; db.students[i].weekly+=v; if(n) db.students[i].hasNote=true; render(); }
+    function resetWeekly() { if(confirm("איפוס שבועי?")) { db.students.forEach(s=>{s.weekly=0; s.hasNote=false;}); render(); } }
+    function fullReset() { if(confirm("איפוס כללי ל-100₪?")) { db.students.forEach(s=>{s.total=100; s.weekly=0; s.hasNote=false;}); render(); } }
     function uploadPhoto(e) { const r = new FileReader(); r.onload = ev => { db.config.photo = ev.target.result; render(); }; r.readAsDataURL(e.target.files[0]); }
     function exportData() { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'backup.json'; a.click(); }
     
