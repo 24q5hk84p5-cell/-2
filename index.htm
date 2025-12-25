@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אוצר הכיתה ח'/2 - גרסה 61</title>
+    <title>אוצר הכיתה ח'/2 - גרסה 63 (תמיכה באקסל)</title>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root { --primary: #3e2723; --secondary: #5d4037; --bg: #fdfaf5; --card: #ffffff; --accent: #af935a; --success: #2e7d32; --danger: #c62828; --undo: #1976d2; }
         body { background-color: var(--bg); font-family: 'Assistant', sans-serif; margin: 0; padding: 20px; color: var(--primary); }
         .container { max-width: 1200px; margin: auto; }
         header { text-align: center; margin-bottom: 30px; }
         h1 { font-size: 3.5em; font-weight: 800; margin: 0; color: var(--primary); }
-        .mode-switch { background: var(--primary); color: white; padding: 10px 30px; border-radius: 50px; cursor: pointer; font-weight: 700; border: none; transition: 0.3s; font-family: inherit; }
+        .mode-switch { background: var(--primary); color: white; padding: 10px 30px; border-radius: 50px; cursor: pointer; font-weight: 700; border: none; transition: 0.3s; }
         .dashboard { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; }
         .full-width { grid-column: span 2; }
         .section-card { background: var(--card); border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #eee; }
@@ -25,27 +26,19 @@
         .rank-2 { height: 100px; background: linear-gradient(#95a5a6, #bdc3c7); }
         .rank-3 { height: 70px; background: linear-gradient(#a0522d, #cd7f32); }
 
-        /* חנות */
-        .shop-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #eee; align-items: center; }
-        .can-afford { border-right: 5px solid var(--success); background: #f8fff8; }
-        .cant-afford { opacity: 0.5; border-right: 5px solid var(--danger); }
-        .status-badge { font-size: 0.8em; padding: 3px 8px; border-radius: 4px; font-weight: 800; }
-        .status-ok { background: var(--success); color: white; }
-        .status-no { background: var(--danger); color: white; }
+        /* חנות אישית */
+        .shop-item { display: flex; flex-direction: column; padding: 12px; border-bottom: 1px solid #eee; }
+        .progress-bg { background: #eee; height: 8px; border-radius: 10px; margin-top: 5px; overflow: hidden; }
+        .progress-fill { background: var(--accent); height: 100%; transition: width 0.5s; }
+        .can-buy { border-right: 5px solid var(--success); background: #f9fff9; }
 
         table { width: 100%; border-collapse: collapse; }
-        td, th { padding: 12px; text-align: center; border-bottom: 1px solid #fafafa; }
-        th { color: #888; font-size: 0.9em; }
+        td, th { padding: 12px; text-align: center; border-bottom: 1px solid #fafafa; font-weight: 700; }
         
         body.view-mode .teacher-only { display: none !important; }
-        .log-btn { background: #f5f5f5; border: 1px solid #ddd; cursor: pointer; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-family: inherit; }
-        
+        .btn-reset { background: var(--danger); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; }
         #customModal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:25px; border-radius:15px; box-shadow:0 0 50px rgba(0,0,0,0.3); z-index:1000; width:400px; border:2px solid var(--primary); }
         #overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; }
-
-        .btn-reset { background: var(--danger); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; margin: 5px; }
-        .btn-undo { background: var(--undo); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; margin: 5px; display: none; animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
     </style>
 </head>
 <body class="view-mode">
@@ -80,29 +73,27 @@
         </div>
 
         <div class="section-card">
-            <h3>📜 מחירון החנות <button class="teacher-only" onclick="addItem('shop')">+</button></h3>
-            <div id="shopContainer"></div>
+            <h3>📜 מחירון החנות <button class="teacher-only" onclick="addItem()">+</button></h3>
+            <div id="generalShop"></div>
         </div>
 
         <div class="section-card teacher-only full-width">
-            <h3>👥 ניהול מערכת (מורה בלבד)</h3>
-            <div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px; flex-wrap: wrap;">
-                <button class="btn-reset" onclick="globalReset()">⚠️ איפוס כל הנתונים</button>
-                <button id="undoBtn" class="btn-undo" onclick="undoReset()">↩️ שחזר נתונים (Undo)</button>
-                <button onclick="document.getElementById('excelLoad').click()" style="background:#1976d2; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:700;">טען אקסל 📊</button>
-                <button onclick="exportData()" style="background:#388e3c; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:700;">גיבוי קובץ 💾</button>
+            <h3>👥 כלי מורה (תמיכה ב-Excel)</h3>
+            <div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px;">
+                <button onclick="document.getElementById('excelFile').click()" style="background:#1976d2; color:white; border:none; padding:12px 25px; border-radius:8px; cursor:pointer; font-weight:700;">📂 טען קובץ Excel (.xlsx)</button>
+                <button class="btn-reset" onclick="globalReset()">⚠️ איפוס כללי</button>
+                <button id="undoBtn" style="display:none; background:var(--undo); color:white; border:none; padding:12px 25px; border-radius:8px; cursor:pointer;" onclick="undoReset()">↩️ שחזר</button>
             </div>
-            <input type="text" id="search" placeholder="חפש תלמיד לביצוע מכירה/עדכון..." style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:15px;" oninput="render()">
+            <input type="file" id="excelFile" style="display:none" accept=".xlsx, .xls" onchange="importExcel(event)">
+            <input type="text" id="search" placeholder="חפש תלמיד למכירה..." style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:15px;" oninput="render()">
             <table id="listStudents"></table>
         </div>
     </div>
-
-    <input type="file" id="excelLoad" style="display:none" accept=".csv" onchange="processExcel(event)">
 </div>
 
 <script>
     let dbBackup = null;
-    let db = JSON.parse(localStorage.getItem('yeshiva_v61')) || {
+    let db = JSON.parse(localStorage.getItem('yeshiva_v63')) || {
         config: { slogan: '“אַל תִּהְיוּ כַּעֲבָדִים הַמְשַׁמְּשִׁין אֶת הָרַב...”' },
         fixedScores: { "תפילה": 5, "הצטיינות": 10, "חיסור": -10, "פטפוט": -5 },
         students: ["אברמוביץ דניאל", "איוב איתן", "אלגרבלי בניה עוז", "אלמו נתנאל", "ארבל אליה אהרון", "בלוסטוצקי הלל ישי", "בן עטר נתאי יוסף", "בן פורת נעם", "גורדון בניה", "גלייזר שלום", "דהן יוסף חיים", "הירשנברגר בועז", "וויסמן יהונתן", "ולר נווה אהרן", "טמנה אביהו", "יושעי נעם", "יעקבי יהודה", "כהן ליאור", "כהן ניתאי", "מנצור הראל", "מרסיאנו אורי", "נדל נוה", "ניאזוב אביאל", "סמני שבח", "פורסט עמיחי", "פלומבו נריה", "פנקר שילה", "פרשל מלאכי", "קצב נעם", "רוזנצוויג בעז אשר"].map(n => ({name:n, total:100, weekly:0, history:[]})),
@@ -111,7 +102,7 @@
 
     function render() {
         const isView = document.body.classList.contains('view-mode');
-        document.getElementById('toggleMode').innerText = isView ? "⚙️ כניסה למצב ניהול מורה" : "📺 חזרה לתצוגת תלמידים";
+        document.getElementById('toggleMode').innerText = isView ? "⚙️ כניסה למצב ניהול מורה" : "📺 חזרה לתצוגה";
         document.getElementById('mainSlogan').innerText = db.config.slogan;
 
         // פודיום
@@ -122,66 +113,72 @@
             if(s && s.weekly > 0) pDiv.innerHTML += `<div class="podium-step ${r.c}"><div class="step-name">${s.name}<br>(${s.weekly})</div>${r.i}</div>`;
             else pDiv.innerHTML += `<div style="width:110px"></div>`;
         });
-
-        // בנק
+        
+        // רשימת בנק וחנות
         const bank = document.getElementById('listBank');
-        bank.innerHTML = '<tr><th>שם התלמיד</th><th>קופה</th><th>אישי</th></tr>';
+        bank.innerHTML = '<tr><th>תלמיד</th><th>יתרה</th><th>חנות אישית</th></tr>';
         [...db.students].sort((a,b)=>b.total-a.total).forEach(s => {
             const idx = db.students.findIndex(x => x.name === s.name);
-            bank.innerHTML += `<tr><td>${s.name}</td><td>${s.total}₪</td><td><button class="log-btn" onclick="showPersonalShop(${idx})">🛒</button></td></tr>`;
+            bank.innerHTML += `<tr><td>${s.name}</td><td>${s.total}₪</td><td><button onclick="showPersonalShop(${idx})">🛒</button></td></tr>`;
         });
 
-        // חנות
-        const shopCont = document.getElementById('shopContainer');
-        shopCont.innerHTML = '';
-        db.shop.forEach(item => { shopCont.innerHTML += `<div class="shop-item"><span>${item.name}</span><b>${item.val}₪</b></div>`; });
+        const gs = document.getElementById('generalShop');
+        gs.innerHTML = '';
+        db.shop.forEach(item => gs.innerHTML += `<div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #eee;"><span>${item.name}</span><b>${item.val}₪</b></div>`);
 
         // ניהול מורה
-        const teacherTable = document.getElementById('listStudents');
-        teacherTable.innerHTML = '<tr><th>תלמיד</th><th>מכירה</th><th>תיקון</th></tr>';
+        const st = document.getElementById('listStudents');
+        st.innerHTML = '';
         db.students.forEach((s, i) => {
             if(!s.name.includes(document.getElementById('search').value)) return;
-            teacherTable.innerHTML += `<tr><td>${s.name}</td>
-                <td><button onclick="openTeacherSale(${i})" style="background:var(--success); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">מכירה 🛒</button></td>
-                <td><button onclick="adjust(${i},5)" style="color:green; font-weight:bold;">+5</button> <button onclick="adjust(${i},-5)" style="color:red; font-weight:bold;">-5</button></td>
-            </tr>`;
+            st.innerHTML += `<tr><td>${s.name}</td><td><button onclick="openTeacherSale(${i})" style="background:var(--success); color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">מכור 🛒</button></td><td><button onclick="adjust(${i},5)">+5</button> <button onclick="adjust(${i},-5)">-5</button></td></tr>`;
         });
 
-        localStorage.setItem('yeshiva_v61', JSON.stringify(db));
+        localStorage.setItem('yeshiva_v63', JSON.stringify(db));
     }
 
-    // איפוס ושחזור
-    function globalReset() {
-        if(confirm("⚠️ אזהרה: פעולה זו תאפס את כל היתרות והנקודות של כל התלמידים. האם אתה בטוח?")) {
-            dbBackup = JSON.parse(JSON.stringify(db)); // שמירת גיבוי לפני איפוס
-            db.students.forEach(s => { s.total = 0; s.weekly = 0; s.history = []; });
-            document.getElementById('undoBtn').style.display = 'inline-block';
+    // פונקציית ייבוא אקסל XLSX
+    function importExcel(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const data = new Uint8Array(event.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+            const rows = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+            rows.forEach((row, i) => {
+                if (i === 0) return; // כותרות
+                const name = (row[1] || "").toString().trim(); // שם בטור B
+                const student = db.students.find(s => s.name === name);
+                if (student) {
+                    const rowString = row.join(" ");
+                    Object.keys(db.fixedScores).forEach(key => {
+                        if (rowString.includes(key)) {
+                            const val = db.fixedScores[key];
+                            student.total += val;
+                            student.weekly += val;
+                            student.history.push(`${key}: ${val > 0 ? '+' : ''}${val}`);
+                        }
+                    });
+                }
+            });
             render();
-            alert("כל הנתונים אופסו. ניתן לשחזר ב-30 השניות הקרובות.");
-            setTimeout(() => { document.getElementById('undoBtn').style.display = 'none'; }, 30000);
-        }
+            alert("קובץ האקסל נקלט בהצלחה!");
+        };
+        reader.readAsArrayBuffer(file);
     }
 
-    function undoReset() {
-        if(dbBackup) {
-            db = JSON.parse(JSON.stringify(dbBackup));
-            dbBackup = null;
-            document.getElementById('undoBtn').style.display = 'none';
-            render();
-            alert("הנתונים שוחזרו בהצלחה!");
-        }
-    }
-
-    // פונקציות קיימות
     function showPersonalShop(idx) {
         const s = db.students[idx];
-        document.getElementById('modalTitle').innerText = "חנות אישית: " + s.name;
-        let html = `<p>יתרה: <b>${s.total}₪</b></p>`;
+        document.getElementById('modalTitle').innerText = "חנות עבור " + s.name;
+        let html = `<p>יתרה נוכחית: <b>${s.total}₪</b></p>`;
         db.shop.forEach(item => {
             const can = s.total >= item.val;
-            html += `<div class="shop-item ${can ? 'can-afford' : 'cant-afford'}">
-                <span>${item.name} (${item.val}₪)</span>
-                <span class="status-badge ${can ? 'status-ok' : 'status-no'}">${can ? '✅' : '❌'}</span>
+            const per = Math.min((s.total/item.val)*100, 100);
+            html += `<div class="shop-item ${can ? 'can-buy' : ''}">
+                <div style="display:flex; justify-content:space-between"><span>${item.name}</span><span>${item.val}₪</span></div>
+                <div class="progress-bg"><div class="progress-fill" style="width:${per}%"></div></div>
             </div>`;
         });
         document.getElementById('modalContent').innerHTML = html;
@@ -191,12 +188,12 @@
 
     function openTeacherSale(idx) {
         const s = db.students[idx];
-        document.getElementById('modalTitle').innerText = "מכירה ל" + s.name;
-        let html = `<p>יתרה: ${s.total}₪</p><hr>`;
+        document.getElementById('modalTitle').innerText = "ביצוע מכירה: " + s.name;
+        let html = '';
         db.shop.forEach(item => {
             html += `<div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <span>${item.name} (${item.val}₪)</span>
-                <button onclick="confirmSale(${idx},'${item.name}',${item.val})" ${s.total >= item.val ? '' : 'disabled'} style="cursor:pointer;">מכור</button>
+                <button onclick="confirmSale(${idx},'${item.name}',${item.val})" ${s.total < item.val ? 'disabled' : ''}>מכור</button>
             </div>`;
         });
         document.getElementById('modalContent').innerHTML = html;
@@ -210,37 +207,19 @@
         render(); closeModal();
     }
 
-    function processExcel(e) {
-        const reader = new FileReader();
-        reader.onload = f => {
-            const lines = f.target.result.split('\n');
-            lines.forEach((line, i) => {
-                if(i===0) return;
-                const name = (line.split(',')[1]||"").trim();
-                const student = db.students.find(s => s.name === name);
-                if(student) {
-                    Object.keys(db.fixedScores).forEach(key => {
-                        if(line.includes(key)) {
-                            const v = db.fixedScores[key];
-                            student.total += v; student.weekly += v;
-                            student.history.push(`${key}: ${v>0?'+':''}${v}`);
-                        }
-                    });
-                }
-            });
-            render(); alert("אקסל נטען!");
-        };
-        reader.readAsText(e.target.files[0]);
+    function globalReset() {
+        if(confirm("לאפס הכל?")) {
+            dbBackup = JSON.parse(JSON.stringify(db));
+            db.students.forEach(s => { s.total = 0; s.weekly = 0; s.history = []; });
+            document.getElementById('undoBtn').style.display = 'inline-block';
+            render();
+        }
     }
-
+    function undoReset() { if(dbBackup) { db = JSON.parse(JSON.stringify(dbBackup)); render(); } }
     function adjust(i, v) { db.students[i].total += v; db.students[i].weekly += v; render(); }
     function closeModal() { document.getElementById('customModal').style.display = 'none'; document.getElementById('overlay').style.display = 'none'; }
-    function exportData() { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(db)], {type:'application/json'})); a.download = 'backup_h2.json'; a.click(); }
-    function addItem(type) {
-        let n = prompt("שם:"); if(!n) return;
-        let p = parseInt(prompt("מחיר:"));
-        db.shop.push({name:n, val:p}); render();
-    }
+    function addItem() { let n = prompt("שם:"); let p = parseInt(prompt("מחיר:")); if(n && p) { db.shop.push({name:n, val:p}); render(); } }
+
     render();
 </script>
 </body>
