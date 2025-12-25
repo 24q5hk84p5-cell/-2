@@ -3,35 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אוצר הכיתה - גרסה סופית 25</title>
+    <title>אוצר הכיתה - גרסה 26</title>
     <style>
         :root { --primary: #5d4037; --secondary: #8d6e63; --bg: #e0d7c6; --card: #fffde7; }
         body { background-color: var(--bg); background-image: url('https://www.transparenttextures.com/patterns/parchment.png'); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; color: #3e2723; }
         .container { max-width: 98%; margin: auto; background: rgba(255, 252, 240, 0.95); padding: 15px; border: 5px double var(--secondary); border-radius: 15px; }
         header { text-align: center; position: relative; margin-bottom: 15px; }
-        #mainSlogan { font-style: italic; color: var(--secondary); margin-top: -5px; font-weight: bold; }
+        #mainSlogan { font-style: italic; color: var(--secondary); margin-top: -5px; font-weight: bold; font-size: 1.2em; }
         
-        .photo-container { margin: 10px auto; max-width: 400px; display: none; }
-        #classPhoto { width: 100%; border: 4px solid var(--primary); border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        /* אזור תמונה */
+        .photo-container { margin: 15px auto; max-width: 500px; display: none; }
+        #classPhoto { width: 100%; border: 5px solid var(--primary); border-radius: 15px; box-shadow: 0 6px 12px rgba(0,0,0,0.3); }
 
         #loginArea { display: none; background: white; border: 2px solid var(--primary); padding: 10px; border-radius: 8px; position: absolute; top: 40px; left: 10px; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .dashboard { display: grid; grid-template-columns: 1.3fr 1.2fr 1fr 1.1fr; gap: 10px; }
-        .section-card { background: var(--card); border: 1px solid var(--secondary); border-radius: 8px; padding: 10px; height: 500px; overflow-y: auto; }
+        .section-card { background: var(--card); border: 1px solid var(--secondary); border-radius: 8px; padding: 10px; height: 520px; overflow-y: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
         th { background: var(--primary); color: white; padding: 8px; position: sticky; top: 0; }
         td { padding: 6px; border-bottom: 1px solid #ddd; text-align: center; }
         
-        .btn { cursor: pointer; border: none; font-weight: bold; border-radius: 4px; padding: 5px 12px; transition: 0.2s; }
+        .btn { cursor: pointer; border: none; font-weight: bold; border-radius: 4px; padding: 6px 14px; transition: 0.2s; }
         .plus { background: #4caf50; color: white; }
         .minus { background: #e53935; color: white; }
         .teacher-only { display: none; }
         
-        .admin-section { margin-top: 20px; background: #d7ccc8; padding: 15px; border-radius: 10px; border: 2px solid var(--primary); }
+        .admin-section { margin-top: 20px; background: #d7ccc8; padding: 20px; border-radius: 10px; border: 3px solid var(--primary); }
         .prize-tag { background: #fbc02d; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.8em; display: block; margin-bottom: 2px; border: 1px solid #f57f17; }
         
         .podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 8px; height: 130px; margin: 15px 0; border-bottom: 2px solid var(--secondary); }
         .podium-step { width: 75px; border-radius: 8px 8px 0 0; color: white; text-align: center; font-weight: bold; position: relative; transition: height 0.5s; }
-        .step-name { color: #3e2723; position: absolute; top: -42px; width: 100%; font-size: 0.75em; font-weight: bold; line-height: 1.1; }
+        .step-name { color: #3e2723; position: absolute; top: -45px; width: 100%; font-size: 0.75em; font-weight: bold; line-height: 1.1; }
     </style>
 </head>
 <body>
@@ -46,16 +47,18 @@
             <button class="btn" onclick="toggleLogin(false)" style="background:#ccc;">X</button>
         </div>
 
-        <button id="logoutBtn" onclick="logout()" class="teacher-only" style="position: absolute; left: 0; top: 0; background: #3e2723; color: white; padding: 5px;">🔒 יציאה</button>
+        <button id="logoutBtn" onclick="logout()" class="teacher-only" style="position: absolute; left: 0; top: 0; background: #3e2723; color: white; padding: 5px;">🔒 יציאה מנהל</button>
         
         <h1 id="mainTitle">🏛️ אוצר הכיתה</h1>
         <p id="mainSlogan"></p>
         
-        <div class="photo-container" id="photoWrapper"><img id="classPhoto" src=""></div>
+        <div class="photo-container" id="photoWrapper">
+            <img id="classPhoto" src="" alt="תמונת כיתה">
+        </div>
 
         <div class="teacher-only" style="margin: 15px 0; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;">
-            <button class="btn" onclick="exportData()" style="background:#2e7d32; color:white;">💾 גיבוי</button>
-            <button class="btn" onclick="document.getElementById('fileLoad').click()" style="background:#1565c0; color:white;">📂 טעינה</button>
+            <button class="btn" onclick="exportData()" style="background:#2e7d32; color:white;">💾 גיבוי נתונים</button>
+            <button class="btn" onclick="document.getElementById('fileLoad').click()" style="background:#1565c0; color:white;">📂 טעינת גיבוי</button>
             <button class="btn" onclick="resetWeekly()" style="background:#795548; color:white;">🌀 איפוס שבועי</button>
             <button class="btn" onclick="fullReset()" style="background:#b71c1c; color:white;">⚠️ איפוס כללי</button>
             <input type="file" id="fileLoad" style="display:none" onchange="importData(event)">
@@ -70,56 +73,82 @@
     </div>
 
     <div class="admin-section teacher-only">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-            <div style="background:white; padding:10px; border-radius:5px;">
-                <strong>⚙️ הגדרות:</strong> 
-                פלוס: <input type="number" id="cfgPlus" style="width:40px"> | 
-                קנס: <input type="number" id="cfgMinus" style="width:40px">
-                <button onclick="saveConfig()" class="btn" style="background:gray; color:white;">שמור</button><br><br>
-                סלוגן: <input type="text" id="cfgSlogan" style="width:150px"> | 
-                תמונה: <input type="file" accept="image/*" onchange="uploadPhoto(event)" style="width:100px; font-size:0.7em;">
-                <br><br>
-                <strong>🔑 סיסמה:</strong> <input type="password" id="newPass" style="width:80px"> <button onclick="updatePass()" class="btn plus">עדכן</button>
+        <h2 style="margin-top:0; border-bottom: 2px solid var(--primary);">🛠️ לוח בקרה מנהל</h2>
+        <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px;">
+            <div style="background:white; padding:15px; border-radius:8px; border: 1px solid #ccc;">
+                <strong>📷 ניהול תמונה וסלוגן:</strong><br><br>
+                העלאת תמונת כיתה: <input type="file" id="photoInp" accept="image/*" onchange="uploadPhoto(event)"><br><br>
+                עריכת סלוגן: <input type="text" id="cfgSlogan" style="width:200px; padding:4px;">
+                <button onclick="saveConfig()" class="btn" style="background:gray; color:white;">עדכן הכל</button>
             </div>
-            <div style="background:white; padding:10px; border-radius:5px;">
-                <strong>🎁 הוספת פרס:</strong> 
-                שם: <input type="text" id="pName" style="width:80px"> 
-                נק': <input type="number" id="pPoints" style="width:40px"> 
-                <button onclick="addPrize()" class="btn plus">+</button>
-                <div id="prizeList" style="margin-top:5px; font-size:0.8em; max-height:60px; overflow-y:auto;"></div>
+            
+            <div style="background:white; padding:15px; border-radius:8px; border: 1px solid #ccc;">
+                <strong>⚖️ הגדרות ניקוד וסיסמה:</strong><br><br>
+                פלוס: <input type="number" id="cfgPlus" style="width:45px"> | 
+                קנס: <input type="number" id="cfgMinus" style="width:45px"><br><br>
+                סיסמה חדשה: <input type="password" id="newPass" style="width:100px">
+                <button onclick="updatePass()" class="btn plus">שנה סיסמה</button>
             </div>
         </div>
-        <div style="margin-top: 15px; background:white; padding:10px; border-radius:5px;">
-            <strong>👤 ניהול תלמידים:</strong> <input type="text" id="newName" placeholder="שם חדש"> <button class="btn plus" onclick="addStudent()">הוסף</button>
-            <div id="editList" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap:5px; margin-top:10px; max-height:120px; overflow-y:auto;"></div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top:15px;">
+            <div style="background:white; padding:15px; border-radius:8px; border: 1px solid #ccc;">
+                <strong>🎁 ניהול פרסים:</strong><br>
+                שם: <input type="text" id="pName" style="width:100px"> 
+                נק': <input type="number" id="pPoints" style="width:45px"> 
+                <button onclick="addPrize()" class="btn plus">הוסף פרס</button>
+                <div id="prizeList" style="margin-top:10px; font-size:0.9em; max-height:80px; overflow-y:auto;"></div>
+            </div>
+            
+            <div style="background:white; padding:15px; border-radius:8px; border: 1px solid #ccc;">
+                <strong>👤 הוספת תלמיד:</strong><br>
+                <input type="text" id="newName" placeholder="שם מלא"> 
+                <button class="btn plus" onclick="addStudent()">הוסף לרשימה</button>
+            </div>
+        </div>
+
+        <div style="margin-top: 15px; background:white; padding:15px; border-radius:8px; border: 1px solid #ccc;">
+            <strong>✏️ עריכת / מחיקת תלמידים:</strong><br>
+            <div id="editList" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap:8px; margin-top:10px; max-height:150px; overflow-y:auto;"></div>
         </div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('yeshiva_final_v25')) || {
-        config: { title: "🏛️ אוצר הכיתה", slogan: '"אל תהיו כעבדים..."', plusVal: 15, minVal: -10, pass: "1234", classPhoto: "" },
-        prizes: [{name: "הודעת נחת", points: 45, clean: true}],
+    let db = JSON.parse(localStorage.getItem('yeshiva_final_v26')) || {
+        config: { title: "🏛️ אוצר הכיתה", slogan: '"אל תהיו כעבדים המשמשין את הרב..."', plusVal: 15, minVal: -10, pass: "1234", classPhoto: "" },
+        prizes: [{name: "הודעת נחת", points: 45, clean: true}, {name: "ממתק", points: 25, clean: false}],
         students: ["אברמוביץ דניאל", "איוב איתן", "אלגרבלי בניה עוז", "אלמו נתנאל", "ארבל אליה אהרון", "בלוסטוצקי הלל ישי", "בן עטר נתאי יוסף", "בן פורת נעם", "גורדון בניה", "גלייזר שלום", "דהן יוסף חיים", "הירשנברגר בועז", "וויסמן יהונתן", "ולר נווה אהרן", "טמנה אביהו", "יושעי נעם", "יעקבי יהודה", "כהן ליאור", "כהן ניתאי", "מנצור הראל", "מרסיאנו אורי", "נדל נוה", "ניאזוב אביאל", "סמני שבח", "פורסט עמיחי", "פלומבו נריה", "פנקר שילה", "פרשל מלאכי", "קצב נעם", "רוזנצוויג בעז אשר"].map(n => ({name: n, total: 100, weekly: 0, hasNote: false}))
     };
 
     function toggleLogin(s) { document.getElementById('loginArea').style.display = s ? 'block' : 'none'; if(s) document.getElementById('passInput').focus(); }
+    
     function checkPassword() {
         const inp = document.getElementById('passInput');
         if (inp.value === db.config.pass) { showAdmin(true); toggleLogin(false); }
-        else if (inp.value === "613") { db.config.pass = "1234"; alert("אופס ל-1234"); }
-        else alert("טעות");
+        else if (inp.value === "613") { db.config.pass = "1234"; alert("הסיסמה אופסה ל-1234"); }
+        else alert("סיסמה שגויה!");
         inp.value = '';
     }
-    function showAdmin(s) { document.querySelectorAll('.teacher-only').forEach(el => el.style.display = s ? 'block' : 'none'); document.getElementById('loginBtn').style.display = s ? 'none' : 'block'; render(); }
+
+    function showAdmin(s) { 
+        document.querySelectorAll('.teacher-only').forEach(el => el.style.display = s ? 'block' : 'none'); 
+        document.getElementById('loginBtn').style.display = s ? 'none' : 'block'; 
+        render(); 
+    }
+
     function logout() { showAdmin(false); }
-    function updatePass() { const np = document.getElementById('newPass').value; if(np){ db.config.pass = np; alert("סיסמה עודכנה"); render(); } }
 
     function uploadPhoto(event) {
         const reader = new FileReader();
-        reader.onload = e => { db.config.classPhoto = e.target.result; render(); };
+        reader.onload = e => { 
+            db.config.classPhoto = e.target.result; 
+            render(); 
+        };
         reader.readAsDataURL(event.target.files[0]);
     }
+
+    function updatePass() { const np = document.getElementById('newPass').value; if(np){ db.config.pass = np; alert("הסיסמה עודכנה בהצלחה!"); render(); } }
 
     function render() {
         document.getElementById('mainSlogan').innerText = db.config.slogan;
@@ -127,8 +156,12 @@
         document.getElementById('cfgMinus').value = db.config.minVal;
         document.getElementById('cfgSlogan').value = db.config.slogan;
 
+        // טיפול בתמונה
         const img = document.getElementById('classPhoto');
-        if(db.config.classPhoto) { img.src = db.config.classPhoto; document.getElementById('photoWrapper').style.display = 'block'; }
+        if(db.config.classPhoto) { 
+            img.src = db.config.classPhoto; 
+            document.getElementById('photoWrapper').style.display = 'block'; 
+        }
 
         const t1 = document.getElementById('tableManage'), t3 = document.getElementById('tableBank'), tP = document.getElementById('tablePrizes'), tW = document.getElementById('tableWeeklySort'), eL = document.getElementById('editList'), pL = document.getElementById('prizeList');
         t1.innerHTML = t3.innerHTML = tP.innerHTML = tW.innerHTML = eL.innerHTML = pL.innerHTML = '';
@@ -144,7 +177,6 @@
         });
 
         sortedByWeekly.forEach((s) => {
-            const i = db.students.indexOf(s);
             if(s.weekly > 0) tW.innerHTML += `<tr><td>${s.name}</td><td>${s.weekly}</td></tr>`;
             db.prizes.forEach(p => {
                 if(s.weekly >= p.points && (p.clean ? !s.hasNote : true)) tP.innerHTML += `<tr><td>${s.name}</td><td><span class="prize-tag">${p.name}</span></td></tr>`;
@@ -152,29 +184,29 @@
         });
 
         db.students.forEach((s, i) => {
-            eL.innerHTML += `<div style="font-size:0.75em;"><button onclick="removeStudent(${i})">x</button> <input type="text" value="${s.name}" onchange="db.students[${i}].name=this.value;render();" style="width:100px; border:none; background:transparent;"></div>`;
+            eL.innerHTML += `<div style="font-size:0.8em; border-bottom:1px solid #eee; padding:2px;"><button onclick="removeStudent(${i})" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold;">X</button> <input type="text" value="${s.name}" onchange="db.students[${i}].name=this.value;render();" style="width:130px; border:none; background:transparent;"></div>`;
         });
 
-        db.prizes.forEach((p, i) => { pL.innerHTML += `<span style="margin-left:8px;">${p.name} (${p.points}) <button onclick="db.prizes.splice(${i},1);render();">x</button></span>`; });
+        db.prizes.forEach((p, i) => { pL.innerHTML += `<span style="background:#eee; padding:3px; border-radius:4px; margin:2px; display:inline-block;">${p.name} (${p.points}) <button onclick="db.prizes.splice(${i},1);render();" style="color:red; border:none; background:none; cursor:pointer;">x</button></span>`; });
 
-        const pod = document.getElementById('podium'), medals = ['🥈', '🥇', '🥉'], colors = ['#c0c0c0', '#ffd700', '#cd7f32'], heights = [75, 100, 55];
+        const pod = document.getElementById('podium'), medals = ['🥈', '🥇', '🥉'], colors = ['#c0c0c0', '#ffd700', '#cd7f32'], heights = [80, 110, 60];
         pod.innerHTML = '';
         [1, 0, 2].forEach(pos => {
             const s = sortedByWeekly[pos];
             if(s && s.weekly > 0) pod.innerHTML += `<div class="podium-step" style="height:${heights[pos]}px; background:${colors[pos]}"><div class="step-name">${s.name}<br>(${s.weekly})</div>${medals[pos]}</div>`;
             else pod.innerHTML += `<div style="width:75px;"></div>`;
         });
-        localStorage.setItem('yeshiva_final_v25', JSON.stringify(db));
+        localStorage.setItem('yeshiva_final_v26', JSON.stringify(db));
     }
 
     function changeScore(i, v, p) { db.students[i].total += v; if(v>0) db.students[i].weekly += v; if(p) db.students[i].hasNote = true; render(); }
-    function addStudent() { const n = document.getElementById('newName').value; if(n){ db.students.push({name:n, total:100, weekly:0, hasNote:false}); render(); } }
-    function removeStudent(i) { if(confirm("למחוק?")) { db.students.splice(i,1); render(); } }
+    function addStudent() { const n = document.getElementById('newName').value; if(n){ db.students.push({name:n, total:100, weekly:0, hasNote:false}); document.getElementById('newName').value=''; render(); } }
+    function removeStudent(i) { if(confirm("למחוק את התלמיד מהרשימה?")) { db.students.splice(i,1); render(); } }
     function addPrize() { const n = document.getElementById('pName').value, p = parseInt(document.getElementById('pPoints').value); if(n && p){ db.prizes.push({name:n, points:p, clean:true}); render(); } }
-    function saveConfig() { db.config.plusVal = parseInt(document.getElementById('cfgPlus').value); db.config.minVal = parseInt(document.getElementById('cfgMinus').value); db.config.slogan = document.getElementById('cfgSlogan').value; render(); }
-    function resetWeekly() { if(confirm("איפוס שבוע?")) { db.students.forEach(s=>{s.weekly=0; s.hasNote=false;}); render(); } }
-    function fullReset() { if(confirm("איפוס כללי (כולל כסף)?")) { db.students.forEach(s=>{s.total=100; s.weekly=0; s.hasNote=false;}); render(); } }
-    function exportData() { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'backup.json'; a.click(); }
+    function saveConfig() { db.config.plusVal = parseInt(document.getElementById('cfgPlus').value); db.config.minVal = parseInt(document.getElementById('cfgMinus').value); db.config.slogan = document.getElementById('cfgSlogan').value; alert("ההגדרות נשמרו!"); render(); }
+    function resetWeekly() { if(confirm("האם לאפס את הניקוד השבועי לכולם?")) { db.students.forEach(s=>{s.weekly=0; s.hasNote=false;}); render(); } }
+    function fullReset() { if(confirm("זהירות! האם להחזיר את כל הקופות ל-100₪ ולאפס הכל?")) { db.students.forEach(s=>{s.total=100; s.weekly=0; s.hasNote=false;}); render(); } }
+    function exportData() { const b = new Blob([JSON.stringify(db)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'bakup_class.json'; a.click(); }
     function importData(e) { const r = new FileReader(); r.onload = f => { db = JSON.parse(f.target.result); render(); }; r.readAsText(e.target.files[0]); }
     render();
 </script>
