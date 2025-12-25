@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>בנק הכיתה ח/2</title>
+    <title id="pageTitle">בנק הכיתה ח/2</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -13,49 +13,45 @@
         html { scroll-behavior: smooth; }
         body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; padding-bottom: 50px; }
         
-        /* כותרת וסלוגן */
         .sticky-header { position: sticky; top: 0; width: 100%; background: rgba(15, 23, 42, 0.95); padding: 15px 0; display: flex; flex-direction: column; align-items: center; z-index: 1000; border-bottom: 2px solid var(--accent); backdrop-filter: blur(10px); }
         .main-title { font-size: 1.8em; font-weight: 800; color: var(--accent); margin: 0; text-shadow: 0 0 10px rgba(56, 189, 248, 0.3); }
-        .slogan { font-size: 0.95em; color: #94a3b8; font-style: italic; margin-top: 5px; font-weight: 400; text-align: center; max-width: 90%; }
+        .slogan { font-size: 0.95em; color: #94a3b8; font-style: italic; margin-top: 5px; text-align: center; max-width: 90%; }
 
         .class-photo-container { width: 100%; max-width: 850px; margin: 20px 0; text-align: center; padding: 0 10px; box-sizing: border-box; }
         #classPhoto { width: 100%; max-height: 300px; object-fit: cover; border-radius: 24px; border: 3px solid #334155; display: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
         .podium-container { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin: 20px 0; height: 160px; width: 100%; max-width: 500px; }
         .podium-step { display: flex; flex-direction: column; align-items: center; flex: 1; }
-        .step-bar { width: 100%; border-radius: 12px 12px 0 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; color: #000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .step-bar { width: 100%; border-radius: 12px 12px 0 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; color: #000; }
         .first { height: 100px; background: var(--gold); order: 2; }
         .second { height: 75px; background: var(--silver); order: 1; }
         .third { height: 55px; background: var(--bronze); order: 3; }
         .podium-name { font-size: 0.8em; margin-bottom: 4px; font-weight: bold; color: white; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 90px; }
         
-        .container { width: 95%; max-width: 850px; background: var(--card-bg); border-radius: 24px; overflow: hidden; border: 1px solid #334155; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+        .container { width: 95%; max-width: 850px; background: var(--card-bg); border-radius: 24px; overflow: hidden; border: 1px solid #334155; }
         .btn { background: var(--accent); color: var(--bg); border: none; padding: 10px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px; }
         
-        .student-row { border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
-        .student-row:hover { background: rgba(255,255,255,0.03); }
+        .student-row { border-bottom: 1px solid rgba(255,255,255,0.05); }
         .student-header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .score-circle { width: 45px; height: 45px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-weight: bold; border: 2px solid var(--accent); background: rgba(56, 189, 248, 0.1); }
+        .score-circle { width: 45px; height: 45px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-weight: bold; border: 2px solid var(--accent); }
         
-        .history-panel { display: none; padding: 15px 25px; background: rgba(0,0,0,0.4); border-top: 1px solid rgba(255,255,255,0.05); animation: slideDown 0.3s ease-out; }
+        .history-panel { display: none; padding: 15px 25px; background: rgba(0,0,0,0.4); border-top: 1px solid rgba(255,255,255,0.05); }
         .log-item { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95em; border-bottom: 1px dotted rgba(255,255,255,0.1); padding-bottom: 4px; }
-        .pos { color: var(--success); font-weight: bold; }
-        .neg { color: var(--danger); font-weight: bold; }
         
         .edit-panel { padding: 30px; display: none; }
         .active { display: block; }
         .settings-table { width: 100%; margin-bottom: 20px; background: rgba(255,255,255,0.05); border-radius: 15px; padding: 15px; }
         .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #334155; }
-        input[type="number"] { background: #0f172a; color: white; border: 1px solid var(--accent); border-radius: 8px; padding: 6px; width: 65px; text-align: center; }
+        input[type="text"], input[type="number"] { background: #0f172a; color: white; border: 1px solid var(--accent); border-radius: 8px; padding: 8px; }
     </style>
 </head>
 <body>
 
     <div class="sticky-header">
-        <div class="main-title">🏦 בנק הכיתה ח/2</div>
-        <div class="slogan">"אל תהיו כעבדים המשמשים את הרב על מנת לקבל פרס..."</div>
+        <div class="main-title" id="displayTitle">בנק הכיתה ח/2</div>
+        <div class="slogan" id="displaySlogan">"אל תהיו כעבדים המשמשים את הרב על מנת לקבל פרס..."</div>
         <div style="width:100%; max-width:850px; display:flex; justify-content:flex-end; padding:10px 20px 0 20px;">
-            <button class="btn" onclick="toggleMode()">⚙️ ניהול הכיתה</button>
+            <button class="btn" onclick="toggleMode()">⚙️ ניהול ועריכה</button>
         </div>
     </div>
 
@@ -73,14 +69,30 @@
         </div>
 
         <div id="editSection" class="edit-panel">
-            <h3>📸 עדכון תמונה כיתתית</h3>
+            <h3>📝 עריכת כותרות</h3>
+            <div class="settings-table">
+                <div class="settings-row">
+                    <span>שם הכיתה:</span>
+                    <input type="text" id="inputTitle" oninput="updateTexts()" style="width: 60%;">
+                </div>
+                <div class="settings-row">
+                    <span>סלוגן:</span>
+                    <input type="text" id="inputSlogan" oninput="updateTexts()" style="width: 60%;">
+                </div>
+            </div>
+
+            <hr>
+            <h3>📸 תמונה כיתתית</h3>
             <input type="file" accept="image/*" onchange="uploadPhoto(event)" class="btn" style="width:100%; margin-bottom:20px;">
+            
             <hr>
             <h3>📊 ערכי ניקוד</h3>
             <div id="behaviorSettings" class="settings-table"></div>
+            
             <hr>
             <h3>📁 ייבוא מאקסל</h3>
             <input type="file" id="fileIn" accept=".xlsx, .xls" onchange="loadExcel(event)">
+            
             <hr>
             <div style="text-align: center; margin-top: 20px;">
                 <button class="btn" style="background:var(--danger); color:white; width: 100%; padding: 15px; justify-content: center;" onclick="resetDataOnly()">🔄 איפוס שבועי (ניקוד והיסטוריה)</button>
@@ -92,17 +104,33 @@
     const studentNames = ["אברמוביץ דניאל", "איוב איתן", "אלגרבלי בניה עוז", "אלמו נתנאל", "ארבל אליה אהרון", "בלוסטוצקי הלל ישי", "בן עטר נתאי יוסף", "בן פורת נעם", "גורדון בניה", "גלייזר שלום", "דהן יוסף חיים", "הירשנברגר בועז", "וויסמן יהונתן", "ולר נווה אהרן", "טמנה אביהו", "יושעי נעם", "יעקבי יהודה", "כהן ליאור", "כהן ניתאי", "מנצור הראל", "מרסיאנו אורי", "נדל נוה", "ניאזוב אביאל", "סמני שבח", "פורסט עמיחי", "פלומבו נריה", "פנקר שילה", "פרשל מלאכי", "קצב נעם", "רוזנצוויג בעז אשר"];
     const defaultRules = { "חיסור בתפילה": -5, "מילה טובה": 10, "עזרה": 15, "השתתפות": 5, "הפרעה": -10, "איחור": -5 };
 
-    let state = JSON.parse(localStorage.getItem('class_bank_h2_v15')) || {
+    let state = JSON.parse(localStorage.getItem('class_bank_h2_v16')) || {
         data: studentNames.map(n => ({ name: n, balance: 100, logs: [] })),
         rules: defaultRules,
-        photo: ""
+        photo: "",
+        title: "בנק הכיתה ח/2",
+        slogan: '"אל תהיו כעבדים המשמשים את הרב על מנת לקבל פרס..."'
     };
 
     let backupState = null;
 
-    function save() { localStorage.setItem('class_bank_h2_v15', JSON.stringify(state)); }
+    function save() { localStorage.setItem('class_bank_h2_v16', JSON.stringify(state)); }
+
+    function updateTexts() {
+        state.title = document.getElementById('inputTitle').value;
+        state.slogan = document.getElementById('inputSlogan').value;
+        document.getElementById('displayTitle').innerText = state.title;
+        document.getElementById('displaySlogan').innerText = state.slogan;
+        document.getElementById('pageTitle').innerText = state.title;
+        save();
+    }
 
     function render() {
+        document.getElementById('displayTitle').innerText = state.title;
+        document.getElementById('displaySlogan').innerText = state.slogan;
+        document.getElementById('inputTitle').value = state.title;
+        document.getElementById('inputSlogan').value = state.slogan;
+
         const img = document.getElementById('classPhoto');
         if (state.photo) { img.src = state.photo; img.style.display = 'inline-block'; }
 
@@ -118,13 +146,7 @@
                         <div class="score-circle" style="border-color:${s.balance < 100 ? 'var(--danger)' : 'var(--accent)'}">${s.balance}</div>
                     </div>
                     <div id="hist-${idx}" class="history-panel">
-                        <div style="font-weight:bold; margin-bottom:10px; color:var(--accent); font-size:0.9em;">פירוט אירועים:</div>
-                        ${s.logs.length ? s.logs.map(l => `
-                            <div class="log-item">
-                                <span>${l.text}</span>
-                                <span class="${l.val >= 0 ? 'pos' : 'neg'}">${l.val >= 0 ? '+' : ''}${l.val}</span>
-                            </div>
-                        `).join('') : '<div style="color:#64748b; font-style:italic;">אין היסטוריית פעולות</div>'}
+                        ${s.logs.length ? s.logs.map(l => `<div class="log-item"><span>${l.text}</span><span style="color:${l.val>=0?'var(--success)':'var(--danger)'}">${l.val>=0?'+':''}${l.val}</span></div>`).join('') : 'אין היסטוריה'}
                     </div>
                 </div>`;
         });
@@ -136,24 +158,17 @@
         const podiumDiv = document.getElementById('podium');
         podiumDiv.innerHTML = `
             <div class="podium-step"><div class="podium-name">${sorted[1].name}</div><div class="step-bar second">🥈<br>${sorted[1].balance}</div></div>
-            <div class="podium-step"><div class="podium-name" style="font-size:0.95em;">${sorted[0].name}</div><div class="step-bar first">👑<br>${sorted[0].balance}</div></div>
+            <div class="podium-step"><div class="podium-name">${sorted[0].name}</div><div class="step-bar first">👑<br>${sorted[0].balance}</div></div>
             <div class="podium-step"><div class="podium-name">${sorted[2].name}</div><div class="step-bar third">🥉<br>${sorted[2].balance}</div></div>
         `;
     }
 
-    function toggleHistory(id) {
-        const el = document.getElementById(id);
-        el.style.display = el.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function uploadPhoto(e) {
-        const reader = new FileReader();
-        reader.onload = (f) => { state.photo = f.target.result; render(); };
-        reader.readAsDataURL(e.target.files[0]);
-    }
-
+    function toggleHistory(id) { const el = document.getElementById(id); el.style.display = el.style.display === 'block' ? 'none' : 'block'; }
+    function uploadPhoto(e) { const reader = new FileReader(); reader.onload = (f) => { state.photo = f.target.result; render(); }; reader.readAsDataURL(e.target.files[0]); }
+    function toggleMode() { document.getElementById('editSection').classList.toggle('active'); if(document.getElementById('editSection').classList.contains('active')) window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }
+    
     function resetDataOnly() {
-        if(confirm("לאפס את כל הניקוד וההיסטוריה של כיתה ח/2? (התמונה לא תימחק)")) {
+        if(confirm("לאפס ניקוד והיסטוריה?")) {
             backupState = JSON.parse(JSON.stringify(state));
             state.data.forEach(s => { s.balance = 100; s.logs = []; });
             document.getElementById('restoreBtn').style.display = 'inline-block';
@@ -162,13 +177,7 @@
     }
 
     function restoreData() {
-        if(backupState) {
-            state = JSON.parse(JSON.stringify(backupState));
-            backupState = null;
-            document.getElementById('restoreBtn').style.display = 'none';
-            render();
-            alert("שחזור הושלם!");
-        }
+        if(backupState) { state = JSON.parse(JSON.stringify(backupState)); backupState = null; document.getElementById('restoreBtn').style.display = 'none'; render(); }
     }
 
     function loadExcel(e) {
@@ -181,14 +190,12 @@
                 let s = state.data.find(n => rowStr.includes(n.name));
                 if (s) {
                     Object.keys(state.rules).sort((a,b)=>b.length-a.length).forEach(key => {
-                        const flexKey = key.split(' ').join('\\s+');
-                        const regex = new RegExp(`${flexKey}(?:\\s*:\\s*(\\d+))?`, 'g');
+                        const regex = new RegExp(`${key.split(' ').join('\\s+')}(?:\\s*:\\s*(\\d+))?`, 'g');
                         let match;
                         while ((match = regex.exec(rowStr)) !== null) {
                             let count = match[1] ? parseInt(match[1]) : 1;
-                            let pts = count * state.rules[key];
-                            s.balance += pts;
-                            s.logs.unshift({ text: key + (count > 1 ? ` (x${count})` : ''), val: pts });
+                            s.balance += (count * state.rules[key]);
+                            s.logs.unshift({ text: key + (count > 1 ? ` (x${count})` : ''), val: count * state.rules[key] });
                         }
                     });
                 }
@@ -198,8 +205,6 @@
         reader.readAsArrayBuffer(e.target.files[0]);
     }
 
-    function toggleMode() { document.getElementById('editSection').classList.toggle('active'); }
-    
     const settingsDiv = document.getElementById('behaviorSettings');
     for (let key in state.rules) {
         settingsDiv.innerHTML += `<div class="settings-row"><span>${key}</span><input type="number" value="${state.rules[key]}" onchange="state.rules['${key}']=parseInt(this.value);save()"></div>`;
