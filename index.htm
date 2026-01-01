@@ -2,220 +2,180 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>מערכת ניהול ניקוד כיתתית</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <title>מצטייני ח'2 - הגרסה המדויקת</title>
     <style>
-        :root {
-            --primary: #2563eb; --secondary: #64748b; --success: #22c55e;
-            --danger: #ef4444; --warning: #f59e0b; --bg: #f8fafc;
-            --card: #ffffff; --text: #1e293b;
-        }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 50px; }
-        .header { background: var(--primary); color: white; padding: 20px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        .container { max-width: 900px; margin: 20px auto; padding: 0 15px; }
-        
-        /* כרטיס תלמיד */
-        .student-list { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-        .student-card { background: var(--card); padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: 0.2s; }
-        .student-info { flex-grow: 1; }
-        .student-name { font-weight: bold; font-size: 1.1em; display: flex; align-items: center; gap: 10px; }
-        .prize-icons { display: flex; gap: 5px; }
-        .badge { font-size: 0.7em; padding: 2px 8px; border-radius: 10px; color: white; }
+        :root { --gold: #fbbf24; --silver: #94a3b8; --bronze: #cd7f32; --primary: #1e40af; --bg: #f8fafc; --success: #16a34a; --danger: #ef4444; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; padding: 20px; direction: rtl; }
+        .header { background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; padding: 30px; text-align: center; border-radius: 20px; margin-bottom: 30px; }
+        #drop-area { border: 4px dashed #3b82f6; border-radius: 25px; padding: 40px; text-align: center; background: white; cursor: pointer; }
+       
+        .podium { display: flex; align-items: flex-end; justify-content: center; gap: 20px; height: 220px; margin: 60px 0; display: none; }
+        .step { width: 160px; border-radius: 15px 15px 0 0; color: white; text-align: center; position: relative; padding-bottom: 15px; font-weight: bold; }
+        .step1 { background: var(--gold); height: 180px; order: 2; box-shadow: 0 15px 25px rgba(251,191,36,0.4); }
+        .step2 { background: var(--silver); height: 130px; order: 1; }
+        .step3 { background: var(--bronze); height: 100px; order: 3; }
+        .p-name { color: #1e293b; position: absolute; top: -60px; width: 100%; font-size: 1.4em; font-weight: 900; }
+        .p-score { display: block; font-size: 0.65em; background: rgba(255,255,255,0.9); color: #1e40af; border-radius: 5px; padding: 2px; margin: 5px 10px; }
 
-        /* ניקוד */
-        .score-section { display: flex; align-items: center; gap: 15px; }
-        .score-val { font-size: 1.5em; font-weight: 800; color: var(--primary); min-width: 50px; text-align: center; }
-        .btn-circle { width: 32px; height: 32px; border-radius: 50%; border: none; cursor: pointer; color: white; font-weight: bold; font-size: 1.2em; display: flex; align-items: center; justify-content: center; }
+        .student-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; margin-top: 20px; display: none; }
+        .s-card { background: white; padding: 15px; border-radius: 15px; text-align: center; cursor: pointer; font-weight: bold; border: 2px solid #e2e8f0; }
+        .s-card.outperformed { border-color: var(--success); background: #f0fdf4; color: var(--success); }
+        .s-card.is-past { opacity: 0.5; filter: grayscale(1); }
 
-        /* פודיום */
-        .podium { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin: 30px 0; height: 150px; }
-        .podium-place { display: flex; flex-direction: column; align-items: center; width: 100px; }
-        .podium-bar { width: 100%; border-radius: 8px 8px 0 0; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-
-        /* ניהול */
-        .admin-panel { background: #e2e8f0; padding: 20px; border-radius: 15px; margin-bottom: 20px; display: none; }
-        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .btn-main { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        
-        .class-photo { width: 100%; max-height: 300px; object-fit: cover; border-radius: 15px; margin-bottom: 20px; display: none; }
-        
-        @media print { .no-print { display: none; } }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 20px; z-index: 1001; width: 350px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 1000; }
+        .report-section { margin: 15px 0; padding: 10px; border-radius: 10px; text-align: right; }
+        .good-bg { background: #f0fdf4; color: var(--success); }
+        .bad-bg { background: #fef2f2; color: var(--danger); }
+        .btn { cursor: pointer; padding: 12px; border: none; border-radius: 10px; font-weight: bold; width: 100%; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h1 id="viewTitle">בנק הכיתה</h1>
-    <p id="viewSlogan">בונים הצלחה ביחד</p>
-    <button class="btn-main no-print" onclick="toggleAdmin()">⚙️ מצב עריכה</button>
+    <h1 style="margin:0;">🏆 נבחרי השבוע - כיתה ח'2</h1>
 </div>
 
-<div class="container">
-    <div id="adminArea" class="admin-panel no-print">
-        <div class="admin-grid">
-            <div style="background: white; padding: 15px; border-radius: 10px;">
-                <h3>📁 טעינת אקסל</h3>
-                <input type="file" id="excelFile" accept=".xlsx, .xls" onchange="processExcel(event)">
-                <p style="font-size: 0.8em; color: gray;">השמות יזוהו אוטומטית ללא קשר לסדר (משפחה/פרטי).</p>
-            </div>
-            <div style="background: white; padding: 15px; border-radius: 10px;">
-                <h3>🖼️ עיצוב כיתה</h3>
-                <input type="text" id="editTitle" placeholder="שם הכיתה" oninput="updateMeta()"><br><br>
-                <input type="text" id="editSlogan" placeholder="סלוגן" oninput="updateMeta()"><br><br>
-                <input type="file" accept="image/*" onchange="updatePhoto(event)">
-            </div>
-        </div>
-        <div style="margin-top: 15px; display: flex; gap: 10px;">
-            <button class="btn-main" style="background: var(--danger);" onclick="resetScores()">🔄 איפוס ניקוד שבועי</button>
-            <button class="btn-main" style="background: var(--warning);" onclick="exportData()">💾 גיבוי נתונים</button>
-        </div>
+<div id="drop-area" onclick="document.getElementById('fileInput').click()">
+    <h2>📁 לחץ להעלאת קובץ ה-CSV</h2>
+    <input type="file" id="fileInput" accept=".csv" style="display:none" onchange="handleFiles(this.files)">
+</div>
+
+<div id="results-area">
+    <div class="podium" id="podium">
+        <div class="step step1"><div id="n1" class="p-name"></div>🥇</div>
+        <div class="step step2"><div id="n2" class="p-name"></div>🥈</div>
+        <div class="step step3"><div id="n3" class="p-name"></div>🥉</div>
     </div>
 
-    <img id="displayPhoto" class="class-photo">
-    
-    <div id="podiumArea" class="podium"></div>
+    <div style="text-align:center;">
+        <button id="pastBtn" class="btn" style="display:none; width:200px; background:#64748b; color:white;" onclick="showPastModal()">ניהול זוכים מהעבר</button>
+    </div>
 
-    <div id="studentList" class="student-list"></div>
+    <div class="student-grid" id="studentGrid"></div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeModals()"></div>
+
+<div class="modal" id="detailsModal">
+    <h2 id="m-name" style="margin-top:0;"></h2>
+    <div id="m-score" style="font-weight: bold; margin-bottom: 10px;"></div>
+    <div class="report-section good-bg" id="m-good-box"><strong>💪 הצלחות:</strong><div id="m-good"></div></div>
+    <div class="report-section bad-bg" id="m-bad-box"><strong>⚠️ לשיפור:</strong><div id="m-bad"></div></div>
+    <button class="btn" style="background:var(--primary); color:white;" onclick="closeModals()">סגור</button>
+</div>
+
+<div class="modal" id="pastModal">
+    <h3>מי כבר זכה?</h3>
+    <div id="pastList" style="max-height: 250px; overflow-y: auto;"></div>
+    <button class="btn" style="background:var(--primary); color:white; margin-top:10px;" onclick="closeModals()">עדכן</button>
 </div>
 
 <script>
-    // נתונים התחלתיים
-    let state = JSON.parse(localStorage.getItem('class_v1_core')) || {
-        students: [
-            "אברמוביץ דניאל", "איוב איתן", "אלגרבלי בניה עוז", "אלמו נתנאל", "ארבל אליה אהרון", 
-            "בלוסטוצקי הלל ישי", "בן עטר נתאי יוסף", "בן פורת נעם", "גורדון בניה", "גלייזר שלום", 
-            "דהן יוסף חיים", "הירשנברגר בועז", "וויסמן יהונתן", "ולר נווה אהרן", "טמנה אביהו", 
-            "יושעי נעם", "יעקבי יהודה", "כהן ליאור", "כהן ניתאי", "מנצור הראל", 
-            "מרסיאנו אורי", "נדל נוה", "ניאזוב אביאל", "סמני שבח", "פורסט עמיחי", 
-            "פלומבו נריה", "פנקר שילה", "פרשל מלאכי", "קצב נעם", "רוזנצוויג בעז אשר"
-        ].map(name => ({ name, score: 100, weeklyLogs: [] })),
-        config: { title: "בנק הכיתה ח/2", slogan: "אל תהיו כעבדים המשמשים את הרב...", photo: "" },
-        prizes: [
-            { name: "💌 הודעת נחת", minScore: 125, noBadBehavior: true, minGood: 3 },
-            { name: "🍫 צ'ופר שבועי", minScore: 145, noBadBehavior: false, minGood: 0 }
-        ]
-    };
+    let db = {};
+    let pastWinners = JSON.parse(localStorage.getItem('h2_v96_winners') || '[]');
 
-    function save() { localStorage.setItem('class_v1_core', JSON.stringify(state)); }
-
-    // פונקציית זיהוי שמות גמישה
-    function findStudent(rawName) {
-        const clean = (s) => s.split(' ').filter(x => x.length > 1).sort().join('');
-        const searchName = clean(rawName);
-        return state.students.find(s => clean(s.name) === searchName || clean(s.name).includes(searchName) || searchName.includes(clean(s.name)));
+    function handleFiles(files) {
+        if (!files.length) return;
+        const reader = new FileReader();
+        reader.onload = (e) => { parseCSV(e.target.result); render(); };
+        reader.readAsText(files[0], 'UTF-8');
     }
 
-    function updateScore(studentName, amount, reason = "עדכון ידני") {
-        const s = state.students.find(x => x.name === studentName);
-        if (s) {
-            s.score += amount;
-            s.weeklyLogs.push({ reason, amount, date: new Date().toLocaleDateString() });
-            render();
+    function parseCSV(text) {
+        const rows = text.split(/\r?\n/);
+        db = {};
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            if (row.length < 2) continue;
+            const name = row[1].replace(/"/g, '').trim();
+            if (!name) continue;
+            db[name] = { score: 0, interruptions: 0, absences: 0, pos: [], neg: [] };
+            row.forEach(cell => {
+                const content = cell.replace(/"/g, '').trim();
+                const regex = /([^0-9 Hebrew:]+):\s?(\d+)/g;
+                let match;
+                while ((match = regex.exec(content)) !== null) {
+                    const type = match[1].trim(); const count = parseInt(match[2]);
+                    if (/(הפרעה|פטפוט|שוטטות|חוצפה|ציוד|אי הכנת)/.test(type)) {
+                        db[name].interruptions += count;
+                        db[name].neg.push(`${type} (${count})`);
+                        db[name].score -= (count * 3);
+                    } else if (type.includes("חיסור")) {
+                        db[name].absences += count;
+                        db[name].neg.push(`${type} (${count})`);
+                    } else if (/(מילה|הצטיינות|שותף|הגעה)/.test(type)) {
+                        db[name].score += (count * 10);
+                        db[name].pos.push(`${type} (${count})`);
+                    }
+                }
+            });
         }
     }
 
     function render() {
-        // עדכון כותרות
-        document.getElementById('viewTitle').innerText = state.config.title;
-        document.getElementById('viewSlogan').innerText = state.config.slogan;
-        if(state.config.photo) {
-            const img = document.getElementById('displayPhoto');
-            img.src = state.config.photo; img.style.display = 'block';
+        let absLimit = 2;
+        let winners = [];
+        // תנאי חדש: רק מי שיש לו ניקוד חיובי (score > 0) יכול לזכות
+        while (absLimit <= 15) {
+            winners = Object.entries(db)
+                .filter(([n, d]) => d.score > 0 && d.interruptions === 0 && d.absences <= absLimit && !pastWinners.includes(n))
+                .sort((a, b) => b[1].score - a[1].score);
+            if (winners.length >= 3 || absLimit === 15) break;
+            absLimit++;
         }
 
-        // פודיום
-        const sorted = [...state.students].sort((a,b) => b.score - a.score);
-        const podArea = document.getElementById('podiumArea');
-        podArea.innerHTML = `
-            <div class="podium-place"><small>${sorted[1].name}</small><div class="podium-bar" style="height:60px; background:#cbd5e1;">🥈</div></div>
-            <div class="podium-place"><small>${sorted[0].name}</small><div class="podium-bar" style="height:90px; background:#fbbf24;">🥇</div></div>
-            <div class="podium-place"><small>${sorted[2].name}</small><div class="podium-bar" style="height:40px; background:#cd7f32;">🥉</div></div>
-        `;
+        const minScore = (winners.length >= 3) ? winners[2][1].score : (winners.length > 0 ? winners[winners.length-1][1].score : 0);
 
-        // רשימה
-        const list = document.getElementById('studentList');
-        list.innerHTML = '';
-        sorted.forEach((s, i) => {
-            // בדיקת זכאות לפרסים
-            const badCount = s.weeklyLogs.filter(l => l.amount < 0).length;
-            const goodCount = s.weeklyLogs.filter(l => l.amount > 0).length;
-            
-            let prizeHTML = '';
-            state.prizes.forEach(p => {
-                const scoreOk = s.score >= p.minScore;
-                const behaviorOk = !p.noBadBehavior || (p.noBadBehavior && badCount === 0);
-                const goodOk = goodCount >= p.minGood;
-                if (scoreOk && behaviorOk && goodOk) {
-                    prizeHTML += `<span class="badge" style="background:var(--warning)">${p.name}</span>`;
-                }
-            });
+        document.getElementById('drop-area').style.display = 'none';
+        document.getElementById('podium').style.display = 'flex';
+        document.getElementById('studentGrid').style.display = 'grid';
+        document.getElementById('pastBtn').style.display = 'inline-block';
 
-            list.innerHTML += `
-                <div class="student-card">
-                    <div class="student-info">
-                        <div class="student-name">${i+1}. ${s.name} <div class="prize-icons">${prizeHTML}</div></div>
-                    </div>
-                    <div class="score-section">
-                        <button class="btn-circle" style="background:var(--danger)" onclick="updateScore('${s.name}', -5)">-</button>
-                        <div class="score-val">${s.score}</div>
-                        <button class="btn-circle" style="background:var(--success)" onclick="updateScore('${s.name}', 5)">+</button>
-                    </div>
-                </div>
-            `;
+        [1, 2, 3].forEach((rank, i) => {
+            const el = document.getElementById(`n${rank}`);
+            if (winners[i]) {
+                el.innerHTML = `${winners[i][0]}<span class="p-score">${winners[i][1].score} נק'</span>`;
+            } else { el.innerText = "---"; }
         });
-        save();
+
+        const grid = document.getElementById('studentGrid');
+        grid.innerHTML = Object.keys(db).sort().map(name => {
+            const s = db[name];
+            const isWinner = winners.slice(0,3).some(w => w[0] === name);
+            const isPotential = !isWinner && !pastWinners.includes(name) && s.score > minScore;
+            let cls = "s-card" + (isPotential ? " outperformed" : "") + (pastWinners.includes(name) ? " is-past" : "");
+            return `<div class="${cls}" onclick="openDetails('${name}')">${name}<br><small>${s.score} נק'</small></div>`;
+        }).join('');
     }
 
-    function processExcel(e) {
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-            const data = new Uint8Array(evt.target.result);
-            const workbook = XLSX.read(data, {type: 'array'});
-            const sheet = workbook.Sheets[workbook.SheetNames[0]];
-            const rows = XLSX.utils.sheet_to_json(sheet, {header: 1});
-
-            rows.forEach(row => {
-                const text = row.join(" ");
-                const student = findStudent(text);
-                if (student) {
-                    // חיפוש מילות מפתח
-                    if (text.includes("הפרעה")) updateScore(student.name, -15, "הפרעה");
-                    if (text.includes("מילה טובה")) updateScore(student.name, 5, "מילה טובה");
-                    if (text.includes("חיסור")) updateScore(student.name, -5, "חיסור");
-                    if (text.includes("השתתפות")) updateScore(student.name, 5, "השתתפות");
-                }
-            });
-            alert("הנתונים נסרקו בהצלחה!");
-        };
-        reader.readAsArrayBuffer(e.target.files[0]);
+    function openDetails(name) {
+        const s = db[name];
+        document.getElementById('m-name').innerText = name;
+        document.getElementById('m-score').innerText = `ניקוד: ${s.score}`;
+        document.getElementById('m-good').innerHTML = s.pos.length ? s.pos.join('<br>') : "אין";
+        document.getElementById('m-bad').innerHTML = s.neg.length ? s.neg.join('<br>') : "נקי!";
+        document.getElementById('detailsModal').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
     }
 
-    function toggleAdmin() {
-        const el = document.getElementById('adminArea');
-        el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    function showPastModal() {
+        const list = document.getElementById('pastList');
+        list.innerHTML = Object.keys(db).sort().map(name => `
+            <div style="text-align:right; padding:5px;"><input type="checkbox" id="c-${name}" ${pastWinners.includes(name)?'checked':''} onchange="toggleWinner('${name}')"> <label for="c-${name}">${name}</label></div>
+        `).join('');
+        document.getElementById('pastModal').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
     }
 
-    function resetScores() {
-        if(confirm("לאפס את כל הניקוד ל-100? (ההיסטוריה השבועית תימחק)")) {
-            state.students.forEach(s => { s.score = 100; s.weeklyLogs = []; });
-            render();
-        }
-    }
-
-    function updateMeta() {
-        state.config.title = document.getElementById('editTitle').value;
-        state.config.slogan = document.getElementById('editSlogan').value;
+    function toggleWinner(name) {
+        if (pastWinners.includes(name)) pastWinners = pastWinners.filter(n => n !== name);
+        else pastWinners.push(name);
+        localStorage.setItem('h2_v96_winners', JSON.stringify(pastWinners));
         render();
     }
 
-    function updatePhoto(e) {
-        const r = new FileReader();
-        r.onload = (f) => { state.config.photo = f.target.result; render(); };
-        r.readAsDataURL(e.target.files[0]);
-    }
-
-    render();
+    function closeModals() { document.querySelectorAll('.modal, .overlay').forEach(el => el.style.display = 'none'); }
 </script>
 </body>
 </html>
