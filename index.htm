@@ -8,33 +8,96 @@
 ‏    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 ‏    <style>
 ‏        :root { --gold: #d4af37; --wood: #3e2723; --dark: #1a0f0d; --cream: #fff8e1; }
-‏        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #2d1b15; color: var(--cream); display: flex; height: 100vh; overflow: hidden; }
-‏        .bsd { position: fixed; top: 5px; left: 10px; font-size: 0.8rem; color: var(--gold); z-index: 3000; }
-‏        .sidebar { width: 280px; background: var(--dark); border-left: 2px solid var(--gold); display: flex; flex-direction: column; z-index: 1000; }
-‏        .sidebar-header { padding: 20px; text-align: center; border-bottom: 2px solid var(--gold); }
-‏        .logo-img { height: 70px; margin-bottom: 10px; display: none; margin: 0 auto; object-fit: contain; }
-‏        .class-img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; border: 1px solid var(--gold); margin-top: 10px; display: none; }
-‏        .nav-item { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.3s; font-size: 1.1rem; }
+        
+‏        body { 
+‏            margin: 0; 
+‏            font-family: 'Segoe UI', sans-serif; 
+‏            background: #2d1b15; 
+‏            color: var(--cream); 
+‏            display: flex; 
+‏            flex-direction: row;
+‏            height: 100vh; 
+‏            overflow: hidden; 
+        }
+
+‏        .bsd { position: fixed; top: 5px; left: 10px; font-size: 0.7rem; color: var(--gold); z-index: 3000; }
+        
+        /* תפריט צד רספונסיבי */
+‏        .sidebar { 
+‏            width: 280px; 
+‏            background: var(--dark); 
+‏            border-left: 2px solid var(--gold); 
+‏            display: flex; 
+‏            flex-direction: column; 
+‏            z-index: 1000; 
+‏            transition: 0.3s;
+        }
+
+‏        .sidebar-header { padding: 15px; text-align: center; border-bottom: 2px solid var(--gold); }
+‏        .logo-img { height: 60px; margin: 0 auto 10px; display: none; object-fit: contain; }
+‏        .class-img { width: 100%; max-height: 120px; object-fit: cover; border-radius: 8px; border: 1px solid var(--gold); display: none; }
+
+‏        .nav-item { padding: 15px 20px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.3s; font-size: 1.1rem; }
 ‏        .nav-item:hover, .nav-item.active { background: var(--wood); color: var(--gold); border-right: 5px solid var(--gold); }
-‏        .main-container { flex: 1; overflow-y: auto; padding: 30px; position: relative; }
-‏        header { text-align: center; margin-bottom: 40px; }
-‏        .podium { display: flex; justify-content: center; align-items: flex-end; gap: 20px; height: 180px; margin: 30px 0; }
-‏        .step { width: 130px; text-align: center; padding: 10px; border-radius: 12px 12px 0 0; color: #000; font-weight: bold; }
-‏        .step-1 { background: var(--gold); height: 100%; order: 2; box-shadow: 0 0 25px var(--gold); }
+
+        /* תוכן מרכזי */
+‏        .main-container { flex: 1; overflow-y: auto; padding: 20px; position: relative; width: 100%; }
+‏        header { text-align: center; margin-bottom: 25px; }
+‏        header h1 { font-size: 1.8rem; color: var(--gold); margin: 0; }
+
+        /* פודיום מותאם */
+‏        .podium { 
+‏            display: flex; 
+‏            justify-content: center; 
+‏            align-items: flex-end; 
+‏            gap: 10px; 
+‏            height: 150px; 
+‏            margin: 20px 0; 
+        }
+‏        .step { width: 30%; max-width: 100px; text-align: center; padding: 10px 5px; border-radius: 10px 10px 0 0; color: #000; font-weight: bold; font-size: 0.85rem; }
+‏        .step-1 { background: var(--gold); height: 100%; order: 2; box-shadow: 0 0 15px var(--gold); }
 ‏        .step-2 { background: #c0c0c0; height: 75%; order: 1; }
 ‏        .step-3 { background: #cd7f32; height: 55%; order: 3; }
-‏        .card { background: rgba(0,0,0,0.3); border: 2px solid var(--gold); border-radius: 20px; padding: 25px; margin-bottom: 20px; }
-‏        table { width: 100%; border-collapse: collapse; text-align: center; }
-‏        th { background: rgba(0,0,0,0.5); color: var(--gold); padding: 12px; border-bottom: 2px solid var(--gold); }
-‏        td { padding: 12px; border-bottom: 1px solid rgba(212,175,55,0.1); }
+
+‏        .card { background: rgba(0,0,0,0.3); border: 2px solid var(--gold); border-radius: 15px; padding: 15px; margin-bottom: 20px; }
+        
+        /* טבלה רספונסיבית */
+‏        .table-container { overflow-x: auto; width: 100%; }
+‏        table { width: 100%; border-collapse: collapse; text-align: center; min-width: 300px; }
+‏        th { background: rgba(0,0,0,0.5); color: var(--gold); padding: 10px; font-size: 0.9rem; border-bottom: 2px solid var(--gold); }
+‏        td { padding: 10px; font-size: 0.9rem; border-bottom: 1px solid rgba(212,175,55,0.1); }
+        
 ‏        .pos { color: #2ecc71; } .neg { color: #e74c3c; }
-‏        .btn { background: var(--gold); color: #000; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-‏        .btn-toggle { background: transparent; color: var(--gold); border: 2px solid var(--gold); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; font-weight: bold; }
-‏        .btn-del { color: #e74c3c; cursor: pointer; background: none; border: none; font-size: 1.1rem; transition: 0.2s; }
-‏        .btn-del:hover { transform: scale(1.2); color: #ff5e4d; }
-‏        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 2000; }
-‏        .modal-content { background: var(--wood); margin: 2% auto; width: 95%; max-width: 900px; padding: 30px; border: 2px solid var(--gold); border-radius: 20px; max-height: 90vh; overflow-y: auto; }
-‏        input[type="text"], input[type="password"], input[type="file"] { width: 100%; padding: 10px; margin: 8px 0; background: #1a0f0d; border: 1px solid var(--gold); color: var(--gold); border-radius: 5px; }
+
+‏        .btn { width: 100%; background: var(--gold); color: #000; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1rem; margin: 5px 0; }
+‏        .btn-toggle { background: transparent; color: var(--gold); border: 1.5px solid var(--gold); padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; }
+‏        .btn-del { color: #e74c3c; background: none; border: none; font-size: 1.2rem; padding: 5px; }
+
+        /* מודאל מותאם לנייד */
+‏        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; }
+‏        .modal-content { background: var(--wood); margin: 5% auto; width: 92%; padding: 15px; border: 2px solid var(--gold); border-radius: 15px; max-height: 85vh; overflow-y: auto; }
+
+        /* מדיה קווריז לפלאפון */
+‏        @media (max-width: 768px) {
+‏            body { flex-direction: column; }
+‏            .sidebar { 
+‏                width: 100%; 
+‏                height: auto; 
+‏                flex-direction: row; 
+‏                justify-content: space-around; 
+‏                border-left: none; 
+‏                border-bottom: 2px solid var(--gold); 
+            }
+‏            .sidebar-header, .class-img { display: none; }
+‏            .nav-item { padding: 10px; font-size: 0.9rem; flex-direction: column; gap: 5px; flex: 1; text-align: center; }
+‏            .nav-item i { font-size: 1.2rem; }
+‏            .nav-item.active { border-right: none; border-bottom: 4px solid var(--gold); }
+‏            .main-container { padding: 15px; height: calc(100vh - 70px); }
+‏            .podium { height: 120px; }
+‏            .step { font-size: 0.75rem; }
+        }
+
+‏        input[type="text"], input[type="password"], input[type="file"] { width: 100%; padding: 12px; margin: 8px 0; background: #1a0f0d; border: 1px solid var(--gold); color: var(--gold); border-radius: 5px; box-sizing: border-box; }
 ‏    </style>
 ‏</head>
 ‏<body>
@@ -44,58 +107,57 @@
 ‏<div class="sidebar">
 ‏    <div class="sidebar-header">
 ‏        <img id="sideLogo" class="logo-img">
-‏        <h2 style="color:var(--gold); margin:0;">ח'2 - ישיבת לוד</h2>
+‏        <h2 style="color:var(--gold); margin:0; font-size: 1.2rem;">ח'2 - לוד</h2>
 ‏        <img id="sideClassImg" class="class-img">
 ‏    </div>
-‏    <div class="nav-menu">
-‏        <div class="nav-item active" id="btn-home" onclick="showSection('home')"><i class="fas fa-home"></i> דף הבית</div>
-‏        <div class="nav-item" id="btn-shop" onclick="showSection('shop')"><i class="fas fa-store"></i> החנות</div>
-‏        <div class="nav-item" id="btn-admin" onclick="checkAdmin()"><i class="fas fa-user-shield"></i> ניהול מורה</div>
-‏    </div>
+‏    <div class="nav-item active" id="btn-home" onclick="showSection('home')"><i class="fas fa-home"></i> <span>בית</span></div>
+‏    <div class="nav-item" id="btn-shop" onclick="showSection('shop')"><i class="fas fa-store"></i> <span>חנות</span></div>
+‏    <div class="nav-item" id="btn-admin" onclick="checkAdmin()"><i class="fas fa-user-shield"></i> <span>ניהול</span></div>
 ‏</div>
 
 ‏<div class="main-container">
 ‏    <header>
-‏        <h1 style="color:var(--gold); font-size: 2.5rem; margin:0;">💰 הבנק הכיתתי 💰</h1>
-‏        <p id="sloganView" style="font-style: italic; font-size: 1.2rem; margin-top: 10px;"></p>
+‏        <h1>💰 הבנק הכיתתי 💰</h1>
+‏        <p id="sloganView" style="font-style: italic; font-size: 1rem; margin-top: 5px; opacity: 0.9;"></p>
 ‏    </header>
 
 ‏    <div id="section-home" class="section">
 ‏        <div class="podium" id="podiumArea"></div>
 ‏        <div class="card">
-‏            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-‏                <h3 style="color:var(--gold); margin:0;"><i class="fas fa-trophy"></i> דירוג תלמידים</h3>
-‏                <button id="showMoreBtn" class="btn-toggle" onclick="toggleFullList()">הצג את כל הכיתה</button>
+‏            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+‏                <h3 style="color:var(--gold); margin:0; font-size: 1.1rem;"><i class="fas fa-trophy"></i> דירוג</h3>
+‏                <button id="showMoreBtn" class="btn-toggle" onclick="toggleFullList()">כל הכיתה</button>
 ‏            </div>
-‏            <table>
-‏                <thead><tr><th>מקום</th><th>שם התלמיד</th><th>יתרה</th></tr></thead>
-‏                <tbody id="leaderboardBody"></tbody>
-‏            </table>
+‏            <div class="table-container">
+‏                <table>
+‏                    <thead><tr><th>מקום</th><th>תלמיד</th><th>יתרה</th></tr></thead>
+‏                    <tbody id="leaderboardBody"></tbody>
+‏                </table>
+‏            </div>
 ‏        </div>
 ‏    </div>
 
 ‏    <div id="section-admin" class="section" style="display:none; flex-direction:column;">
 ‏        <div class="card">
-‏            <h3>עדכון נתונים ואקסל</h3>
+‏            <h3><i class="fas fa-file-excel"></i> עדכון אקסל</h3>
 ‏            <input type="file" id="excelFile" accept=".xlsx, .xls">
 ‏        </div>
 ‏        <div class="card">
-‏            <h3>עיצוב ותמונות</h3>
+‏            <h3><i class="fas fa-paint-brush"></i> עיצוב</h3>
 ‏            <label>סלוגן:</label><input type="text" id="sloganInput">
-‏            <label>העלאת לוגו:</label><input type="file" id="logoUpload" accept="image/*">
-‏            <label>העלאת תמונה כיתתית:</label><input type="file" id="classImgUpload" accept="image/*">
-‏            <button class="btn" onclick="saveSettings()">שמור הגדרות</button>
+‏            <label>לוגו:</label><input type="file" id="logoUpload" accept="image/*">
+‏            <button class="btn" onclick="saveSettings()">שמור שינויים</button>
 ‏        </div>
 ‏        <div class="card">
-‏            <h3>אבטחה</h3>
+‏            <h3><i class="fas fa-lock"></i> אבטחה</h3>
 ‏            <input type="password" id="newPass" placeholder="סיסמה חדשה">
 ‏            <button class="btn" onclick="updatePass()">עדכן סיסמה</button>
-‏            <button class="btn" style="background:#555; color:#fff" onclick="resetPass()">איפוס סיסמה</button>
+‏            <button class="btn" style="background:#555; color:#fff" onclick="resetPass()">איפוס</button>
 ‏        </div>
 ‏    </div>
 
 ‏    <div id="section-shop" class="section" style="display:none;">
-‏        <div class="card"><h2>החנות בבנייה...</h2></div>
+‏        <div class="card" style="text-align:center;"><h2>החנות בקרוב...</h2><i class="fas fa-tools fa-3x" style="color:var(--gold)"></i></div>
 ‏    </div>
 ‏</div>
 
@@ -111,7 +173,7 @@
 ‏    let showAll = false;
 
 ‏    const pricing = {
-        "מילה  טובה": 5, "מילה טובה": 5, "הצטיינות": 10, "שותף": 5, "הגעה בזמן": 5, "הבאת ציוד": 5,
+        "מילה  טובה": 5, "מילה טובה": 5, "הצטיינות": 10, "שותף": 5, "הגעה בזמן": 5,
         "חיסור": -10, "איחור": -5, "הפרעה": -15, "חוצפה": -20, "פטפוט": -5, "שוטטות": -10
     };
 
@@ -123,45 +185,42 @@
 
 ‏    function applyUI() {
 ‏        document.getElementById('sloganView').innerText = config.slogan;
-‏        if(config.logo) { document.getElementById('sideLogo').src = config.logo; document.getElementById('sideLogo').style.display = 'block'; }
-‏        if(config.classImg) { document.getElementById('sideClassImg').src = config.classImg; document.getElementById('sideClassImg').style.display = 'block'; }
+‏        if(config.logo) { 
+‏            const logo = document.getElementById('sideLogo');
+‏            logo.src = config.logo; logo.style.display = 'block'; 
+        }
     }
 
 ‏    function showSection(name) {
 ‏        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
 ‏        const sec = document.getElementById('section-' + name);
-‏        if(sec) sec.style.display = (name === 'admin') ? 'flex' : 'block';
+‏        if(sec) sec.style.display = 'flex';
 ‏        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
 ‏        const btn = document.getElementById('btn-' + name);
 ‏        if(btn) btn.classList.add('active');
     }
 
 ‏    function checkAdmin() {
-‏        const p = prompt("סיסמה:");
+‏        const p = prompt("סיסמת מורה:");
 ‏        if(p === config.pass) { config.isAuth = true; showSection('admin'); }
-‏        else alert("שגויה");
-    }
-
-‏    function handleImage(input, key, callback) {
-‏        const file = input.files[0];
-‏        if(file) {
-‏            const reader = new FileReader();
-‏            reader.onload = e => { config[key] = e.target.result; callback(); };
-‏            reader.readAsDataURL(file);
-‏        } else callback();
+‏        else if(p !== null) alert("שגויה");
     }
 
 ‏    function saveSettings() {
 ‏        config.slogan = document.getElementById('sloganInput').value;
 ‏        const logoIn = document.getElementById('logoUpload');
-‏        const classIn = document.getElementById('classImgUpload');
-‏        handleImage(logoIn, 'logo', () => {
-‏            handleImage(classIn, 'classImg', () => {
+‏        if(logoIn.files[0]) {
+‏            const reader = new FileReader();
+‏            reader.onload = e => { 
+‏                config.logo = e.target.result; 
 ‏                localStorage.setItem('bank_cfg', JSON.stringify(config));
-‏                applyUI();
-‏                alert("נשמר!");
-            });
-        });
+‏                applyUI(); alert("נשמר!");
+            };
+‏            reader.readAsDataURL(logoIn.files[0]);
+‏        } else {
+‏            localStorage.setItem('bank_cfg', JSON.stringify(config));
+‏            applyUI(); alert("נשמר!");
+        }
     }
 
 ‏    document.getElementById('excelFile').addEventListener('change', e => {
@@ -176,75 +235,73 @@
 ‏                Object.keys(row).forEach(col => {
 ‏                    if(!col.includes("-")) return;
 ‏                    const [sub, teach] = col.split("-").map(s => s.trim());
-‏                    const cellValue = String(row[col] || "");
+‏                    const cellVal = String(row[col] || "");
 ‏                    Object.keys(pricing).forEach(k => {
-                        // חיפוש גמיש שמאפשר טקסט בין המפתח לנקודתיים (כמו הפרעה למהלך..: 2)
 ‏                        const regex = new RegExp(`${k}.*?:\\s*(\\d+)`, 'g');
 ‏                        let m;
-‏                        while ((m = regex.exec(cellValue)) !== null) {
+‏                        while ((m = regex.exec(cellVal)) !== null) {
 ‏                            const count = parseInt(m[1]);
 ‏                            const score = count * pricing[k];
 ‏                            db[name].total += score;
-‏                            db[name].logs.push({ sub, teach, k: k + (cellValue.includes("למהלך") && k === "הפרעה" ? " למהלך" : ""), c: count, s: score });
+‏                            db[name].logs.push({ sub, teach, k: k + (cellVal.includes("למהלך") && k === "הפרעה" ? " למהלך" : ""), c: count, s: score });
                         }
                     });
                 });
             });
 ‏            localStorage.setItem('bank_db', JSON.stringify(db));
-‏            render(); alert("אקסל עודכן!");
+‏            render(); alert("עודכן!");
         };
 ‏        reader.readAsArrayBuffer(e.target.files[0]);
     });
 
 ‏    function toggleFullList() {
 ‏        showAll = !showAll;
-‏        document.getElementById('showMoreBtn').innerText = showAll ? "הצג רק מובילים" : "הצג את כל הכיתה";
+‏        document.getElementById('showMoreBtn').innerText = showAll ? "רק מובילים" : "כל הכיתה";
 ‏        render();
     }
 
 ‏    function render() {
-‏        const sorted = Object.keys(db).map(n => ({name: n, total: db[n].total}))
-‏            .sort((a,b) => b.total - a.total);
+‏        const sorted = Object.keys(db).map(n => ({name: n, total: db[n].total})).sort((a,b) => b.total - a.total);
 ‏        const pod = document.getElementById('podiumArea'); pod.innerHTML = '';
 ‏        [1,0,2].forEach((idx, i) => {
-‏            if(sorted[idx]) pod.innerHTML += `<div class="step step-${i+1}"><div>${sorted[idx].name}</div><div>${sorted[idx].total} ₪</div></div>`;
+‏            if(sorted[idx]) pod.innerHTML += `<div class="step step-${i+1}"><div>${sorted[idx].name.split(' ')[0]}</div><div>${sorted[idx].total}₪</div></div>`;
         });
 ‏        const displayData = showAll ? sorted : sorted.slice(0, 5);
-‏        const tbody = document.getElementById('leaderboardBody');
-‏        tbody.innerHTML = displayData.map((s, i) => `
-‏            <tr onclick="openStudent('${s.name}')"><td>${i+1}</td><td>${s.name}</td><td style="font-weight:bold; color:var(--gold)">${s.total} ₪</td></tr>
+‏        document.getElementById('leaderboardBody').innerHTML = displayData.map((s, i) => `
+‏            <tr onclick="openStudent('${s.name}')"><td>${i+1}</td><td>${s.name}</td><td style="font-weight:bold; color:var(--gold)">${s.total}₪</td></tr>
 ‏        `).join('');
     }
 
-‏    function deleteLog(studentName, logIndex) {
-‏        if(!confirm("למחוק את הרישום הזה?")) return;
-‏        const student = db[studentName];
-‏        const removedLog = student.logs.splice(logIndex, 1)[0];
-‏        student.total -= removedLog.s;
-‏        localStorage.setItem('bank_db', JSON.stringify(db));
-‏        openStudent(studentName); render();
+‏    function deleteLog(studentName, index) {
+‏        if(confirm("למחוק?")) {
+‏            const s = db[studentName];
+‏            s.total -= s.logs.splice(index, 1)[0].s;
+‏            localStorage.setItem('bank_db', JSON.stringify(db));
+‏            openStudent(studentName); render();
+        }
     }
 
 ‏    function openStudent(name) {
 ‏        if(!config.isAuth) {
-‏            const p = prompt("סיסמת מורה לצפייה:");
+‏            const p = prompt("סיסמה לפרטים:");
 ‏            if(p !== config.pass) return;
 ‏            config.isAuth = true;
         }
 ‏        const s = db[name];
-‏        let h = `<h2 style="color:var(--gold); border-bottom:2px solid var(--gold); padding-bottom:10px;">פירוט: ${name}</h2>`;
-‏        h += `<table><thead><tr><th>שיעור</th><th>מורה</th><th>פעולה</th><th>כמות</th><th>סה"כ</th><th>פעולה</th></tr></thead><tbody>`;
-‏        s.logs.forEach((l, index) => {
-‏            h += `<tr class="${l.s >= 0 ? 'pos' : 'neg'}"><td>${l.sub}</td><td>${l.teach}</td><td>${l.k}</td><td>${l.c}</td><td style="font-weight:bold;">${l.s} ₪</td><td><button class="btn-del" onclick="deleteLog('${name}', ${index})"><i class="fas fa-trash-alt"></i></button></td></tr>`;
+‏        let h = `<h3 style="color:var(--gold); border-bottom:1px solid var(--gold); padding-bottom:10px;">${name}</h3><div class="table-container"><table>`;
+‏        h += `<thead><tr><th>פעולה</th><th>₪</th><th></th></tr></thead><tbody>`;
+‏        s.logs.forEach((l, i) => {
+‏            h += `<tr class="${l.s >= 0 ? 'pos' : 'neg'}"><td>${l.k} (${l.sub})</td><td>${l.s}</td><td><button class="btn-del" onclick="deleteLog('${name}', ${i})"><i class="fas fa-trash"></i></button></td></tr>`;
         });
-‏        h += `</tbody></table><div style="display:flex; justify-content:space-between; margin-top:20px; padding:15px; background:rgba(0,0,0,0.4); border-radius:10px;"><h3>יתרה סופית:</h3><h3 style="color:var(--gold); font-size:1.8rem;">${s.total} ₪</h3></div><button class="btn" style="width:100%; margin-top:15px; height:45px;" onclick="closeModal()">סגור</button>`;
+‏        h += `</tbody></table></div><div style="margin-top:15px; text-align:center;"><h4>סה"כ: ${s.total} ₪</h4></div><button class="btn" onclick="closeModal()">סגור</button>`;
 ‏        document.getElementById('modalData').innerHTML = h;
 ‏        document.getElementById('studentModal').style.display = 'block';
     }
 
 ‏    function closeModal() { document.getElementById('studentModal').style.display = 'none'; }
-‏    function updatePass() { config.pass = document.getElementById('newPass').value; localStorage.setItem('bank_cfg', JSON.stringify(config)); alert("סיסמה עודכנה!"); }
-‏    function resetPass() { if(prompt("קוד 9999:") === "9999") { config.pass = "1234"; localStorage.setItem('bank_cfg', JSON.stringify(config)); location.reload(); } }
+‏    function updatePass() { config.pass = document.getElementById('newPass').value; localStorage.setItem('bank_cfg', JSON.stringify(config)); alert("עודכן!"); }
+‏    function resetPass() { if(prompt("קוד איפוס:") === "9999") { config.pass = "1234"; localStorage.setItem('bank_cfg', JSON.stringify(config)); location.reload(); } }
+    
 ‏    init();
 ‏</script>
 ‏</body>
