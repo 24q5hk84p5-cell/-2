@@ -1,181 +1,251 @@
-<!DOCTYPE html>
-<html lang="he" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <title>מצטייני ח'2 - הגרסה המדויקת</title>
-    <style>
-        :root { --gold: #fbbf24; --silver: #94a3b8; --bronze: #cd7f32; --primary: #1e40af; --bg: #f8fafc; --success: #16a34a; --danger: #ef4444; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; padding: 20px; direction: rtl; }
-        .header { background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; padding: 30px; text-align: center; border-radius: 20px; margin-bottom: 30px; }
-        #drop-area { border: 4px dashed #3b82f6; border-radius: 25px; padding: 40px; text-align: center; background: white; cursor: pointer; }
-       
-        .podium { display: flex; align-items: flex-end; justify-content: center; gap: 20px; height: 220px; margin: 60px 0; display: none; }
-        .step { width: 160px; border-radius: 15px 15px 0 0; color: white; text-align: center; position: relative; padding-bottom: 15px; font-weight: bold; }
-        .step1 { background: var(--gold); height: 180px; order: 2; box-shadow: 0 15px 25px rgba(251,191,36,0.4); }
-        .step2 { background: var(--silver); height: 130px; order: 1; }
-        .step3 { background: var(--bronze); height: 100px; order: 3; }
-        .p-name { color: #1e293b; position: absolute; top: -60px; width: 100%; font-size: 1.4em; font-weight: 900; }
-        .p-score { display: block; font-size: 0.65em; background: rgba(255,255,255,0.9); color: #1e40af; border-radius: 5px; padding: 2px; margin: 5px 10px; }
+‏<!DOCTYPE html>
+‏<html lang="he" dir="rtl">
+‏<head>
+‏    <meta charset="UTF-8">
+‏    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+‏    <title>הבנק הכיתתי - ח'2</title>
+‏    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+‏    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+‏    <style>
+‏        :root { --gold: #d4af37; --wood: #3e2723; --dark: #1a0f0d; --cream: #fff8e1; }
+‏        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #2d1b15; color: var(--cream); display: flex; height: 100vh; overflow: hidden; }
+‏        .bsd { position: fixed; top: 5px; left: 10px; font-size: 0.8rem; color: var(--gold); z-index: 3000; }
+‏        .sidebar { width: 280px; background: var(--dark); border-left: 2px solid var(--gold); display: flex; flex-direction: column; z-index: 1000; }
+‏        .sidebar-header { padding: 20px; text-align: center; border-bottom: 2px solid var(--gold); }
+‏        .logo-img { height: 70px; margin-bottom: 10px; display: none; margin: 0 auto; object-fit: contain; }
+‏        .class-img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; border: 1px solid var(--gold); margin-top: 10px; display: none; }
+‏        .nav-item { padding: 15px 25px; cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.3s; font-size: 1.1rem; }
+‏        .nav-item:hover, .nav-item.active { background: var(--wood); color: var(--gold); border-right: 5px solid var(--gold); }
+‏        .main-container { flex: 1; overflow-y: auto; padding: 30px; position: relative; }
+‏        header { text-align: center; margin-bottom: 40px; }
+‏        .podium { display: flex; justify-content: center; align-items: flex-end; gap: 20px; height: 180px; margin: 30px 0; }
+‏        .step { width: 130px; text-align: center; padding: 10px; border-radius: 12px 12px 0 0; color: #000; font-weight: bold; }
+‏        .step-1 { background: var(--gold); height: 100%; order: 2; box-shadow: 0 0 25px var(--gold); }
+‏        .step-2 { background: #c0c0c0; height: 75%; order: 1; }
+‏        .step-3 { background: #cd7f32; height: 55%; order: 3; }
+‏        .card { background: rgba(0,0,0,0.3); border: 2px solid var(--gold); border-radius: 20px; padding: 25px; margin-bottom: 20px; }
+‏        table { width: 100%; border-collapse: collapse; text-align: center; }
+‏        th { background: rgba(0,0,0,0.5); color: var(--gold); padding: 12px; border-bottom: 2px solid var(--gold); }
+‏        td { padding: 12px; border-bottom: 1px solid rgba(212,175,55,0.1); }
+‏        .pos { color: #2ecc71; } .neg { color: #e74c3c; }
+‏        .btn { background: var(--gold); color: #000; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+‏        .btn-toggle { background: transparent; color: var(--gold); border: 2px solid var(--gold); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; font-weight: bold; }
+‏        .btn-del { color: #e74c3c; cursor: pointer; background: none; border: none; font-size: 1.1rem; transition: 0.2s; }
+‏        .btn-del:hover { transform: scale(1.2); color: #ff5e4d; }
+‏        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 2000; }
+‏        .modal-content { background: var(--wood); margin: 2% auto; width: 95%; max-width: 900px; padding: 30px; border: 2px solid var(--gold); border-radius: 20px; max-height: 90vh; overflow-y: auto; }
+‏        input[type="text"], input[type="password"], input[type="file"] { width: 100%; padding: 10px; margin: 8px 0; background: #1a0f0d; border: 1px solid var(--gold); color: var(--gold); border-radius: 5px; }
+‏    </style>
+‏</head>
+‏<body>
 
-        .student-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; margin-top: 20px; display: none; }
-        .s-card { background: white; padding: 15px; border-radius: 15px; text-align: center; cursor: pointer; font-weight: bold; border: 2px solid #e2e8f0; }
-        .s-card.outperformed { border-color: var(--success); background: #f0fdf4; color: var(--success); }
-        .s-card.is-past { opacity: 0.5; filter: grayscale(1); }
+‏<div class="bsd">בס"ד</div>
 
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 20px; z-index: 1001; width: 350px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); }
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 1000; }
-        .report-section { margin: 15px 0; padding: 10px; border-radius: 10px; text-align: right; }
-        .good-bg { background: #f0fdf4; color: var(--success); }
-        .bad-bg { background: #fef2f2; color: var(--danger); }
-        .btn { cursor: pointer; padding: 12px; border: none; border-radius: 10px; font-weight: bold; width: 100%; }
-    </style>
-</head>
-<body>
+‏<div class="sidebar">
+‏    <div class="sidebar-header">
+‏        <img id="sideLogo" class="logo-img">
+‏        <h2 style="color:var(--gold); margin:0;">ח'2 - ישיבת לוד</h2>
+‏        <img id="sideClassImg" class="class-img">
+‏    </div>
+‏    <div class="nav-menu">
+‏        <div class="nav-item active" id="btn-home" onclick="showSection('home')"><i class="fas fa-home"></i> דף הבית</div>
+‏        <div class="nav-item" id="btn-shop" onclick="showSection('shop')"><i class="fas fa-store"></i> החנות</div>
+‏        <div class="nav-item" id="btn-admin" onclick="checkAdmin()"><i class="fas fa-user-shield"></i> ניהול מורה</div>
+‏    </div>
+‏</div>
 
-<div class="header">
-    <h1 style="margin:0;">🏆 נבחרי השבוע - כיתה ח'2</h1>
-</div>
+‏<div class="main-container">
+‏    <header>
+‏        <h1 style="color:var(--gold); font-size: 2.5rem; margin:0;">💰 הבנק הכיתתי 💰</h1>
+‏        <p id="sloganView" style="font-style: italic; font-size: 1.2rem; margin-top: 10px;"></p>
+‏    </header>
 
-<div id="drop-area" onclick="document.getElementById('fileInput').click()">
-    <h2>📁 לחץ להעלאת קובץ ה-CSV</h2>
-    <input type="file" id="fileInput" accept=".csv" style="display:none" onchange="handleFiles(this.files)">
-</div>
+‏    <div id="section-home" class="section">
+‏        <div class="podium" id="podiumArea"></div>
+‏        <div class="card">
+‏            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+‏                <h3 style="color:var(--gold); margin:0;"><i class="fas fa-trophy"></i> דירוג תלמידים</h3>
+‏                <button id="showMoreBtn" class="btn-toggle" onclick="toggleFullList()">הצג את כל הכיתה</button>
+‏            </div>
+‏            <table>
+‏                <thead><tr><th>מקום</th><th>שם התלמיד</th><th>יתרה</th></tr></thead>
+‏                <tbody id="leaderboardBody"></tbody>
+‏            </table>
+‏        </div>
+‏    </div>
 
-<div id="results-area">
-    <div class="podium" id="podium">
-        <div class="step step1"><div id="n1" class="p-name"></div>🥇</div>
-        <div class="step step2"><div id="n2" class="p-name"></div>🥈</div>
-        <div class="step step3"><div id="n3" class="p-name"></div>🥉</div>
-    </div>
+‏    <div id="section-admin" class="section" style="display:none; flex-direction:column;">
+‏        <div class="card">
+‏            <h3>עדכון נתונים ואקסל</h3>
+‏            <input type="file" id="excelFile" accept=".xlsx, .xls">
+‏        </div>
+‏        <div class="card">
+‏            <h3>עיצוב ותמונות</h3>
+‏            <label>סלוגן:</label><input type="text" id="sloganInput">
+‏            <label>העלאת לוגו:</label><input type="file" id="logoUpload" accept="image/*">
+‏            <label>העלאת תמונה כיתתית:</label><input type="file" id="classImgUpload" accept="image/*">
+‏            <button class="btn" onclick="saveSettings()">שמור הגדרות</button>
+‏        </div>
+‏        <div class="card">
+‏            <h3>אבטחה</h3>
+‏            <input type="password" id="newPass" placeholder="סיסמה חדשה">
+‏            <button class="btn" onclick="updatePass()">עדכן סיסמה</button>
+‏            <button class="btn" style="background:#555; color:#fff" onclick="resetPass()">איפוס סיסמה</button>
+‏        </div>
+‏    </div>
 
-    <div style="text-align:center;">
-        <button id="pastBtn" class="btn" style="display:none; width:200px; background:#64748b; color:white;" onclick="showPastModal()">ניהול זוכים מהעבר</button>
-    </div>
+‏    <div id="section-shop" class="section" style="display:none;">
+‏        <div class="card"><h2>החנות בבנייה...</h2></div>
+‏    </div>
+‏</div>
 
-    <div class="student-grid" id="studentGrid"></div>
-</div>
+‏<div id="studentModal" class="modal">
+‏    <div class="modal-content" id="modalData"></div>
+‏</div>
 
-<div class="overlay" id="overlay" onclick="closeModals()"></div>
+‏<script>
+‏    let db = JSON.parse(localStorage.getItem('bank_db')) || {};
+‏    let config = JSON.parse(localStorage.getItem('bank_cfg')) || { 
+‏        pass: "1234", slogan: "יישר כוח!", logo: "", classImg: "", isAuth: false 
+    };
+‏    let showAll = false;
 
-<div class="modal" id="detailsModal">
-    <h2 id="m-name" style="margin-top:0;"></h2>
-    <div id="m-score" style="font-weight: bold; margin-bottom: 10px;"></div>
-    <div class="report-section good-bg" id="m-good-box"><strong>💪 הצלחות:</strong><div id="m-good"></div></div>
-    <div class="report-section bad-bg" id="m-bad-box"><strong>⚠️ לשיפור:</strong><div id="m-bad"></div></div>
-    <button class="btn" style="background:var(--primary); color:white;" onclick="closeModals()">סגור</button>
-</div>
+‏    const pricing = {
+        "מילה  טובה": 5, "מילה טובה": 5, "הצטיינות": 10, "שותף": 5, "הגעה בזמן": 5, "הבאת ציוד": 5,
+        "חיסור": -10, "איחור": -5, "הפרעה": -15, "חוצפה": -20, "פטפוט": -5, "שוטטות": -10
+    };
 
-<div class="modal" id="pastModal">
-    <h3>מי כבר זכה?</h3>
-    <div id="pastList" style="max-height: 250px; overflow-y: auto;"></div>
-    <button class="btn" style="background:var(--primary); color:white; margin-top:10px;" onclick="closeModals()">עדכן</button>
-</div>
-
-<script>
-    let db = {};
-    let pastWinners = JSON.parse(localStorage.getItem('h2_v96_winners') || '[]');
-
-    function handleFiles(files) {
-        if (!files.length) return;
-        const reader = new FileReader();
-        reader.onload = (e) => { parseCSV(e.target.result); render(); };
-        reader.readAsText(files[0], 'UTF-8');
+‏    function init() {
+‏        applyUI();
+‏        showSection('home');
+‏        render();
     }
 
-    function parseCSV(text) {
-        const rows = text.split(/\r?\n/);
-        db = {};
-        for (let i = 1; i < rows.length; i++) {
-            const row = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            if (row.length < 2) continue;
-            const name = row[1].replace(/"/g, '').trim();
-            if (!name) continue;
-            db[name] = { score: 0, interruptions: 0, absences: 0, pos: [], neg: [] };
-            row.forEach(cell => {
-                const content = cell.replace(/"/g, '').trim();
-                const regex = /([^0-9 Hebrew:]+):\s?(\d+)/g;
-                let match;
-                while ((match = regex.exec(content)) !== null) {
-                    const type = match[1].trim(); const count = parseInt(match[2]);
-                    if (/(הפרעה|פטפוט|שוטטות|חוצפה|ציוד|אי הכנת)/.test(type)) {
-                        db[name].interruptions += count;
-                        db[name].neg.push(`${type} (${count})`);
-                        db[name].score -= (count * 3);
-                    } else if (type.includes("חיסור")) {
-                        db[name].absences += count;
-                        db[name].neg.push(`${type} (${count})`);
-                    } else if (/(מילה|הצטיינות|שותף|הגעה)/.test(type)) {
-                        db[name].score += (count * 10);
-                        db[name].pos.push(`${type} (${count})`);
-                    }
-                }
+‏    function applyUI() {
+‏        document.getElementById('sloganView').innerText = config.slogan;
+‏        if(config.logo) { document.getElementById('sideLogo').src = config.logo; document.getElementById('sideLogo').style.display = 'block'; }
+‏        if(config.classImg) { document.getElementById('sideClassImg').src = config.classImg; document.getElementById('sideClassImg').style.display = 'block'; }
+    }
+
+‏    function showSection(name) {
+‏        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+‏        const sec = document.getElementById('section-' + name);
+‏        if(sec) sec.style.display = (name === 'admin') ? 'flex' : 'block';
+‏        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+‏        const btn = document.getElementById('btn-' + name);
+‏        if(btn) btn.classList.add('active');
+    }
+
+‏    function checkAdmin() {
+‏        const p = prompt("סיסמה:");
+‏        if(p === config.pass) { config.isAuth = true; showSection('admin'); }
+‏        else alert("שגויה");
+    }
+
+‏    function handleImage(input, key, callback) {
+‏        const file = input.files[0];
+‏        if(file) {
+‏            const reader = new FileReader();
+‏            reader.onload = e => { config[key] = e.target.result; callback(); };
+‏            reader.readAsDataURL(file);
+‏        } else callback();
+    }
+
+‏    function saveSettings() {
+‏        config.slogan = document.getElementById('sloganInput').value;
+‏        const logoIn = document.getElementById('logoUpload');
+‏        const classIn = document.getElementById('classImgUpload');
+‏        handleImage(logoIn, 'logo', () => {
+‏            handleImage(classIn, 'classImg', () => {
+‏                localStorage.setItem('bank_cfg', JSON.stringify(config));
+‏                applyUI();
+‏                alert("נשמר!");
             });
-        }
-    }
-
-    function render() {
-        let absLimit = 2;
-        let winners = [];
-        // תנאי חדש: רק מי שיש לו ניקוד חיובי (score > 0) יכול לזכות
-        while (absLimit <= 15) {
-            winners = Object.entries(db)
-                .filter(([n, d]) => d.score > 0 && d.interruptions === 0 && d.absences <= absLimit && !pastWinners.includes(n))
-                .sort((a, b) => b[1].score - a[1].score);
-            if (winners.length >= 3 || absLimit === 15) break;
-            absLimit++;
-        }
-
-        const minScore = (winners.length >= 3) ? winners[2][1].score : (winners.length > 0 ? winners[winners.length-1][1].score : 0);
-
-        document.getElementById('drop-area').style.display = 'none';
-        document.getElementById('podium').style.display = 'flex';
-        document.getElementById('studentGrid').style.display = 'grid';
-        document.getElementById('pastBtn').style.display = 'inline-block';
-
-        [1, 2, 3].forEach((rank, i) => {
-            const el = document.getElementById(`n${rank}`);
-            if (winners[i]) {
-                el.innerHTML = `${winners[i][0]}<span class="p-score">${winners[i][1].score} נק'</span>`;
-            } else { el.innerText = "---"; }
         });
-
-        const grid = document.getElementById('studentGrid');
-        grid.innerHTML = Object.keys(db).sort().map(name => {
-            const s = db[name];
-            const isWinner = winners.slice(0,3).some(w => w[0] === name);
-            const isPotential = !isWinner && !pastWinners.includes(name) && s.score > minScore;
-            let cls = "s-card" + (isPotential ? " outperformed" : "") + (pastWinners.includes(name) ? " is-past" : "");
-            return `<div class="${cls}" onclick="openDetails('${name}')">${name}<br><small>${s.score} נק'</small></div>`;
-        }).join('');
     }
 
-    function openDetails(name) {
-        const s = db[name];
-        document.getElementById('m-name').innerText = name;
-        document.getElementById('m-score').innerText = `ניקוד: ${s.score}`;
-        document.getElementById('m-good').innerHTML = s.pos.length ? s.pos.join('<br>') : "אין";
-        document.getElementById('m-bad').innerHTML = s.neg.length ? s.neg.join('<br>') : "נקי!";
-        document.getElementById('detailsModal').style.display = 'block';
-        document.getElementById('overlay').style.display = 'block';
+‏    document.getElementById('excelFile').addEventListener('change', e => {
+‏        const reader = new FileReader();
+‏        reader.onload = ev => {
+‏            const wb = XLSX.read(new Uint8Array(ev.target.result), {type: 'array'});
+‏            const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+‏            db = {};
+‏            rows.forEach(row => {
+‏                const name = row['שם התלמיד']; if(!name) return;
+‏                db[name] = { total: 0, logs: [] };
+‏                Object.keys(row).forEach(col => {
+‏                    if(!col.includes("-")) return;
+‏                    const [sub, teach] = col.split("-").map(s => s.trim());
+‏                    const cellValue = String(row[col] || "");
+‏                    Object.keys(pricing).forEach(k => {
+                        // חיפוש גמיש שמאפשר טקסט בין המפתח לנקודתיים (כמו הפרעה למהלך..: 2)
+‏                        const regex = new RegExp(`${k}.*?:\\s*(\\d+)`, 'g');
+‏                        let m;
+‏                        while ((m = regex.exec(cellValue)) !== null) {
+‏                            const count = parseInt(m[1]);
+‏                            const score = count * pricing[k];
+‏                            db[name].total += score;
+‏                            db[name].logs.push({ sub, teach, k: k + (cellValue.includes("למהלך") && k === "הפרעה" ? " למהלך" : ""), c: count, s: score });
+                        }
+                    });
+                });
+            });
+‏            localStorage.setItem('bank_db', JSON.stringify(db));
+‏            render(); alert("אקסל עודכן!");
+        };
+‏        reader.readAsArrayBuffer(e.target.files[0]);
+    });
+
+‏    function toggleFullList() {
+‏        showAll = !showAll;
+‏        document.getElementById('showMoreBtn').innerText = showAll ? "הצג רק מובילים" : "הצג את כל הכיתה";
+‏        render();
     }
 
-    function showPastModal() {
-        const list = document.getElementById('pastList');
-        list.innerHTML = Object.keys(db).sort().map(name => `
-            <div style="text-align:right; padding:5px;"><input type="checkbox" id="c-${name}" ${pastWinners.includes(name)?'checked':''} onchange="toggleWinner('${name}')"> <label for="c-${name}">${name}</label></div>
-        `).join('');
-        document.getElementById('pastModal').style.display = 'block';
-        document.getElementById('overlay').style.display = 'block';
+‏    function render() {
+‏        const sorted = Object.keys(db).map(n => ({name: n, total: db[n].total}))
+‏            .sort((a,b) => b.total - a.total);
+‏        const pod = document.getElementById('podiumArea'); pod.innerHTML = '';
+‏        [1,0,2].forEach((idx, i) => {
+‏            if(sorted[idx]) pod.innerHTML += `<div class="step step-${i+1}"><div>${sorted[idx].name}</div><div>${sorted[idx].total} ₪</div></div>`;
+        });
+‏        const displayData = showAll ? sorted : sorted.slice(0, 5);
+‏        const tbody = document.getElementById('leaderboardBody');
+‏        tbody.innerHTML = displayData.map((s, i) => `
+‏            <tr onclick="openStudent('${s.name}')"><td>${i+1}</td><td>${s.name}</td><td style="font-weight:bold; color:var(--gold)">${s.total} ₪</td></tr>
+‏        `).join('');
     }
 
-    function toggleWinner(name) {
-        if (pastWinners.includes(name)) pastWinners = pastWinners.filter(n => n !== name);
-        else pastWinners.push(name);
-        localStorage.setItem('h2_v96_winners', JSON.stringify(pastWinners));
-        render();
+‏    function deleteLog(studentName, logIndex) {
+‏        if(!confirm("למחוק את הרישום הזה?")) return;
+‏        const student = db[studentName];
+‏        const removedLog = student.logs.splice(logIndex, 1)[0];
+‏        student.total -= removedLog.s;
+‏        localStorage.setItem('bank_db', JSON.stringify(db));
+‏        openStudent(studentName); render();
     }
 
-    function closeModals() { document.querySelectorAll('.modal, .overlay').forEach(el => el.style.display = 'none'); }
-</script>
-</body>
-</html>
+‏    function openStudent(name) {
+‏        if(!config.isAuth) {
+‏            const p = prompt("סיסמת מורה לצפייה:");
+‏            if(p !== config.pass) return;
+‏            config.isAuth = true;
+        }
+‏        const s = db[name];
+‏        let h = `<h2 style="color:var(--gold); border-bottom:2px solid var(--gold); padding-bottom:10px;">פירוט: ${name}</h2>`;
+‏        h += `<table><thead><tr><th>שיעור</th><th>מורה</th><th>פעולה</th><th>כמות</th><th>סה"כ</th><th>פעולה</th></tr></thead><tbody>`;
+‏        s.logs.forEach((l, index) => {
+‏            h += `<tr class="${l.s >= 0 ? 'pos' : 'neg'}"><td>${l.sub}</td><td>${l.teach}</td><td>${l.k}</td><td>${l.c}</td><td style="font-weight:bold;">${l.s} ₪</td><td><button class="btn-del" onclick="deleteLog('${name}', ${index})"><i class="fas fa-trash-alt"></i></button></td></tr>`;
+        });
+‏        h += `</tbody></table><div style="display:flex; justify-content:space-between; margin-top:20px; padding:15px; background:rgba(0,0,0,0.4); border-radius:10px;"><h3>יתרה סופית:</h3><h3 style="color:var(--gold); font-size:1.8rem;">${s.total} ₪</h3></div><button class="btn" style="width:100%; margin-top:15px; height:45px;" onclick="closeModal()">סגור</button>`;
+‏        document.getElementById('modalData').innerHTML = h;
+‏        document.getElementById('studentModal').style.display = 'block';
+    }
+
+‏    function closeModal() { document.getElementById('studentModal').style.display = 'none'; }
+‏    function updatePass() { config.pass = document.getElementById('newPass').value; localStorage.setItem('bank_cfg', JSON.stringify(config)); alert("סיסמה עודכנה!"); }
+‏    function resetPass() { if(prompt("קוד 9999:") === "9999") { config.pass = "1234"; localStorage.setItem('bank_cfg', JSON.stringify(config)); location.reload(); } }
+‏    init();
+‏</script>
+‏</body>
+‏</html>
